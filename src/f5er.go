@@ -19,19 +19,77 @@ import (
 	"github.com/jmcvetta/napping"
 	//	"github.com/kr/pretty"
 	"crypto/tls"
+	"errors"
+	"github.com/spf13/cobra"
+	"github.com/spf13/viper"
 	"log"
 	"net/http"
 	"net/url"
 	//	"time"
 )
 
+var F5Cmd = &cobra.Command{
+	Use:   "f5er",
+	Short: "tickle an F5 load balancer using REST",
+	Long:  `A utility to create and manage F5 configuration objects`,
+	Run: func(cmd *cobra.Command, args []string) {
+		// Do Stuff Here
+		InitialiseConfig()
+		Run()
+	},
+}
+
+func getConfigurable(k string) (v string, err error) {
+	v = viper.GetString(k)
+	if len(v) > 0 {
+		return v, nil
+	}
+	errstr := "undefined configurable: " + k
+	err = errors.New(errstr)
+	return v, err
+}
+
+var (
+	f5Host  string
+	cfgFile string = "f5.json"
+)
+
 func init() {
+	F5Cmd.PersistentFlags().StringVarP(&f5Host, "f5", "f", "", "IP or hostname of F5 to poke")
+	viper.BindPFlag("f5", F5Cmd.Flags().Lookup("f5"))
 	log.SetFlags(log.Ltime | log.Lshortfile)
 }
 
-func main() {
+func InitialiseConfig() {
+	viper.SetConfigFile(cfgFile)
+	viper.AddConfigPath(".")
+	if f5Host != "" {
+		viper.Set("f5", f5Host)
+	}
+	err := viper.ReadInConfig()
+	if err != nil {
+		fmt.Println("Can't find your config file: %s", cfgFile)
+	}
+}
+
+func CheckRequiredFlags() {
+	val := viper.GetString("f5")
+	log.Println("f5: ", val)
+	if !viper.IsSet("f5") {
+		log.SetFlags(0)
+		log.Println("")
+		log.Println("error: missing required option --f5", f5Host)
+		log.Fatalln("")
+	}
+
+}
+
+func Run() {
+
+	CheckRequiredFlags()
+
 	//
-	// Prompt user for Github username/password
+	// Prompt user for f5 username/password
 	//
 	var username string
 	fmt.Printf("f5 username: ")
@@ -43,6 +101,8 @@ func main() {
 	if err != nil {
 		log.Fatal(err)
 	}
+
+	log.Println("f5host: %s", f5Host)
 	//
 	// Compose request
 	//
@@ -178,4 +238,12 @@ func main() {
 	fmt.Println("RawText")
 	fmt.Println(resp.RawText())
 	println("")
+}
+
+func main() {
+
+	viper.Debug()
+	viper.AutomaticEnv()
+	//	checkRequiredFlags()
+	F5Cmd.Execute()
 }
