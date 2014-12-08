@@ -50,8 +50,10 @@ func getConfigurable(k string) (v string, err error) {
 }
 
 var (
-	f5Host  string
-	cfgFile string = "f5.json"
+	f5Host   string
+	username string
+	passwd   string
+	cfgFile  string = "f5.json"
 )
 
 func init() {
@@ -70,39 +72,45 @@ func InitialiseConfig() {
 	if err != nil {
 		fmt.Println("Can't find your config file: %s", cfgFile)
 	}
+	f5Host = viper.GetString("f5")
+	username = viper.GetString("username")
+	passwd = viper.GetString("passwd")
 }
 
 func CheckRequiredFlags() {
-	val := viper.GetString("f5")
-	log.Println("f5: ", val)
+
 	if !viper.IsSet("f5") {
 		log.SetFlags(0)
 		log.Println("")
-		log.Println("error: missing required option --f5", f5Host)
+		log.Println("error: missing required option --f5")
 		log.Fatalln("")
 	}
+	if !viper.IsSet("username") {
+		promptForCreds()
+	}
 
+}
+
+func promptForCreds() {
+	//
+	// Prompt user for f5 username/password
+	//
+	fmt.Printf("No login credentials defined in config - prompting...\n")
+	fmt.Printf("f5 username: ")
+	_, err := fmt.Scanf("%s", &username)
+	if err != nil {
+		log.Fatal(err)
+	}
+	passwd, err = gopass.GetPass("f5 password: ")
+	if err != nil {
+		log.Fatal(err)
+	}
 }
 
 func Run() {
 
 	CheckRequiredFlags()
 
-	//
-	// Prompt user for f5 username/password
-	//
-	var username string
-	fmt.Printf("f5 username: ")
-	_, err := fmt.Scanf("%s", &username)
-	if err != nil {
-		log.Fatal(err)
-	}
-	passwd, err := gopass.GetPass("f5 password: ")
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	log.Println("f5host: %s", f5Host)
 	//
 	// Compose request
 	//
@@ -242,8 +250,6 @@ func Run() {
 
 func main() {
 
-	viper.Debug()
 	viper.AutomaticEnv()
-	//	checkRequiredFlags()
 	F5Cmd.Execute()
 }
