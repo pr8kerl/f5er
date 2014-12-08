@@ -14,12 +14,12 @@ NOTE: This example may only work on *nix systems due to gopass requirements.
 */
 
 import (
-	"code.google.com/p/gopass"
-	"fmt"
-	"github.com/jmcvetta/napping"
 	//	"github.com/kr/pretty"
+	"code.google.com/p/gopass"
 	"crypto/tls"
 	"errors"
+	"fmt"
+	"github.com/jmcvetta/napping"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"log"
