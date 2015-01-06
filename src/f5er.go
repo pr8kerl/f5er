@@ -1,10 +1,3 @@
-// Copyright (c) 2012-2013 Jason McVetta.  This is Free Software, released
-// under the terms of the GPL v3.  See http://www.gnu.org/copyleft/gpl.html for
-// details.  Resist intellectual serfdom - the ownership of ideas is akin to
-// slavery.
-
-// Example demonstrating use of package napping, with HTTP Basic
-// authentictation over HTTPS, to retrieve a Github auth token.
 package main
 
 /*
@@ -65,7 +58,6 @@ var showPoolCmd = &cobra.Command{
 			showPools()
 		} else {
 			pname := args[0]
-			fmt.Println("f5er show pool " + pname)
 			showPool(pname)
 		}
 	},
@@ -171,9 +163,9 @@ func showPools() {
 		log.Fatal(err)
 	}
 	for _, v := range res.Items {
-		fmt.Printf("pool\npartition:\t%s\n", v.Partition)
-		fmt.Printf("name:\t\t%s\n", v.Name)
-		fmt.Printf("fullpath:\t\t%s\n\n", v.Fullpath)
+		fmt.Printf("pool name:\t%s\n", v.Name)
+		fmt.Printf("partition:\t%s\n", v.Partition)
+		fmt.Printf("fullpath:\t%s\n\n", v.Fullpath)
 	}
 	fmt.Println("response Status:", resp.Status())
 	fmt.Println("--------------------------------------------------------------------------------")
@@ -249,10 +241,10 @@ func showPool(pname string) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	fmt.Printf("url:\t%s\n", url)
-	fmt.Printf("pool\npartition:\t%s\n", res.Partition)
-	fmt.Printf("name:\t\t%s\n", res.Name)
-	fmt.Printf("fullpath:\t\t%s\n\n", res.Fullpath)
+	//fmt.Printf("url:\t%s\n\n", url)
+	fmt.Printf("pool name:\t%s\n", res.Name)
+	fmt.Printf("partition:\t%s\n", res.Partition)
+	fmt.Printf("fullpath:\t%s\n\n", res.Fullpath)
 	fmt.Println("response Status:", resp.Status())
 	fmt.Println("--------------------------------------------------------------------------------")
 	fmt.Println("Header")
@@ -265,6 +257,7 @@ func showPool(pname string) {
 
 func init() {
 	f5Cmd.Flags().StringVarP(&f5Host, "f5", "f", "", "IP or hostname of F5 to poke")
+	f5Cmd.PersistentFlags().StringVarP(&partition, "partition", "p", "", "F5 partition")
 	viper.BindPFlag("f5", f5Cmd.Flags().Lookup("f5"))
 	f5Cmd.AddCommand(showCmd)
 	showCmd.AddCommand(showPoolCmd)
