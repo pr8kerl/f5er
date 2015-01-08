@@ -73,14 +73,58 @@ type httperr struct {
 	}
 }
 
+/*
+"membersReference":{
+				"link":"https://localhost/mgmt/tm/ltm/pool/~DMZ~audmzbilltweb-sit_443_pool/members?ver=11.6.0",
+				"isSubcollection":true,
+				"items":[
+				  {
+									"kind":"tm:ltm:pool:members:membersstate",
+									"name":"audmzbilltweb01-sit:443",
+									"partition":"DMZ",
+									"fullPath":"/DMZ/audmzbilltweb01-sit:443",
+									"generation":233,
+									"selfLink":"https://localhost/mgmt/tm/ltm/pool/~DMZ~audmzbilltweb-sit_443_pool/members/~DMZ~audmzbilltweb01-sit:443?ver=11.6.0",
+									"address":"10.60.61.215%6",
+									"connectionLimit":0,
+									"dynamicRatio":1,
+									"ephemeral":"false",
+									"fqdn":{
+													"autopopulate":"disabled"
+									},
+									"inheritProfile":"enabled",
+									"logging":"disabled",
+									"monitor":"default",
+									"priorityGroup":0,
+									"rateLimit":"disabled",
+									"ratio":1,
+									"session":"monitor-enabled",
+									"state":"up"
+					}
+			]
+	}
+*/
+
+type LBMember struct {
+	Name     string `json:"name"`
+	Fullpath string `json:"fullPath"`
+	Address  string `json:"address"`
+	State    string `json:"state"`
+}
+type LBMemberRef struct {
+	Link  string     `json:"link"`
+	Items []LBMember `json":items"`
+}
+
 type LBPool struct {
-	Name              string `json:"name"`
-	Fullpath          string `json:"fullPath"`
-	Generation        int    `json:"generation"`
-	AllowNat          string `json:"allowNat"`
-	AllowSnat         string `json:"allowSnat"`
-	LoadBalancingMode string `json:"loadBalancingMode"`
-	Monitor           string `json:"monitor"`
+	Name              string      `json:"name"`
+	Fullpath          string      `json:"fullPath"`
+	Generation        int         `json:"generation"`
+	AllowNat          string      `json:"allowNat"`
+	AllowSnat         string      `json:"allowSnat"`
+	LoadBalancingMode string      `json:"loadBalancingMode"`
+	Monitor           string      `json:"monitor"`
+	MemberRef         LBMemberRef `json:"membersReference"`
 }
 
 /*
@@ -241,7 +285,8 @@ func showPool(pname string) {
 	}
 
 	//	url := "https://" + f5Host + "/mgmt/tm/ltm/pool/" + poolname + "?\\$expand=*"
-	url := "https://" + f5Host + "/mgmt/tm/ltm/pool/~" + partition + "~" + poolname
+	//url := "https://" + f5Host + "/mgmt/tm/ltm/pool/~" + partition + "~" + poolname + "~expand=*"
+	url := "https://" + f5Host + "/mgmt/tm/ltm/pool/~" + partition + "~" + poolname + "?expandSubcollections=true"
 	res := LBPool{}
 
 	//url := "https://10.60.99.241/mgmt/tm/ltm/pool/~DMZ~audmzbilltweb-sit_443_pool"
@@ -262,6 +307,11 @@ func showPool(pname string) {
 	fmt.Printf("fullpath:\t%s\n", res.Fullpath)
 	fmt.Printf("lb mode:\t%s\n", res.LoadBalancingMode)
 	fmt.Printf("monitor:\t%s\n", res.Monitor)
+
+	for i, member := range res.MemberRef.Items {
+		fmt.Printf("\tmember %d name:\t\t%s\n", i, member.Name)
+		fmt.Printf("\tmember %d address:\t%s\n", i, member.Address)
+	}
 	if debug {
 		fmt.Printf("url:\t%s\n\n", url)
 		fmt.Println("response Status:", resp.Status())
