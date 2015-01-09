@@ -8,7 +8,7 @@ NOTE: This example may only work on *nix systems due to gopass requirements.
 
 import (
 	//	"github.com/kr/pretty"
-	"code.google.com/p/gopass"
+	//"code.google.com/p/gopass"
 	"crypto/tls"
 	"fmt"
 	"github.com/jmcvetta/napping"
@@ -22,13 +22,14 @@ import (
 )
 
 var (
-	f5Host    string
-	username  string
-	passwd    string
-	debug     bool = false
-	partition string
-	poolname  string
-	cfgFile   string = "f5.json"
+	f5Host      string
+	username    string
+	passwd      string
+	credentials map[string]string
+	debug       bool = false
+	partition   string
+	poolname    string
+	cfgFile     string = "f5.json"
 )
 
 var f5Cmd = &cobra.Command{
@@ -143,42 +144,26 @@ func InitialiseConfig() {
 	}
 	err := viper.ReadInConfig()
 	if err != nil {
-		fmt.Println("Can't find your config file: %s", cfgFile)
+		fmt.Printf("Can't find your config file: %s\n", cfgFile)
+	}
+	if !viper.IsSet("credentials") {
+		log.Fatal("no login credentials defined in config")
 	}
 	checkRequiredFlag("f5")
+
+	credentials = viper.GetStringMapString("credentials")
 	f5Host = viper.GetString("f5")
-	username = viper.GetString("username")
-	passwd = viper.GetString("passwd")
+	username = credentials["username"]
+	passwd = credentials["password"]
 	partition = viper.GetString("partition")
 	debug = viper.GetBool("debug")
 	poolname = viper.GetString("poolname")
 }
 
 func checkRequiredFlag(flg string) {
-
 	if !viper.IsSet(flg) {
 		log.SetFlags(0)
 		log.Fatalf("\nerror: missing required option --%s\n\n", flg)
-	}
-	if !viper.IsSet("username") {
-		promptForCreds()
-	}
-
-}
-
-func promptForCreds() {
-	//
-	// Prompt user for f5 username/password
-	//
-	fmt.Printf("No login credentials defined in config - prompting...\n")
-	fmt.Printf("f5 username: ")
-	_, err := fmt.Scanf("%s", &username)
-	if err != nil {
-		log.Fatal(err)
-	}
-	passwd, err = gopass.GetPass("f5 password: ")
-	if err != nil {
-		log.Fatal(err)
 	}
 }
 

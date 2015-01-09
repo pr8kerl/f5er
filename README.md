@@ -5,6 +5,25 @@ A golang F5 rest client
 ## To do
 - everything
 
+## cross-compile for windows
+Use [gox](https://github.com/mitchellh/gox).
++ install
+```
+go get github.com/mitchellh/gox
+```
++ compile cross-compilation build chain
+```
+gox -build-toolchain
+```
++ create windows binaries
+```
+gox -os="windows"
+Number of parallel builds: 4
+
+-->     windows/386: _/home/ians/work/f5er
+-->   windows/amd64: _/home/ians/work/f5er
+```
+
 
 ### Pool
 
