@@ -4,7 +4,7 @@ GOBIN  := $(GOPATH)/bin
 PATH   := $(GOROOT)/bin:$(PATH)
 DEPS   := code.google.com/p/gopass github.com/jmcvetta/napping github.com/spf13/cobra github.com/spf13/viper
 
-all: f5er windows
+all: f5er
 
 update: $(DEPS)
 	GOPATH=$(GOPATH) go get -u $^

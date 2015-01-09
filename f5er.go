@@ -149,12 +149,19 @@ func InitialiseConfig() {
 	if !viper.IsSet("credentials") {
 		log.Fatal("no login credentials defined in config")
 	}
+	credentials = viper.GetStringMapString("credentials")
+	var ok bool
+	username, ok = credentials["username"]
+	if !ok {
+		log.Fatal("no username defined in config")
+	}
+	passwd, ok = credentials["username"]
+	if !ok {
+		log.Fatal("no passwd defined in config")
+	}
 	checkRequiredFlag("f5")
 
-	credentials = viper.GetStringMapString("credentials")
 	f5Host = viper.GetString("f5")
-	username = credentials["username"]
-	passwd = credentials["password"]
 	partition = viper.GetString("partition")
 	debug = viper.GetBool("debug")
 	poolname = viper.GetString("poolname")
