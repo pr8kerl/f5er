@@ -2,9 +2,10 @@ package main
 
 import (
 	"crypto/tls"
+	"encoding/json"
 	"fmt"
 	"github.com/jmcvetta/napping"
-	//	"github.com/spf13/cobra"
+	//	"github.com/kr/pretty"
 	"github.com/spf13/viper"
 	"log"
 	"net/http"
@@ -147,7 +148,7 @@ func InitialiseConfig() {
 	if !ok {
 		log.Fatal("no username defined in config")
 	}
-	passwd, ok = credentials["username"]
+	passwd, ok = credentials["passwd"]
 	if !ok {
 		log.Fatal("no passwd defined in config")
 	}
@@ -183,6 +184,7 @@ func showPools() {
 	//
 	s := napping.Session{
 		Client:   client,
+		Log:      debug,
 		Userinfo: url.UserPassword(username, passwd),
 	}
 
@@ -200,23 +202,28 @@ func showPools() {
 	if err != nil {
 		log.Fatal(err)
 	}
+	if resp.Status() == 401 {
+		log.Fatal("unauthorised - check your username and passwd")
+	}
 	if resp.Status() >= 300 {
 		log.Fatal(e.Message)
 	}
 	for _, v := range res.Items {
 		fmt.Printf("pool:\t%s\n", v.Fullpath)
 	}
-	if debug {
-		fmt.Printf("url:\t%s\n\n", url)
-		fmt.Println("response Status:", resp.Status())
-		fmt.Println("--------------------------------------------------------------------------------")
-		fmt.Println("Header")
-		fmt.Println(resp.HttpResponse().Header)
-		fmt.Println("--------------------------------------------------------------------------------")
-		fmt.Println("RawText")
-		fmt.Println(resp.RawText())
-		println("")
-	}
+	/*
+		if debug {
+			fmt.Printf("url:\t%s\n\n", url)
+			fmt.Println("response Status:", resp.Status())
+			fmt.Println("--------------------------------------------------------------------------------")
+			fmt.Println("Header")
+			fmt.Println(resp.HttpResponse().Header)
+			fmt.Println("--------------------------------------------------------------------------------")
+			fmt.Println("RawText")
+			fmt.Println(resp.RawText())
+			println("")
+		}
+	*/
 }
 
 func showPool(pname string) {
@@ -265,6 +272,7 @@ func showPool(pname string) {
 	//
 	s := napping.Session{
 		Client:   client,
+		Log:      debug,
 		Userinfo: url.UserPassword(username, passwd),
 	}
 
@@ -284,6 +292,9 @@ func showPool(pname string) {
 	if err != nil {
 		log.Fatal(err)
 	}
+	if resp.Status() == 401 {
+		log.Fatal("unauthorised - check your username and passwd")
+	}
 	if resp.Status() >= 300 {
 		log.Fatal(e.Message)
 	}
@@ -295,21 +306,38 @@ func showPool(pname string) {
 	for i, member := range res.MemberRef.Items {
 		fmt.Printf("\tmember %d name:\t\t%s\n", i, member.Name)
 		fmt.Printf("\tmember %d address:\t%s\n", i, member.Address)
+		fmt.Printf("\tmember %d state:\t\t%s\n", i, member.State)
 	}
-	if debug {
-		fmt.Printf("url:\t%s\n\n", url)
-		fmt.Println("response Status:", resp.Status())
-		fmt.Println("--------------------------------------------------------------------------------")
-		fmt.Println("Header")
-		fmt.Println(resp.HttpResponse().Header)
-		fmt.Println("--------------------------------------------------------------------------------")
-		fmt.Println("RawText")
-		fmt.Println(resp.RawText())
-		fmt.Println("--------------------------------------------------------------------------------")
-		fmt.Println("RawResponse")
-		fmt.Println(res)
-		println("")
+	/*
+		if debug {
+			fmt.Printf("url:\t%s\n\n", url)
+			fmt.Println("response Status:", resp.Status())
+			fmt.Println("--------------------------------------------------------------------------------")
+			fmt.Println("Header")
+			fmt.Println(resp.HttpResponse().Header)
+			fmt.Println("--------------------------------------------------------------------------------")
+			fmt.Println("Response")
+			jsonresp, err := prettifyJson(resp.RawText())
+			if err != nil {
+				log.Fatal(err)
+			}
+			fmt.Println(jsonresp)
+			fmt.Println("--------------------------------------------------------------------------------")
+		}
+	*/
+}
+
+func prettifyJson(s string) (string, error) {
+	var data map[string]interface{}
+	b := []byte(s)
+	if err := json.Unmarshal(b, &data); err != nil {
+		return s, err
 	}
+	b, err := json.MarshalIndent(data, "", "\t")
+	if err != nil {
+		return s, err
+	}
+	return string(b), nil
 }
 
 func init() {
