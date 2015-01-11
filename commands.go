@@ -3,7 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/spf13/cobra"
-	"os"
+	"log"
 )
 
 var f5Cmd = &cobra.Command{
@@ -18,9 +18,8 @@ var showCmd = &cobra.Command{
 	Long:  "show current state of F5 objects. Show requires an object, eg. f5er show pool",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			cmd.Help()
-			fmt.Println("show needs an argument - the object type to show perhaps??")
-			os.Exit(1)
+			fmt.Println("all available ltm modules")
+			show()
 		}
 	},
 }
@@ -31,11 +30,52 @@ var showPoolCmd = &cobra.Command{
 	Long:  "show the current state of a pool",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			fmt.Println("f5er show pool")
 			showPools()
 		} else {
-			pname := args[0]
-			showPool(pname)
+			name := args[0]
+			showPool(name)
 		}
 	},
+}
+
+var showVirtualCmd = &cobra.Command{
+	Use:   "virtual",
+	Short: "show a virtual server",
+	Long:  "show the current state of a virtual server",
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) < 1 {
+			showVirtuals()
+		} else {
+			name := args[0]
+			showVirtual(name)
+		}
+	},
+}
+
+type LBModule struct {
+	Link string `json:"link"`
+}
+
+type LBModuleRef struct {
+	Reference LBModule `json:"reference"`
+}
+
+type LBModules struct {
+	Items []LBModuleRef `json:"items"`
+}
+
+func show() {
+
+	u := "https://" + f5Host + "/mgmt/tm/ltm"
+	res := LBModules{}
+
+	err := GetRequest(u, &res)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	for _, v := range res.Items {
+		fmt.Printf("module:\t%s\n", v.Reference.Link)
+	}
+
 }
