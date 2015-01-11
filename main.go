@@ -44,6 +44,7 @@ func InitialiseConfig() {
 	if err != nil {
 		fmt.Printf("Can't find your config file: %s\n", cfgFile)
 	}
+	viper.AutomaticEnv()
 
 	if !viper.IsSet("credentials") {
 		log.Fatal("no login credentials defined in config")
@@ -131,6 +132,5 @@ func init() {
 }
 
 func main() {
-	viper.AutomaticEnv()
 	f5Cmd.Execute()
 }
