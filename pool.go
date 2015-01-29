@@ -2,6 +2,7 @@ package main
 
 import (
 	"fmt"
+	"strings"
 	//	"github.com/kr/pretty"
 	"log"
 )
@@ -49,7 +50,9 @@ func showPools() {
 
 func showPool(pname string) {
 
-	u := "https://" + f5Host + "/mgmt/tm/ltm/pool/~" + partition + "~" + poolname + "?expandSubcollections=true"
+	//u := "https://" + f5Host + "/mgmt/tm/ltm/pool/~" + partition + "~" + pname + "?expandSubcollections=true"
+	pool := strings.Replace(pname, "/", "~", -1)
+	u := "https://" + f5Host + "/mgmt/tm/ltm/pool/" + pool + "?expandSubcollections=true"
 	res := LBPool{}
 
 	err := GetRequest(u, &res)

@@ -63,7 +63,6 @@ func InitialiseConfig() {
 	if !ok {
 		log.Fatal("no f5 defined in config")
 	}
-	checkRequiredFlag("f5")
 
 	partition = viper.GetString("partition")
 	debug = viper.GetBool("debug")
@@ -112,6 +111,11 @@ func GetRequest(u string, res interface{}) error {
 	if resp.Status() >= 300 {
 		return errors.New(e.Message)
 	} else {
+
+		//		fmt.Println("---------------------------")
+		//		fmt.Println("RawText")
+		//		prettifyScanner(resp.RawText())
+
 		return nil
 	}
 }
@@ -132,5 +136,6 @@ func init() {
 }
 
 func main() {
+	//f5Cmd.DebugFlags()
 	f5Cmd.Execute()
 }
