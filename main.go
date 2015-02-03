@@ -18,9 +18,10 @@ var (
 	passwd      string
 	credentials map[string]string
 	debug       bool
-	partition   string
-	poolname    string
+	poolmember  string
 	cfgFile     string = "f5.json"
+	f5Input     string
+	f5Pool      string
 	transport   *http.Transport
 	client      *http.Client
 	session     napping.Session
@@ -64,9 +65,15 @@ func InitialiseConfig() {
 		log.Fatal("no f5 defined in config")
 	}
 
-	partition = viper.GetString("partition")
 	debug = viper.GetBool("debug")
-	poolname = viper.GetString("poolname")
+	poolmember = viper.GetString("poolmember")
+	if f5Cmd.PersistentFlags().Lookup("input").Changed {
+		viper.Set("input", f5Input)
+	}
+	if showPoolMemberCmd.Flags().Lookup("pool").Changed {
+		viper.Set("pool", f5Pool)
+	}
+	//viper.BindPFlag("pool", f5Cmd.Flags().Lookup("pool"))
 }
 
 func checkRequiredFlag(flg string) {
@@ -122,12 +129,20 @@ func GetRequest(u string, res interface{}) error {
 
 func init() {
 
-	f5Cmd.Flags().StringVarP(&f5Host, "f5", "f", "", "IP or hostname of F5 to poke")
+	f5Cmd.PersistentFlags().StringVarP(&f5Host, "f5", "f", "", "IP or hostname of F5 to poke")
 	f5Cmd.PersistentFlags().BoolVarP(&debug, "debug", "d", false, "debug output")
-	f5Cmd.PersistentFlags().StringVarP(&partition, "partition", "p", "", "F5 partition")
+	f5Cmd.PersistentFlags().StringVarP(&f5Input, "input", "i", "", "input json f5 configuration")
+	showPoolMemberCmd.Flags().StringVarP(&f5Pool, "pool", "p", "", "F5 pool name")
+
+	// show
 	f5Cmd.AddCommand(showCmd)
 	showCmd.AddCommand(showPoolCmd)
+	showCmd.AddCommand(showPoolMemberCmd)
 	showCmd.AddCommand(showVirtualCmd)
+
+	// create
+	f5Cmd.AddCommand(createCmd)
+	createCmd.AddCommand(createPoolCmd)
 
 	//	log.SetFlags(log.Ltime | log.Lshortfile)
 	log.SetFlags(0)
@@ -136,6 +151,6 @@ func init() {
 }
 
 func main() {
-	//f5Cmd.DebugFlags()
+//	f5Cmd.DebugFlags()
 	f5Cmd.Execute()
 }

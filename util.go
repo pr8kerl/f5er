@@ -1,7 +1,9 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"log"
 	"strings"
 )
 
@@ -102,5 +104,15 @@ func prettifyBytes(input string) {
 	for _, v := range substrings {
 		fmt.Printf("pretty: %s\n", v)
 	}
+
+}
+
+func printResponse(input interface{}) {
+
+	jsonresp, err := json.MarshalIndent(&input, "", "\t")
+	if err != nil {
+		log.Fatal(err)
+	}
+	fmt.Println(string(jsonresp))
 
 }

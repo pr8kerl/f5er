@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/spf13/cobra"
+	//	"github.com/spf13/viper"
 	"log"
 )
 
@@ -24,6 +25,15 @@ var showCmd = &cobra.Command{
 	},
 }
 
+var createCmd = &cobra.Command{
+	Use:   "create",
+	Short: "create F5 objects",
+	Long:  "create a new F5 object. Create requires an object, eg. f5er create pool",
+	Run: func(cmd *cobra.Command, args []string) {
+		create()
+	},
+}
+
 var showPoolCmd = &cobra.Command{
 	Use:   "pool",
 	Short: "show a pool",
@@ -35,6 +45,33 @@ var showPoolCmd = &cobra.Command{
 			name := args[0]
 			showPool(name)
 		}
+	},
+}
+
+var showPoolMemberCmd = &cobra.Command{
+	Use:   "poolmember",
+	Short: "show a pool member",
+	Long:  "show the details of a pool member",
+	Run: func(cmd *cobra.Command, args []string) {
+		//		if !viper.IsSet("pool") {
+		//			log.Fatal("show poolmember needs a pool to work with - please use --pool flag.")
+		//		}
+		if len(args) < 1 {
+			showPoolMembers()
+		} else {
+			name := args[0]
+			showPoolMember(name)
+		}
+	},
+}
+
+var createPoolCmd = &cobra.Command{
+	Use:   "pool",
+	Short: "create a pool",
+	Long:  "create a new pool",
+	Run: func(cmd *cobra.Command, args []string) {
+		name := args[0]
+		createPool(name)
 	},
 }
 
@@ -52,6 +89,8 @@ var showVirtualCmd = &cobra.Command{
 	},
 }
 
+// F5 Module data struct
+// to show all available modules when using show without args
 type LBModule struct {
 	Link string `json:"link"`
 }
@@ -77,5 +116,11 @@ func show() {
 	for _, v := range res.Items {
 		fmt.Printf("module:\t%s\n", v.Reference.Link)
 	}
+
+}
+
+func create() {
+
+	fmt.Println("what sort of F5 object would you like to create?")
 
 }

@@ -3,6 +3,7 @@ package main
 import (
 	"fmt"
 	"log"
+	"strings"
 	//	"github.com/kr/pretty"
 )
 
@@ -77,32 +78,21 @@ func showVirtuals() {
 	}
 
 	for _, v := range res.Items {
-		fmt.Printf("virtual:\t%s\n", v.Path)
+		fmt.Printf("%s\n", v.Path)
 	}
 
 }
 
 func showVirtual(vname string) {
 
-	u := "https://" + f5Host + "/mgmt/tm/ltm/virtual/~" + partition + "~" + vname + "?expandSubcollections=true"
+	vname = strings.Replace(vname, "/", "~", -1)
+	u := "https://" + f5Host + "/mgmt/tm/ltm/virtual/" + vname + "?expandSubcollections=true"
 	res := LBVirtual{}
 
 	err := GetRequest(u, &res)
 	if err != nil {
 		log.Fatal(err)
 	}
-
-	fmt.Printf("virtual name:\t%s\n", res.Name)
-	fmt.Printf("path:\t%s\n", res.Path)
-	fmt.Printf("destination:\t%s\n", res.Destination)
-	fmt.Printf("pool:\t%s\n", res.Pool)
-
-	/*
-		for i, member := range res.MemberRef.Items {
-			fmt.Printf("\tmember %d name:\t\t%s\n", i, member.Name)
-			fmt.Printf("\tmember %d address:\t%s\n", i, member.Address)
-			fmt.Printf("\tmember %d state:\t\t%s\n", i, member.State)
-		}
-	*/
+	printResponse(&res)
 
 }
