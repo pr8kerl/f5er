@@ -30,7 +30,7 @@ Number of parallel builds: 4
 
 ### Pool
 
-**https://192.168.0.100/mgmt/tm/ltm/pool/~DMZ~audmzbilltweb-sit_443_pool**
+**https://x.x.x.x/mgmt/tm/ltm/pool/~DMZ~audmzbilltweb-sit_443_pool**
 
 ```
 RawText
@@ -39,10 +39,58 @@ RawText
 
 ### Members
 
-**https://192.168.0.100/mgmt/tm/ltm/pool/~DMZ~audmzbilltweb-sit_443_pool/members?ver=11.6.0**
+**https://x.x.x.x/mgmt/tm/ltm/pool/~DMZ~audmzbilltweb-sit_443_pool/members?ver=11.6.0**
 
 ```
-{"kind":"tm:ltm:pool:members:memberscollectionstate","selfLink":"https://localhost/mgmt/tm/ltm/pool/~DMZ~audmzbilltweb-sit_443_pool/members?ver=11.6.0","items":[{"kind":"tm:ltm:pool:members:membersstate","name":"audmzbilltweb01-sit:443","partition":"DMZ","fullPath":"/DMZ/audmzbilltweb01-sit:443","generation":233,"selfLink":"https://localhost/mgmt/tm/ltm/pool/~DMZ~audmzbilltweb-sit_443_pool/members/~DMZ~audmzbilltweb01-sit:443?ver=11.6.0","address":"10.60.61.215%6","connectionLimit":0,"dynamicRatio":1,"ephemeral":"false","fqdn":{"autopopulate":"disabled"},"inheritProfile":"enabled","logging":"disabled","monitor":"default","priorityGroup":0,"rateLimit":"disabled","ratio":1,"session":"monitor-enabled","state":"up"},{"kind":"tm:ltm:pool:members:membersstate","name":"audmzbilltweb02-sit:443","partition":"DMZ","fullPath":"/DMZ/audmzbilltweb02-sit:443","generation":153,"selfLink":"https://localhost/mgmt/tm/ltm/pool/~DMZ~audmzbilltweb-sit_443_pool/members/~DMZ~audmzbilltweb02-sit:443?ver=11.6.0","address":"10.60.61.216%6","connectionLimit":0,"dynamicRatio":1,"ephemeral":"false","fqdn":{"autopopulate":"disabled"},"inheritProfile":"enabled","logging":"disabled","monitor":"default","priorityGroup":0,"rateLimit":"disabled","ratio":1,"session":"monitor-enabled","state":"up"}]}
+{"kind":"tm:ltm:pool:members:memberscollectionstate","selfLink":"https://localhost/mgmt/tm/ltm/pool/~DMZ~audmzbilltweb-sit_443_pool/members?ver=11.6.0","items":[{"kind":"tm:ltm:pool:members:membersstate","name":"audmzbilltweb01-sit:443","partition":"DMZ","fullPath":"/DMZ/audmzbilltweb01-sit:443","generation":233,"selfLink":"https://localhost/mgmt/tm/ltm/pool/~DMZ~audmzbilltweb-sit_443_pool/members/~DMZ~audmzbilltweb01-sit:443?ver=11.6.0","address":"x.x.x.x%6","connectionLimit":0,"dynamicRatio":1,"ephemeral":"false","fqdn":{"autopopulate":"disabled"},"inheritProfile":"enabled","logging":"disabled","monitor":"default","priorityGroup":0,"rateLimit":"disabled","ratio":1,"session":"monitor-enabled","state":"up"},{"kind":"tm:ltm:pool:members:membersstate","name":"audmzbilltweb02-sit:443","partition":"DMZ","fullPath":"/DMZ/audmzbilltweb02-sit:443","generation":153,"selfLink":"https://localhost/mgmt/tm/ltm/pool/~DMZ~audmzbilltweb-sit_443_pool/members/~DMZ~audmzbilltweb02-sit:443?ver=11.6.0","address":"x.x.x.x%6","connectionLimit":0,"dynamicRatio":1,"ephemeral":"false","fqdn":{"autopopulate":"disabled"},"inheritProfile":"enabled","logging":"disabled","monitor":"default","priorityGroup":0,"rateLimit":"disabled","ratio":1,"session":"monitor-enabled","state":"up"}]}
 ```
 
 
+### cluster member status
+```
+curl -sk -u admin:admin -H "Content-Type: application/json" -X GET https://x.x.x.x/mgmt/tm/cm/failover-status 
+{
+  "kind":"tm:cm:failover-status:failover-statusstats",
+  "selfLink":"https://localhost/mgmt/tm/cm/failover-status?ver=11.6.0",
+  "entries":{
+    "https://localhost/mgmt/tm/cm/failover-status/0":{
+      "nestedStats":{
+        "entries":{
+          "color":{"description":"green"},
+          "https://localhost/mgmt/tm/cm/failoverStatus/0/details":{
+            "nestedStats":{
+              "entries":{
+                "https://localhost/mgmt/tm/cm/failoverStatus/0/details/0":{
+                  "nestedStats":{
+                    "entries":{
+                      "details":{"description":"active for /Common/traffic-group-1"}
+                    }
+                  }
+                }
+              }
+            }
+          },
+          "status":{"description":"ACTIVE"},
+          "summary":{"description":"1/1 active"}
+        }
+      }
+    }
+  }
+}
+
+```
+
+### config sync
+```
+curl -sk -u admin:admin -H "Content-Type: application/json" -X POST -d '{"command":"run","utilCmdArgs":"config-sync to-group pair-group-name"}' https://x.x.x.x/mgmt/tm/cm
+```
+
+### show interesting info about device
+```
+curl -sk -u admin:admin -H "Content-Type: application/json" https://x.x.x.x/mgmt/tm/cm/device
+```
+
+### show pool member stats
+```
+curl -sk -u admin:admin -H "Content-Type: application/json" https://x.x.x.x/mgmt/tm/ltm/pool/~DMZ~audmzbilltweb-sit_443_pool/members/stats
+```
