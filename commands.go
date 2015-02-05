@@ -48,19 +48,19 @@ var showPoolCmd = &cobra.Command{
 	},
 }
 
-var showPoolMemberCmd = &cobra.Command{
-	Use:   "poolmember",
-	Short: "show a pool member",
-	Long:  "show the details of a pool member",
+var showPoolMembersCmd = &cobra.Command{
+	Use:   "poolmembers",
+	Short: "show pool members",
+	Long:  "show the pool members of a given pool",
 	Run: func(cmd *cobra.Command, args []string) {
 		//		if !viper.IsSet("pool") {
 		//			log.Fatal("show poolmember needs a pool to work with - please use --pool flag.")
 		//		}
 		if len(args) < 1 {
-			showPoolMembers()
+			log.Fatal("show poolmember requires a pool as an argument - in the form of /partition/poolname")
 		} else {
 			name := args[0]
-			showPoolMember(name)
+			showPoolMembers(name)
 		}
 	},
 }
@@ -85,6 +85,20 @@ var showVirtualCmd = &cobra.Command{
 		} else {
 			name := args[0]
 			showVirtual(name)
+		}
+	},
+}
+
+var showNodeCmd = &cobra.Command{
+	Use:   "node",
+	Short: "show a node",
+	Long:  "show the current state of a node",
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) < 1 {
+			showNodes()
+		} else {
+			name := args[0]
+			showNode(name)
 		}
 	},
 }

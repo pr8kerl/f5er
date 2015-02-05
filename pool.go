@@ -90,37 +90,18 @@ func createPool(pname string) {
 	fmt.Printf("%s\n", pname)
 }
 
-// poolmembers
-func showPoolMembers() {
+func showPoolMembers(pname string) {
 
-	pool := f5Pool
-	pool = strings.Replace(pool, "/", "~", -1)
-	url := "https://" + f5Host + "/mgmt/tm/ltm/pool/" + pool + "/members"
+	pool := strings.Replace(pname, "/", "~", -1)
+	//	member := strings.Replace(pmember, "/", "~", -1)
+	//u := "https://" + f5Host + "/mgmt/tm/ltm/pool/" + pool + "/members?expandSubcollections=true"
+	u := "https://" + f5Host + "/mgmt/tm/ltm/pool/" + pool + "/members"
 	res := LBPoolMembers{}
-
-	err := GetRequest(url, &res)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	for _, v := range res.Items {
-		//fmt.Printf("pool:\t%s\n", v.Fullpath)
-		fmt.Printf("%s\n", v.Fullpath)
-	}
-}
-
-func showPoolMember(pmember string) {
-
-	pool := f5Pool
-	pool = strings.Replace(pool, "/", "~", -1)
-	member := strings.Replace(pmember, "/", "~", -1)
-	u := "https://" + f5Host + "/mgmt/tm/ltm/pool/" + pool + "/members/" + member
-	res := LBPoolMember{}
 
 	err := GetRequest(u, &res)
 	if err != nil {
 		log.Fatal(err)
 	}
-	printResponse(&res)
+	printResponse(&res.Items)
 
 }
