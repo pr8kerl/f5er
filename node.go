@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"strings"
 	//	"github.com/kr/pretty"
+	"encoding/json"
+	"io/ioutil"
 	"log"
 )
 
@@ -34,11 +36,10 @@ import (
 */
 
 type LBNodeFQDN struct {
-	AddressFamily string         `json:"addressFamily"`
-	AutoPopulate  string         `json:"autopopulate"`
-	DownInterval  int            `json:"downInterval"`
-	Interval      int            `json:"interval"`
-	Items         []LBPoolMember `json":items"`
+	AddressFamily string `json:"addressFamily"`
+	AutoPopulate  string `json:"autopopulate"`
+	DownInterval  int    `json:"downInterval"`
+	Interval      int    `json:"interval"`
 }
 
 type LBNode struct {
@@ -63,6 +64,21 @@ type LBNodeRef struct {
 
 type LBNodes struct {
 	Items []LBNode `json:"items"`
+}
+
+// a node struct but with only the postable fields
+// used to create a node
+type LBNodePost struct {
+	Name            string     `json:"name"`
+	Partition       string     `json:"partition"`
+	Fullpath        string     `json:"fullPath"`
+	Generation      int        `json:"generation"`
+	Address         string     `json:"address"`
+	ConnectionLimit int        `json:"connectionLimit"`
+	Fqdn            LBNodeFQDN `json:"fqdn"`
+	Logging         string     `json:"logging"`
+	Monitor         string     `json:"monitor"`
+	RateLimit       string     `json:"rateLimit"`
 }
 
 func showNodes() {
@@ -96,6 +112,29 @@ func showNode(nname string) {
 
 }
 
-func createNode(nname string) {
-	fmt.Printf("%s\n", nname)
+func addNode(args []string) {
+
+	u := "https://" + f5Host + "/mgmt/tm/ltm/node"
+	res := LBNode{}
+	body := LBNodePost{}
+
+	// read in json file
+	dat, err := ioutil.ReadFile(f5Input)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// convert json to a node struct
+	err = json.Unmarshal(dat, &body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// post the request
+	err = PostRequest(u, &body, &res)
+	if err != nil {
+		log.Fatal(err)
+	}
+	printResponse(&res)
+
 }

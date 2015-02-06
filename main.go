@@ -65,6 +65,9 @@ func InitialiseConfig() {
 	}
 
 	debug = viper.GetBool("debug")
+	if f5Cmd.PersistentFlags().Lookup("f5").Changed {
+		viper.Set("f5", f5Host)
+	}
 	if f5Cmd.PersistentFlags().Lookup("input").Changed {
 		viper.Set("input", f5Input)
 	}
@@ -75,6 +78,9 @@ func InitialiseConfig() {
 }
 
 func checkRequiredFlag(flg string) {
+	if f5Cmd.PersistentFlags().Lookup("input").Changed {
+		viper.Set("input", f5Input)
+	}
 	if !viper.IsSet(flg) {
 		log.SetFlags(0)
 		log.Fatalf("\nerror: missing required option --%s\n\n", flg)
@@ -117,10 +123,43 @@ func GetRequest(u string, res interface{}) error {
 		return errors.New(e.Message)
 	} else {
 
-		//		fmt.Println("---------------------------")
-		//		fmt.Println("RawText")
-		//		prettifyScanner(resp.RawText())
+		// all is good in the world
+		return nil
+	}
+}
 
+func PostRequest(u string, pload interface{}, res interface{}) error {
+
+	// REST connection setup
+	transport = &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	client = &http.Client{Transport: transport}
+	//
+	// Setup HTTP Basic auth for this session (ONLY use this with SSL).  Auth
+	// can also be configured on a per-request basis when using Send().
+	//
+	session = napping.Session{
+		Client:   client,
+		Log:      debug,
+		Userinfo: url.UserPassword(username, passwd),
+	}
+	//
+	// Send request to server
+	//
+	e := httperr{}
+	resp, err := session.Post(u, &pload, &res, &e)
+	if err != nil {
+		return err
+	}
+	if resp.Status() == 401 {
+		return errors.New("unauthorised - check your username and passwd")
+	}
+	if resp.Status() >= 300 {
+		return errors.New(e.Message)
+	} else {
+
+		// all is good in the world
 		return nil
 	}
 }
@@ -139,9 +178,10 @@ func init() {
 	showCmd.AddCommand(showVirtualCmd)
 	showCmd.AddCommand(showNodeCmd)
 
-	// create
-	f5Cmd.AddCommand(createCmd)
-	createCmd.AddCommand(createPoolCmd)
+	// add
+	f5Cmd.AddCommand(addCmd)
+	addCmd.AddCommand(addPoolCmd)
+	addCmd.AddCommand(addNodeCmd)
 
 	//	log.SetFlags(log.Ltime | log.Lshortfile)
 	log.SetFlags(0)

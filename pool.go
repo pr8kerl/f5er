@@ -86,7 +86,7 @@ func showPool(pname string) {
 
 }
 
-func createPool(pname string) {
+func addPool(pname string) {
 	fmt.Printf("%s\n", pname)
 }
 
@@ -97,6 +97,25 @@ func showPoolMembers(pname string) {
 	//u := "https://" + f5Host + "/mgmt/tm/ltm/pool/" + pool + "/members?expandSubcollections=true"
 	u := "https://" + f5Host + "/mgmt/tm/ltm/pool/" + pool + "/members"
 	res := LBPoolMembers{}
+
+	err := GetRequest(u, &res)
+	if err != nil {
+		log.Fatal(err)
+	}
+	printResponse(&res.Items)
+
+}
+
+func addPoolMember(pname string) {
+
+	pool := strings.Replace(pname, "/", "~", -1)
+	//	member := strings.Replace(pmember, "/", "~", -1)
+	//u := "https://" + f5Host + "/mgmt/tm/ltm/pool/" + pool + "/members?expandSubcollections=true"
+	u := "https://" + f5Host + "/mgmt/tm/ltm/pool/" + pool + "/members"
+	res := LBPoolMembers{}
+
+	// check input is set
+	// read in input
 
 	err := GetRequest(u, &res)
 	if err != nil {

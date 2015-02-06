@@ -10,7 +10,7 @@ import (
 var f5Cmd = &cobra.Command{
 	Use:   "f5er",
 	Short: "tickle an F5 load balancer using REST",
-	Long:  "A utility to create and manage F5 configuration objects",
+	Long:  "A utility to manage F5 configuration objects",
 }
 
 var showCmd = &cobra.Command{
@@ -25,12 +25,12 @@ var showCmd = &cobra.Command{
 	},
 }
 
-var createCmd = &cobra.Command{
-	Use:   "create",
-	Short: "create F5 objects",
-	Long:  "create a new F5 object. Create requires an object, eg. f5er create pool",
+var addCmd = &cobra.Command{
+	Use:   "add",
+	Short: "add F5 objects",
+	Long:  "add or create a new F5 object. Add requires an object, eg. f5er add pool",
 	Run: func(cmd *cobra.Command, args []string) {
-		create()
+		add()
 	},
 }
 
@@ -65,13 +65,13 @@ var showPoolMembersCmd = &cobra.Command{
 	},
 }
 
-var createPoolCmd = &cobra.Command{
+var addPoolCmd = &cobra.Command{
 	Use:   "pool",
-	Short: "create a pool",
-	Long:  "create a new pool",
+	Short: "add a pool",
+	Long:  "add a new pool",
 	Run: func(cmd *cobra.Command, args []string) {
 		name := args[0]
-		createPool(name)
+		addPool(name)
 	},
 }
 
@@ -100,6 +100,16 @@ var showNodeCmd = &cobra.Command{
 			name := args[0]
 			showNode(name)
 		}
+	},
+}
+
+var addNodeCmd = &cobra.Command{
+	Use:   "node",
+	Short: "add a node",
+	Long:  "add a new node",
+	Run: func(cmd *cobra.Command, args []string) {
+		checkRequiredFlag("input")
+		addNode(args)
 	},
 }
 
@@ -133,8 +143,8 @@ func show() {
 
 }
 
-func create() {
+func add() {
 
-	fmt.Println("what sort of F5 object would you like to create?")
+	fmt.Println("what sort of F5 object would you like to add?")
 
 }
