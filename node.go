@@ -112,7 +112,7 @@ func showNode(nname string) {
 
 }
 
-func addNode(args []string) {
+func addNode() {
 
 	u := "https://" + f5Host + "/mgmt/tm/ltm/node"
 	res := LBNode{}
@@ -136,5 +136,21 @@ func addNode(args []string) {
 		log.Fatal(err)
 	}
 	printResponse(&res)
+
+}
+
+func deleteNode(nname string) {
+
+	//u := "https://" + f5Host + "/mgmt/tm/ltm/pool/~" + partition + "~" + pname + "?expandSubcollections=true"
+	node := strings.Replace(nname, "/", "~", -1)
+	u := "https://" + f5Host + "/mgmt/tm/ltm/node/" + node
+	result := json.RawMessage{}
+
+	err, resp := DeleteRequest(u, &result)
+	if err != nil {
+		log.Fatalf("%d: %s\n", resp.Status(), err)
+	} else {
+		log.Printf("%d: %s deleted successfully\n", resp.Status(), nname)
+	}
 
 }

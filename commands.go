@@ -34,6 +34,15 @@ var addCmd = &cobra.Command{
 	},
 }
 
+var deleteCmd = &cobra.Command{
+	Use:   "delete",
+	Short: "delete F5 objects",
+	Long:  "delete an F5 object. Delete requires an object, eg. f5er delete pool",
+	Run: func(cmd *cobra.Command, args []string) {
+		delete()
+	},
+}
+
 var showPoolCmd = &cobra.Command{
 	Use:   "pool",
 	Short: "show a pool",
@@ -109,7 +118,21 @@ var addNodeCmd = &cobra.Command{
 	Long:  "add a new node",
 	Run: func(cmd *cobra.Command, args []string) {
 		checkRequiredFlag("input")
-		addNode(args)
+		addNode()
+	},
+}
+
+var deleteNodeCmd = &cobra.Command{
+	Use:   "node",
+	Short: "delete a node",
+	Long:  "delete a node",
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) < 1 {
+			log.Fatal("delete node requires a node name as an argument (ie /partition/nodename )")
+		} else {
+			name := args[0]
+			deleteNode(name)
+		}
 	},
 }
 
@@ -144,7 +167,9 @@ func show() {
 }
 
 func add() {
-
 	fmt.Println("what sort of F5 object would you like to add?")
+}
 
+func delete() {
+	fmt.Println("what sort of F5 object would you like to delete?")
 }

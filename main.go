@@ -128,6 +128,41 @@ func GetRequest(u string, res interface{}) error {
 	}
 }
 
+func DeleteRequest(u string, res interface{}) (error, *napping.Response) {
+
+	// REST connection setup
+	transport = &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	client = &http.Client{Transport: transport}
+	//
+	// Setup HTTP Basic auth for this session (ONLY use this with SSL).  Auth
+	// can also be configured on a per-request basis when using Send().
+	//
+	session = napping.Session{
+		Client:   client,
+		Log:      debug,
+		Userinfo: url.UserPassword(username, passwd),
+	}
+	//
+	// Send request to server
+	//
+	e := httperr{}
+	resp, err := session.Delete(u, &res, &e)
+	if err != nil {
+		return err, resp
+	}
+	if resp.Status() == 401 {
+		return errors.New("unauthorised - check your username and passwd"), resp
+	}
+	if resp.Status() >= 300 {
+		return errors.New(e.Message), resp
+	} else {
+		// all is good in the world
+		return nil, resp
+	}
+}
+
 func PostRequest(u string, pload interface{}, res interface{}) error {
 
 	// REST connection setup
@@ -182,6 +217,10 @@ func init() {
 	f5Cmd.AddCommand(addCmd)
 	addCmd.AddCommand(addPoolCmd)
 	addCmd.AddCommand(addNodeCmd)
+
+	// delete
+	f5Cmd.AddCommand(deleteCmd)
+	deleteCmd.AddCommand(deleteNodeCmd)
 
 	//	log.SetFlags(log.Ltime | log.Lshortfile)
 	log.SetFlags(0)
