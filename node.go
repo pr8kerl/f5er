@@ -66,21 +66,6 @@ type LBNodes struct {
 	Items []LBNode `json:"items"`
 }
 
-// a node struct but with only the postable fields
-// used to create a node
-type LBNodePost struct {
-	Name            string     `json:"name"`
-	Partition       string     `json:"partition"`
-	Fullpath        string     `json:"fullPath"`
-	Generation      int        `json:"generation"`
-	Address         string     `json:"address"`
-	ConnectionLimit int        `json:"connectionLimit"`
-	Fqdn            LBNodeFQDN `json:"fqdn"`
-	Logging         string     `json:"logging"`
-	Monitor         string     `json:"monitor"`
-	RateLimit       string     `json:"rateLimit"`
-}
-
 func showNodes() {
 
 	url := "https://" + f5Host + "/mgmt/tm/ltm/node"
@@ -116,7 +101,9 @@ func addNode() {
 
 	u := "https://" + f5Host + "/mgmt/tm/ltm/node"
 	res := LBNode{}
-	body := LBNodePost{}
+	// we use raw so we can modify the input file without using a struct
+	// use of a struct will send all available fields, some of which can't be modified
+	body := json.RawMessage{}
 
 	// read in json file
 	dat, err := ioutil.ReadFile(f5Input)
@@ -131,12 +118,38 @@ func addNode() {
 	}
 
 	// post the request
-	err = PostRequest(u, &body, &res)
+	err, resp := PostRequest(u, &body, &res)
+	if err != nil {
+		log.Fatalf("%d: %s\n", resp.Status(), err)
+	}
+	printResponse(&res)
+}
+
+func updateNode(nname string) {
+
+	node := strings.Replace(nname, "/", "~", -1)
+	u := "https://" + f5Host + "/mgmt/tm/ltm/node/" + node
+	res := LBNode{}
+	body := json.RawMessage{}
+
+	// read in json file
+	dat, err := ioutil.ReadFile(f5Input)
 	if err != nil {
 		log.Fatal(err)
 	}
-	printResponse(&res)
 
+	// convert json to a node struct
+	err = json.Unmarshal(dat, &body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// put the request
+	err, resp := PutRequest(u, &body, &res)
+	if err != nil {
+		log.Fatalf("%d: %s\n", resp.Status(), err)
+	}
+	printResponse(&res)
 }
 
 func deleteNode(nname string) {

@@ -34,6 +34,15 @@ var addCmd = &cobra.Command{
 	},
 }
 
+var updateCmd = &cobra.Command{
+	Use:   "update",
+	Short: "update F5 objects",
+	Long:  "update an existing F5 object. Update requires an object, eg. f5er update pool",
+	Run: func(cmd *cobra.Command, args []string) {
+		update()
+	},
+}
+
 var deleteCmd = &cobra.Command{
 	Use:   "delete",
 	Short: "delete F5 objects",
@@ -57,6 +66,45 @@ var showPoolCmd = &cobra.Command{
 	},
 }
 
+var addPoolCmd = &cobra.Command{
+	Use:   "pool",
+	Short: "add a pool",
+	Long:  "add a new pool",
+	Run: func(cmd *cobra.Command, args []string) {
+		checkRequiredFlag("input")
+		addPool()
+	},
+}
+
+var updatePoolCmd = &cobra.Command{
+	Use:   "pool",
+	Short: "update a pool",
+	Long:  "update an existing pool",
+	Run: func(cmd *cobra.Command, args []string) {
+		checkRequiredFlag("input")
+		if len(args) < 1 {
+			log.Fatal("update pool requires a pool name as an argument (ie /partition/poolname )")
+		} else {
+			name := args[0]
+			updatePool(name)
+		}
+	},
+}
+
+var deletePoolCmd = &cobra.Command{
+	Use:   "pool",
+	Short: "delete a pool",
+	Long:  "delete an existing pool",
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) < 1 {
+			log.Fatal("delete pool requires a pool name as an argument (ie /partition/poolname )")
+		} else {
+			name := args[0]
+			deletePool(name)
+		}
+	},
+}
+
 var showPoolMembersCmd = &cobra.Command{
 	Use:   "poolmembers",
 	Short: "show pool members",
@@ -74,13 +122,48 @@ var showPoolMembersCmd = &cobra.Command{
 	},
 }
 
-var addPoolCmd = &cobra.Command{
-	Use:   "pool",
-	Short: "add a pool",
-	Long:  "add a new pool",
+var addPoolMembersCmd = &cobra.Command{
+	Use:   "poolmembers",
+	Short: "add poolmembers",
+	Long:  "add poolmembers",
 	Run: func(cmd *cobra.Command, args []string) {
-		name := args[0]
-		addPool(name)
+		checkRequiredFlag("input")
+		if len(args) < 1 {
+			log.Fatal("add poolmembers requires a pool name as an argument (ie /partition/poolname )")
+		} else {
+			name := args[0]
+			addPoolMembers(name)
+		}
+	},
+}
+
+var updatePoolMembersCmd = &cobra.Command{
+	Use:   "poolmembers",
+	Short: "update poolmembers",
+	Long:  "update existing poolmembers",
+	Run: func(cmd *cobra.Command, args []string) {
+		checkRequiredFlag("input")
+		if len(args) < 1 {
+			log.Fatal("update poolmembers requires a pool name as an argument (ie /partition/poolname )")
+		} else {
+			name := args[0]
+			updatePoolMembers(name)
+		}
+	},
+}
+
+var deletePoolMembersCmd = &cobra.Command{
+	Use:   "poolmembers",
+	Short: "delete poolmembers",
+	Long:  "delete existing poolmembers",
+	Run: func(cmd *cobra.Command, args []string) {
+		checkRequiredFlag("input")
+		if len(args) < 1 {
+			log.Fatal("delete poolmembers requires a pool name as an argument (ie /partition/poolname )")
+		} else {
+			name := args[0]
+			deletePoolMembers(name)
+		}
 	},
 }
 
@@ -119,6 +202,21 @@ var addNodeCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		checkRequiredFlag("input")
 		addNode()
+	},
+}
+
+var updateNodeCmd = &cobra.Command{
+	Use:   "node",
+	Short: "update a node",
+	Long:  "update an existing F5 node",
+	Run: func(cmd *cobra.Command, args []string) {
+		checkRequiredFlag("input")
+		if len(args) < 1 {
+			log.Fatal("update node requires a node name as an argument (ie /partition/nodename )")
+		} else {
+			name := args[0]
+			updateNode(name)
+		}
 	},
 }
 
@@ -168,6 +266,10 @@ func show() {
 
 func add() {
 	fmt.Println("what sort of F5 object would you like to add?")
+}
+
+func update() {
+	fmt.Println("what sort of F5 object would you like to update?")
 }
 
 func delete() {

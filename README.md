@@ -94,3 +94,8 @@ curl -sk -u admin:admin -H "Content-Type: application/json" https://x.x.x.x/mgmt
 ```
 curl -sk -u admin:admin -H "Content-Type: application/json" https://x.x.x.x/mgmt/tm/ltm/pool/~DMZ~audmzbilltweb-sit_443_pool/members/stats
 ```
+
+### show partitions
+```
+curl -sk -u admin:admin -H "Content-Type: application/json" https://x.x.x.x/mgmt/tm/sys/folder
+```

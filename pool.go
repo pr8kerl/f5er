@@ -4,16 +4,54 @@ import (
 	"fmt"
 	"strings"
 	//	"github.com/kr/pretty"
+	"encoding/json"
+	"io/ioutil"
 	"log"
 )
 
+/*
+	{
+		"kind": "tm:ltm:pool:members:membersstate",
+		"name": "audmzbilltweb04-pdv:443",
+		"partition": "DMZ",
+		"fullPath": "/DMZ/audmzbilltweb04-pdv:443",
+		"generation": 1,
+		"selfLink": "https://localhost/mgmt/tm/ltm/pool/~DMZ~audmzbilltweb-pdv_443_pool/members/~DMZ~audmzbilltweb04-pdv:443?ver=11.6.0",
+		"address": "10.60.61.214%6",
+		"connectionLimit": 0,
+		"dynamicRatio": 1,
+		"ephemeral": "false",
+		"fqdn": {
+			"autopopulate": "disabled"
+		},
+		"inheritProfile": "enabled",
+		"logging": "disabled",
+		"monitor": "default",
+		"priorityGroup": 0,
+		"rateLimit": "disabled",
+		"ratio": 1,
+		"session": "monitor-enabled",
+		"state": "up"
+	}
+
+*/
 // a pool member
 type LBPoolMember struct {
-	Name      string `json:"name"`
-	Partition string `json:"partition"`
-	Fullpath  string `json:"fullPath"`
-	Address   string `json:"address"`
-	State     string `json:"state"`
+	Name            string `json:"name"`
+	Partition       string `json:"partition"`
+	Fullpath        string `json:"fullPath"`
+	Address         string `json:"address"`
+	ConnectionLimit int    `json:"connectionLimit"`
+	DynamicRatio    int    `json:"dynamicRatio"`
+	Ephemeral       string `json:"ephemeral"`
+	InheritProfile  string `json:"inheritProfile"`
+	Logging         string `json:"logging"`
+	Monitor         string `json:"monitor"`
+	PriorityGroup   int    `json:"priorityGroup"`
+	RateLimit       string `json:"rateLimit"`
+	Ratio           int    `json:"ratio"`
+	Session         string `json:"session"`
+	State           string `json:"state"`
 }
 
 // a pool member reference - just a link and an array of pool members
@@ -27,15 +65,61 @@ type LBPoolMembers struct {
 	Items []LBPoolMember `json":items"`
 }
 
+/*
+{
+	"kind": "tm:ltm:pool:poolstate",
+	"name": "audmzbilltweb-pdv_443_pool",
+	"partition": "DMZ",
+	"fullPath": "/DMZ/audmzbilltweb-pdv_443_pool",
+	"generation": 1,
+	"selfLink": "https://localhost/mgmt/tm/ltm/pool/~DMZ~audmzbilltweb-pdv_443_pool?expandSubcollections=true\u0026ver=11.6.0",
+	"allowNat": "yes",
+	"allowSnat": "yes",
+	"ignorePersistedWeight": "disabled",
+	"ipTosToClient": "pass-through",
+	"ipTosToServer": "pass-through",
+	"linkQosToClient": "pass-through",
+	"linkQosToServer": "pass-through",
+	"loadBalancingMode": "round-robin",
+	"minActiveMembers": 0,
+	"minUpMembers": 0,
+	"minUpMembersAction": "failover",
+	"minUpMembersChecking": "disabled",
+	"monitor": "/Common/tcp ",
+	"queueDepthLimit": 0,
+	"queueOnConnectionLimit": "disabled",
+	"queueTimeLimit": 0,
+	"reselectTries": 0,
+	"serviceDownAction": "none",
+	"slowRampTime": 10,
+	"membersReference": {
+
+*/
+
 type LBPool struct {
-	Name              string          `json:"name"`
-	Fullpath          string          `json:"fullPath"`
-	Generation        int             `json:"generation"`
-	AllowNat          string          `json:"allowNat"`
-	AllowSnat         string          `json:"allowSnat"`
-	LoadBalancingMode string          `json:"loadBalancingMode"`
-	Monitor           string          `json:"monitor"`
-	MemberRef         LBPoolMemberRef `json:"membersReference"`
+	Name                   string          `json:"name"`
+	Fullpath               string          `json:"fullPath"`
+	Generation             int             `json:"generation"`
+	AllowNat               string          `json:"allowNat"`
+	AllowSnat              string          `json:"allowSnat"`
+	IgnorePersistedWeight  string          `json:"ignorePersistedWeight"`
+	IpTosToClient          string          `json:"ipTosToClient"`
+	IpTosToServer          string          `json:"ipTosToServer"`
+	LinkQosToClient        string          `json:"linkQosToClient"`
+	LinkQosToServer        string          `json:"linkQosToServer"`
+	LoadBalancingMode      string          `json:"loadBalancingMode"`
+	MinActiveMembers       int             `json:"minActiveMembers"`
+	MinUpMembers           int             `json:"minUpMembers"`
+	MinUpMembersAction     string          `json:"minUpMembersAction"`
+	MinUpMembersChecking   string          `json:"minUpMembersChecking"`
+	Monitor                string          `json:"monitor"`
+	QueueDepthLimit        int             `json:"queueDepthLimit"`
+	QueueOnConnectionLimit string          `json:"queueOnConnectionLimit"`
+	QueueTimeLimit         int             `json:"queueTimeLimit"`
+	ReselectTries          int             `json:"reselectTries"`
+	ServiceDownAction      string          `json:"serviceDownAction"`
+	SlowRampTime           int             `json:"slowRampTime"`
+	MemberRef              LBPoolMemberRef `json:"membersReference"`
 }
 
 type LBPools struct {
@@ -71,23 +155,77 @@ func showPool(pname string) {
 	}
 	printResponse(&res)
 
-	/*
-		fmt.Printf("pool name:\t%s\n", res.Name)
-		fmt.Printf("fullpath:\t%s\n", res.Fullpath)
-		fmt.Printf("lb mode:\t%s\n", res.LoadBalancingMode)
-		fmt.Printf("monitor:\t%s\n", res.Monitor)
+}
 
-		for i, member := range res.MemberRef.Items {
-			fmt.Printf("\tmember %d name:\t\t%s\n", i, member.Name)
-			fmt.Printf("\tmember %d address:\t%s\n", i, member.Address)
-			fmt.Printf("\tmember %d state:\t\t%s\n", i, member.State)
-		}
-	*/
+func addPool() {
+
+	u := "https://" + f5Host + "/mgmt/tm/ltm/pool"
+	res := LBPool{}
+	// we use raw so we can modify the input file without using a struct
+	// use of a struct will send all available fields, some of which can't be modified
+	body := json.RawMessage{}
+
+	// read in json file
+	dat, err := ioutil.ReadFile(f5Input)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// convert json to a node struct
+	err = json.Unmarshal(dat, &body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// post the request
+	err, resp := PostRequest(u, &body, &res)
+	if err != nil {
+		log.Fatalf("%d: %s\n", resp.Status(), err)
+	}
+	printResponse(&res)
 
 }
 
-func addPool(pname string) {
-	fmt.Printf("%s\n", pname)
+func updatePool(pname string) {
+
+	pool := strings.Replace(pname, "/", "~", -1)
+	u := "https://" + f5Host + "/mgmt/tm/ltm/pool/" + pool
+	res := LBPool{}
+	body := json.RawMessage{}
+
+	// read in json file
+	dat, err := ioutil.ReadFile(f5Input)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// convert json to a node struct
+	err = json.Unmarshal(dat, &body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// put the request
+	err, resp := PutRequest(u, &body, &res)
+	if err != nil {
+		log.Fatalf("%d: %s\n", resp.Status(), err)
+	}
+	printResponse(&res)
+
+}
+
+func deletePool(pname string) {
+
+	pool := strings.Replace(pname, "/", "~", -1)
+	u := "https://" + f5Host + "/mgmt/tm/ltm/pool/" + pool
+	result := json.RawMessage{}
+
+	err, resp := DeleteRequest(u, &result)
+	if err != nil {
+		log.Fatalf("%d: %s\n", resp.Status(), err)
+	} else {
+		log.Printf("%d: %s deleted successfully\n", resp.Status(), pname)
+	}
 }
 
 func showPoolMembers(pname string) {
@@ -106,21 +244,74 @@ func showPoolMembers(pname string) {
 
 }
 
-func addPoolMember(pname string) {
+func addPoolMembers(pname string) {
 
 	pool := strings.Replace(pname, "/", "~", -1)
-	//	member := strings.Replace(pmember, "/", "~", -1)
-	//u := "https://" + f5Host + "/mgmt/tm/ltm/pool/" + pool + "/members?expandSubcollections=true"
 	u := "https://" + f5Host + "/mgmt/tm/ltm/pool/" + pool + "/members"
 	res := LBPoolMembers{}
+	// we use raw so we can modify the input file without using a struct
+	// use of a struct will send all available fields, some of which can't be modified
+	body := json.RawMessage{}
 
-	// check input is set
-	// read in input
+	// read in json file
+	dat, err := ioutil.ReadFile(f5Input)
+	if err != nil {
+		log.Fatal(err)
+	}
 
-	err, resp := GetRequest(u, &res)
+	// convert json to a node struct
+	err = json.Unmarshal(dat, &body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// post the request
+	err, resp := PostRequest(u, &body, &res)
 	if err != nil {
 		log.Fatalf("%d: %s\n", resp.Status(), err)
 	}
-	printResponse(&res.Items)
+	printResponse(&res)
 
+}
+
+func updatePoolMembers(pname string) {
+
+	pool := strings.Replace(pname, "/", "~", -1)
+	u := "https://" + f5Host + "/mgmt/tm/ltm/pool/" + pool + "/members"
+	res := LBPoolMembers{}
+	body := json.RawMessage{}
+
+	// read in json file
+	dat, err := ioutil.ReadFile(f5Input)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// convert json to a node struct
+	err = json.Unmarshal(dat, &body)
+	if err != nil {
+		log.Fatal(err)
+	}
+
+	// put the request
+	err, resp := PutRequest(u, &body, &res)
+	if err != nil {
+		log.Fatalf("%d: %s\n", resp.Status(), err)
+	}
+	printResponse(&res)
+
+}
+
+func deletePoolMembers(pname string) {
+
+	pool := strings.Replace(pname, "/", "~", -1)
+	u := "https://" + f5Host + "/mgmt/tm/ltm/pool/" + pool + "/members"
+	result := json.RawMessage{}
+
+	err, resp := DeleteRequest(u, &result)
+	if err != nil {
+		log.Fatalf("%d: %s\n", resp.Status(), err)
+	} else {
+		log.Printf("%d: %s deleted successfully\n", resp.Status(), pname)
+	}
 }
