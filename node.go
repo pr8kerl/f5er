@@ -86,9 +86,9 @@ func showNodes() {
 	url := "https://" + f5Host + "/mgmt/tm/ltm/node"
 	res := LBNodes{}
 
-	err := GetRequest(url, &res)
+	err, resp := GetRequest(url, &res)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("%d: %s\n", resp.Status(), err)
 	}
 
 	for _, v := range res.Items {
@@ -104,9 +104,9 @@ func showNode(nname string) {
 	u := "https://" + f5Host + "/mgmt/tm/ltm/node/" + node
 	res := LBNode{}
 
-	err := GetRequest(u, &res)
+	err, resp := GetRequest(u, &res)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("%d: %s\n", resp.Status(), err)
 	}
 	printResponse(&res)
 

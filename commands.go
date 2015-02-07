@@ -155,9 +155,9 @@ func show() {
 	u := "https://" + f5Host + "/mgmt/tm/ltm"
 	res := LBModules{}
 
-	err := GetRequest(u, &res)
+	err, resp := GetRequest(u, &res)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("%d: %s\n", resp.Status(), err)
 	}
 
 	for _, v := range res.Items {

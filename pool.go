@@ -47,9 +47,9 @@ func showPools() {
 	url := "https://" + f5Host + "/mgmt/tm/ltm/pool"
 	res := LBPools{}
 
-	err := GetRequest(url, &res)
+	err, resp := GetRequest(url, &res)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("%d: %s\n", resp.Status(), err)
 	}
 
 	for _, v := range res.Items {
@@ -65,9 +65,9 @@ func showPool(pname string) {
 	u := "https://" + f5Host + "/mgmt/tm/ltm/pool/" + pool + "?expandSubcollections=true"
 	res := LBPool{}
 
-	err := GetRequest(u, &res)
+	err, resp := GetRequest(u, &res)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("%d: %s\n", resp.Status(), err)
 	}
 	printResponse(&res)
 
@@ -98,9 +98,9 @@ func showPoolMembers(pname string) {
 	u := "https://" + f5Host + "/mgmt/tm/ltm/pool/" + pool + "/members"
 	res := LBPoolMembers{}
 
-	err := GetRequest(u, &res)
+	err, resp := GetRequest(u, &res)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("%d: %s\n", resp.Status(), err)
 	}
 	printResponse(&res.Items)
 
@@ -117,9 +117,9 @@ func addPoolMember(pname string) {
 	// check input is set
 	// read in input
 
-	err := GetRequest(u, &res)
+	err, resp := GetRequest(u, &res)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("%d: %s\n", resp.Status(), err)
 	}
 	printResponse(&res.Items)
 

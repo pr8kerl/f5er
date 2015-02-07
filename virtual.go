@@ -72,9 +72,9 @@ func showVirtuals() {
 	u := "https://" + f5Host + "/mgmt/tm/ltm/virtual"
 	res := LBVirtuals{}
 
-	err := GetRequest(u, &res)
+	err, resp := GetRequest(u, &res)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("%d: %s\n", resp.Status(), err)
 	}
 
 	for _, v := range res.Items {
@@ -89,9 +89,9 @@ func showVirtual(vname string) {
 	u := "https://" + f5Host + "/mgmt/tm/ltm/virtual/" + vname + "?expandSubcollections=true"
 	res := LBVirtual{}
 
-	err := GetRequest(u, &res)
+	err, resp := GetRequest(u, &res)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("%d: %s\n", resp.Status(), err)
 	}
 	printResponse(&res)
 

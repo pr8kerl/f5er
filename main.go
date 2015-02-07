@@ -92,7 +92,7 @@ func bail(msg string) {
 	log.Fatalf("\n%s\n\n", msg)
 }
 
-func GetRequest(u string, res interface{}) error {
+func GetRequest(u string, res interface{}) (error, *napping.Response) {
 
 	// REST connection setup
 	transport = &http.Transport{
@@ -114,17 +114,17 @@ func GetRequest(u string, res interface{}) error {
 	e := httperr{}
 	resp, err := session.Get(u, nil, &res, &e)
 	if err != nil {
-		return err
+		return err, resp
 	}
 	if resp.Status() == 401 {
-		return errors.New("unauthorised - check your username and passwd")
+		return errors.New("unauthorised - check your username and passwd"), resp
 	}
 	if resp.Status() >= 300 {
-		return errors.New(e.Message)
+		return errors.New(e.Message), resp
 	} else {
 
 		// all is good in the world
-		return nil
+		return nil, resp
 	}
 }
 
