@@ -73,7 +73,7 @@ func showNodes() {
 
 	err, resp := GetRequest(url, &res)
 	if err != nil {
-		log.Fatalf("%d: %s\n", resp.Status(), err)
+		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	}
 
 	for _, v := range res.Items {
@@ -91,7 +91,7 @@ func showNode(nname string) {
 
 	err, resp := GetRequest(u, &res)
 	if err != nil {
-		log.Fatalf("%d: %s\n", resp.Status(), err)
+		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	}
 	printResponse(&res)
 
@@ -120,7 +120,7 @@ func addNode() {
 	// post the request
 	err, resp := PostRequest(u, &body, &res)
 	if err != nil {
-		log.Fatalf("%d: %s\n", resp.Status(), err)
+		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	}
 	printResponse(&res)
 }
@@ -147,7 +147,7 @@ func updateNode(nname string) {
 	// put the request
 	err, resp := PutRequest(u, &body, &res)
 	if err != nil {
-		log.Fatalf("%d: %s\n", resp.Status(), err)
+		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	}
 	printResponse(&res)
 }
@@ -161,9 +161,9 @@ func deleteNode(nname string) {
 
 	err, resp := DeleteRequest(u, &result)
 	if err != nil {
-		log.Fatalf("%d: %s\n", resp.Status(), err)
+		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	} else {
-		log.Printf("%d: %s deleted successfully\n", resp.Status(), nname)
+		log.Printf("%s : %s deleted\n", resp.HttpResponse().Status, nname)
 	}
 
 }

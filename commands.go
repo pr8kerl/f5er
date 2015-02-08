@@ -52,6 +52,23 @@ var deleteCmd = &cobra.Command{
 	},
 }
 
+var offlineCmd = &cobra.Command{
+	Use:   "offline",
+	Short: "offline a pool member",
+	Long:  "offline an F5 pool member. eg. f5er offline poolmember /partition/poolmember",
+	Run: func(cmd *cobra.Command, args []string) {
+		offline()
+	},
+}
+
+var onlineCmd = &cobra.Command{
+	Use:   "online",
+	Short: "online a pool member",
+	Long:  "online an F5 pool member. eg. f5er online poolmember /partition/poolmember",
+	Run: func(cmd *cobra.Command, args []string) {
+		online()
+	},
+}
 var showPoolCmd = &cobra.Command{
 	Use:   "pool",
 	Short: "show a pool",
@@ -105,8 +122,8 @@ var deletePoolCmd = &cobra.Command{
 	},
 }
 
-var showPoolMembersCmd = &cobra.Command{
-	Use:   "poolmembers",
+var showPoolMemberCmd = &cobra.Command{
+	Use:   "poolmember",
 	Short: "show pool members",
 	Long:  "show the pool members of a given pool",
 	Run: func(cmd *cobra.Command, args []string) {
@@ -122,14 +139,14 @@ var showPoolMembersCmd = &cobra.Command{
 	},
 }
 
-var addPoolMembersCmd = &cobra.Command{
-	Use:   "poolmembers",
-	Short: "add poolmembers",
-	Long:  "add poolmembers",
+var addPoolMemberCmd = &cobra.Command{
+	Use:   "poolmember",
+	Short: "add poolmember",
+	Long:  "add poolmember",
 	Run: func(cmd *cobra.Command, args []string) {
 		checkRequiredFlag("input")
 		if len(args) < 1 {
-			log.Fatal("add poolmembers requires a pool name as an argument (ie /partition/poolname )")
+			log.Fatal("add poolmember requires a pool name as an argument (ie /partition/poolname )")
 		} else {
 			name := args[0]
 			addPoolMembers(name)
@@ -137,14 +154,14 @@ var addPoolMembersCmd = &cobra.Command{
 	},
 }
 
-var updatePoolMembersCmd = &cobra.Command{
-	Use:   "poolmembers",
+var updatePoolMemberCmd = &cobra.Command{
+	Use:   "poolmember",
 	Short: "update poolmembers",
 	Long:  "update existing poolmembers",
 	Run: func(cmd *cobra.Command, args []string) {
 		checkRequiredFlag("input")
 		if len(args) < 1 {
-			log.Fatal("update poolmembers requires a pool name as an argument (ie /partition/poolname )")
+			log.Fatal("update poolmember requires a pool name as an argument (ie /partition/poolname )")
 		} else {
 			name := args[0]
 			updatePoolMembers(name)
@@ -152,17 +169,47 @@ var updatePoolMembersCmd = &cobra.Command{
 	},
 }
 
-var deletePoolMembersCmd = &cobra.Command{
-	Use:   "poolmembers",
+var deletePoolMemberCmd = &cobra.Command{
+	Use:   "poolmember",
 	Short: "delete poolmembers",
 	Long:  "delete existing poolmembers",
 	Run: func(cmd *cobra.Command, args []string) {
 		checkRequiredFlag("input")
 		if len(args) < 1 {
-			log.Fatal("delete poolmembers requires a pool name as an argument (ie /partition/poolname )")
+			log.Fatal("delete poolmember requires a pool name as an argument (ie /partition/poolname )")
 		} else {
 			name := args[0]
 			deletePoolMembers(name)
+		}
+	},
+}
+
+var offlinePoolMemberCmd = &cobra.Command{
+	Use:   "poolmember",
+	Short: "offline a poolmember",
+	Long:  "offline an existing poolmember",
+	Run: func(cmd *cobra.Command, args []string) {
+		checkRequiredFlag("pool")
+		if len(args) < 1 {
+			log.Fatal("offline poolmember requires a poolmember name as an argument (ie /partition/poolmember )")
+		} else {
+			name := args[0]
+			offlinePoolMember(name)
+		}
+	},
+}
+
+var onlinePoolMemberCmd = &cobra.Command{
+	Use:   "poolmember",
+	Short: "online a poolmember",
+	Long:  "online an existing poolmember",
+	Run: func(cmd *cobra.Command, args []string) {
+		checkRequiredFlag("pool")
+		if len(args) < 1 {
+			log.Fatal("online poolmember requires a poolmember name as an argument (ie /partition/poolmember )")
+		} else {
+			name := args[0]
+			onlinePoolMember(name)
 		}
 	},
 }
@@ -274,4 +321,12 @@ func update() {
 
 func delete() {
 	fmt.Println("what sort of F5 object would you like to delete?")
+}
+
+func offline() {
+	fmt.Println("which pool member would you like to offline?")
+}
+
+func online() {
+	fmt.Println("which pool member would you like to online?")
 }

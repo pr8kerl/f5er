@@ -24,6 +24,7 @@ var (
 	transport   *http.Transport
 	client      *http.Client
 	session     napping.Session
+	now         bool
 )
 
 type httperr struct {
@@ -39,6 +40,7 @@ func InitialiseConfig() {
 	viper.SetConfigFile(cfgFile)
 	viper.AddConfigPath(".")
 	viper.SetDefault("debug", false)
+	viper.SetDefault("force", false)
 
 	err := viper.ReadInConfig()
 	if err != nil {
@@ -64,23 +66,28 @@ func InitialiseConfig() {
 		log.Fatal("no f5 defined in config")
 	}
 
-	debug = viper.GetBool("debug")
+	viper.BindPFlag("pool", onlinePoolMemberCmd.Flags().Lookup("pool"))
+	viper.BindPFlag("pool", offlinePoolMemberCmd.Flags().Lookup("pool"))
 	if f5Cmd.PersistentFlags().Lookup("f5").Changed {
 		viper.Set("f5", f5Host)
 	}
 	if f5Cmd.PersistentFlags().Lookup("input").Changed {
 		viper.Set("input", f5Input)
 	}
-	//	if showPoolMemberCmd.Flags().Lookup("pool").Changed {
-	//		viper.Set("pool", f5Pool)
-	//	}
-	//viper.BindPFlag("pool", f5Cmd.Flags().Lookup("pool"))
+	if offlinePoolMemberCmd.Flags().Lookup("pool").Changed {
+		viper.Set("pool", f5Pool)
+	}
+	if offlinePoolMemberCmd.Flags().Lookup("now").Changed {
+		viper.Set("now", true)
+	}
+	if onlinePoolMemberCmd.Flags().Lookup("pool").Changed {
+		viper.Set("pool", f5Pool)
+	}
+	debug = viper.GetBool("debug")
+	now = viper.GetBool("now")
 }
 
 func checkRequiredFlag(flg string) {
-	if f5Cmd.PersistentFlags().Lookup("input").Changed {
-		viper.Set("input", f5Input)
-	}
 	if !viper.IsSet(flg) {
 		log.SetFlags(0)
 		log.Fatalf("\nerror: missing required option --%s\n\n", flg)
@@ -239,32 +246,42 @@ func init() {
 	f5Cmd.PersistentFlags().StringVarP(&f5Host, "f5", "f", "", "IP or hostname of F5 to poke")
 	f5Cmd.PersistentFlags().BoolVarP(&debug, "debug", "d", false, "debug output")
 	f5Cmd.PersistentFlags().StringVarP(&f5Input, "input", "i", "", "input json f5 configuration")
-	//showPoolMemberCmd.Flags().StringVarP(&f5Pool, "pool", "p", "", "F5 pool name")
+	offlinePoolMemberCmd.Flags().StringVarP(&f5Pool, "pool", "p", "", "F5 pool name")
+	offlinePoolMemberCmd.Flags().BoolVarP(&now, "now", "n", false, "force member offline immediately")
+	onlinePoolMemberCmd.Flags().StringVarP(&f5Pool, "pool", "p", "", "F5 pool name")
 
 	// show
 	f5Cmd.AddCommand(showCmd)
 	showCmd.AddCommand(showPoolCmd)
-	showCmd.AddCommand(showPoolMembersCmd)
+	showCmd.AddCommand(showPoolMemberCmd)
 	showCmd.AddCommand(showVirtualCmd)
 	showCmd.AddCommand(showNodeCmd)
 
 	// add
 	f5Cmd.AddCommand(addCmd)
 	addCmd.AddCommand(addPoolCmd)
-	addCmd.AddCommand(addPoolMembersCmd)
+	addCmd.AddCommand(addPoolMemberCmd)
 	addCmd.AddCommand(addNodeCmd)
 
 	// update
 	f5Cmd.AddCommand(updateCmd)
 	updateCmd.AddCommand(updatePoolCmd)
-	updateCmd.AddCommand(updatePoolMembersCmd)
+	updateCmd.AddCommand(updatePoolMemberCmd)
 	updateCmd.AddCommand(updateNodeCmd)
 
 	// delete
 	f5Cmd.AddCommand(deleteCmd)
 	deleteCmd.AddCommand(deletePoolCmd)
-	deleteCmd.AddCommand(deletePoolMembersCmd)
+	deleteCmd.AddCommand(deletePoolMemberCmd)
 	deleteCmd.AddCommand(deleteNodeCmd)
+
+	// offline
+	f5Cmd.AddCommand(offlineCmd)
+	offlineCmd.AddCommand(offlinePoolMemberCmd)
+
+	// online
+	f5Cmd.AddCommand(onlineCmd)
+	onlineCmd.AddCommand(onlinePoolMemberCmd)
 
 	//	log.SetFlags(log.Ltime | log.Lshortfile)
 	log.SetFlags(0)

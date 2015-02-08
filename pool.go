@@ -65,6 +65,12 @@ type LBPoolMembers struct {
 	Items []LBPoolMember `json":items"`
 }
 
+// used by online/offline
+type MemberState struct {
+	State   string `json:"state"`
+	Session string `json:"session"`
+}
+
 /*
 {
 	"kind": "tm:ltm:pool:poolstate",
@@ -133,7 +139,7 @@ func showPools() {
 
 	err, resp := GetRequest(url, &res)
 	if err != nil {
-		log.Fatalf("%d: %s\n", resp.Status(), err)
+		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	}
 
 	for _, v := range res.Items {
@@ -151,7 +157,7 @@ func showPool(pname string) {
 
 	err, resp := GetRequest(u, &res)
 	if err != nil {
-		log.Fatalf("%d: %s\n", resp.Status(), err)
+		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	}
 	printResponse(&res)
 
@@ -180,7 +186,7 @@ func addPool() {
 	// post the request
 	err, resp := PostRequest(u, &body, &res)
 	if err != nil {
-		log.Fatalf("%d: %s\n", resp.Status(), err)
+		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	}
 	printResponse(&res)
 
@@ -208,7 +214,7 @@ func updatePool(pname string) {
 	// put the request
 	err, resp := PutRequest(u, &body, &res)
 	if err != nil {
-		log.Fatalf("%d: %s\n", resp.Status(), err)
+		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	}
 	printResponse(&res)
 
@@ -222,9 +228,9 @@ func deletePool(pname string) {
 
 	err, resp := DeleteRequest(u, &result)
 	if err != nil {
-		log.Fatalf("%d: %s\n", resp.Status(), err)
+		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	} else {
-		log.Printf("%d: %s deleted successfully\n", resp.Status(), pname)
+		log.Printf("%s : %s deleted\n", resp.HttpResponse().Status, pname)
 	}
 }
 
@@ -238,7 +244,7 @@ func showPoolMembers(pname string) {
 
 	err, resp := GetRequest(u, &res)
 	if err != nil {
-		log.Fatalf("%d: %s\n", resp.Status(), err)
+		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	}
 	printResponse(&res.Items)
 
@@ -268,7 +274,7 @@ func addPoolMembers(pname string) {
 	// post the request
 	err, resp := PostRequest(u, &body, &res)
 	if err != nil {
-		log.Fatalf("%d: %s\n", resp.Status(), err)
+		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	}
 	printResponse(&res)
 
@@ -296,7 +302,7 @@ func updatePoolMembers(pname string) {
 	// put the request
 	err, resp := PutRequest(u, &body, &res)
 	if err != nil {
-		log.Fatalf("%d: %s\n", resp.Status(), err)
+		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	}
 	printResponse(&res)
 
@@ -310,8 +316,63 @@ func deletePoolMembers(pname string) {
 
 	err, resp := DeleteRequest(u, &result)
 	if err != nil {
-		log.Fatalf("%d: %s\n", resp.Status(), err)
+		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	} else {
-		log.Printf("%d: %s deleted successfully\n", resp.Status(), pname)
+		log.Printf("%s : %s deleted\n", resp.HttpResponse().Status, pname)
 	}
+}
+
+func onlinePoolMember(mname string) {
+
+	pmember := strings.Replace(mname, "/", "~", -1)
+	pool := strings.Replace(f5Pool, "/", "~", -1)
+	u := "https://" + f5Host + "/mgmt/tm/ltm/pool/" + pool + "/members/" + pmember
+	res := json.RawMessage{}
+
+	/*
+	   {"state": "user-down", "session": "user-disabled"} (Member Forced Offline in GUI)
+	   {"state": "user-up", "session": "user-disabled"} (Member Disabled in GUI)
+	   {"state": "user-up", "session": "user-enabled"}  (Member Enabled in GUI)
+	*/
+	body := MemberState{"user-up", "user-enabled"}
+
+	// put the request
+	err, resp := PutRequest(u, &body, &res)
+	if err != nil {
+		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
+	} else {
+		log.Printf("%s : %s online\n", resp.HttpResponse().Status, mname)
+	}
+	printResponse(&res)
+
+}
+
+func offlinePoolMember(mname string) {
+
+	pmember := strings.Replace(mname, "/", "~", -1)
+	pool := strings.Replace(f5Pool, "/", "~", -1)
+	u := "https://" + f5Host + "/mgmt/tm/ltm/pool/" + pool + "/members/" + pmember
+	res := json.RawMessage{}
+
+	/*
+	   {"state": "user-down", "session": "user-disabled"} (Member Forced Offline in GUI)
+	   {"state": "user-up", "session": "user-disabled"} (Member Disabled in GUI)
+	   {"state": "user-up", "session": "user-enabled"}  (Member Enabled in GUI)
+	*/
+	var body MemberState
+	if now {
+		body = MemberState{"user-down", "user-disabled"}
+	} else {
+		body = MemberState{"user-up", "user-disabled"}
+	}
+
+	// put the request
+	err, resp := PutRequest(u, &body, &res)
+	if err != nil {
+		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
+	} else {
+		log.Printf("%s : %s offline\n", resp.HttpResponse().Status, mname)
+	}
+	printResponse(&res)
+
 }

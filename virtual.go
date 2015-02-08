@@ -74,7 +74,7 @@ func showVirtuals() {
 
 	err, resp := GetRequest(u, &res)
 	if err != nil {
-		log.Fatalf("%d: %s\n", resp.Status(), err)
+		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	}
 
 	for _, v := range res.Items {
@@ -91,7 +91,7 @@ func showVirtual(vname string) {
 
 	err, resp := GetRequest(u, &res)
 	if err != nil {
-		log.Fatalf("%d: %s\n", resp.Status(), err)
+		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	}
 	printResponse(&res)
 

@@ -1,9 +1,81 @@
 # f5er
 
-A golang F5 rest client
+A golang F5 rest plaything
 
 ## To do
-- everything
+Everything.  
+Well not quite.
+
+Supports pools, poolmembers and nodes in full - so far.
+
+## credentials
+
+F5 ip address and login credentials are stored in a json input file in the current directory.
+The expected file is **f5.json**.
+
+```
+{
+	"credentials": {
+  				"f5": "192.168.0.100",
+					"username": "admin",
+					"passwd": "admin"
+	}
+}
+```
+
+
+## Pools
+
+### Show pools
+
+Show all pools
+```
+f5 show pool
+```
+
+Display a single pool in detail
+```
+f5er show pool /partition/poolname
+```
+
+### Add a new pool
+
+Provide a json input file with all the new pool configuration information. You can base a new pool on the output from a current pool. 
+
+```
+f5er add pool --input=pool.json
+```
+
+### Modify an existing pool
+
+You can modify the config of an existing pool, including the pool members.
+
+Again, provide a json input file with the updated configuration
+
+```
+f5er update pool --input 
+```
+
+
+## Pool members
+
+Pool members can be created/modified in a similar way to pools.
+When pool members are created/modified, the current pool member info is always overwritten. So any new config needs to provide information for all pool members.
+
+Additionally, pool members can be manually brought online or taken offline.
+
+### take a pool member offline
+
+Provide the pool name and pool member. The following will manually mark a pool member offline. Active sessions will continue until they naturally end. This allows connection draining.
+```
+f5er offline poolmember --pool=/partition/poolname /partition/poolmember:portnumber
+```
+
+To take a pool member offline immediately, provide the **--now** command line option. This will prevent existing connections from continuing on the pool member.
+```
+f5er offline poolmember --now --pool=/partition/poolname /partition/poolmember:portnumber
+```
+## Bring a pool member online
 
 ## cross-compile for windows
 Use [gox](https://github.com/mitchellh/gox).
@@ -99,3 +171,14 @@ curl -sk -u admin:admin -H "Content-Type: application/json" https://x.x.x.x/mgmt
 ```
 curl -sk -u admin:admin -H "Content-Type: application/json" https://x.x.x.x/mgmt/tm/sys/folder
 ```
+
+### pool member status
+
+Take pool member offline. Active sessions are no longer allowed to continue
+{"state": "user-down", "session": "user-disabled"} (Member Forced Offline in GUI)
+
+Take pool member offline, active sessions continue (drain)
+{"state": "user-up", "session": "user-disabled"} (Member Disabled in GUI)
+
+Enable a pool member
+{"state": "user-up", "session": "user-enabled"}  (Member Enabled in GUI)
