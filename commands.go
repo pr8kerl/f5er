@@ -228,6 +228,45 @@ var showVirtualCmd = &cobra.Command{
 	},
 }
 
+var addVirtualCmd = &cobra.Command{
+	Use:   "virtual",
+	Short: "add a virtual server",
+	Long:  "add a new virtual server",
+	Run: func(cmd *cobra.Command, args []string) {
+		checkRequiredFlag("input")
+		addVirtual()
+	},
+}
+
+var updateVirtualCmd = &cobra.Command{
+	Use:   "virtual",
+	Short: "update a virtual server",
+	Long:  "update an existing virtual server",
+	Run: func(cmd *cobra.Command, args []string) {
+		checkRequiredFlag("input")
+		if len(args) < 1 {
+			log.Fatal("update virtual requires a virtual server name as an argument (ie /partition/virtualservername )")
+		} else {
+			name := args[0]
+			updateVirtual(name)
+		}
+	},
+}
+
+var deleteVirtualCmd = &cobra.Command{
+	Use:   "virtual",
+	Short: "delete a virtual server",
+	Long:  "delete a virtual server",
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) < 1 {
+			log.Fatal("delete virtual requires a virtual server name as an argument (ie /partition/virtualservername )")
+		} else {
+			name := args[0]
+			deleteVirtual(name)
+		}
+	},
+}
+
 var showNodeCmd = &cobra.Command{
 	Use:   "node",
 	Short: "show a node",
