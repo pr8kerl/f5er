@@ -256,6 +256,7 @@ func init() {
 	showCmd.AddCommand(showPoolMemberCmd)
 	showCmd.AddCommand(showVirtualCmd)
 	showCmd.AddCommand(showNodeCmd)
+	showCmd.AddCommand(showDeviceCmd)
 
 	// add
 	f5Cmd.AddCommand(addCmd)

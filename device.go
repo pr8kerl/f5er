@@ -12,7 +12,6 @@ type LBDeviceRef struct {
 type LBDeviceState struct {
 	Name          string `json:"name"`
 	Path          string `json:"fullPath"`
-	Destination   string `json:"destination"`
 	FailoverState string `json:"failoverState"`
 	ManagementIP  string `json:"managementIP"`
 }
@@ -57,7 +56,7 @@ type LBDeviceState struct {
 
 */
 
-func getDevice() LBDeviceRef {
+func showDevice() {
 
 	u := "https://" + f5Host + "/mgmt/tm/cm/device"
 	res := LBDeviceRef{}
@@ -66,6 +65,6 @@ func getDevice() LBDeviceRef {
 	if err != nil {
 		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	}
-	return res
+	printResponse(&res.Items)
 
 }

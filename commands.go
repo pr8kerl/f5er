@@ -69,6 +69,16 @@ var onlineCmd = &cobra.Command{
 		online()
 	},
 }
+
+var showDeviceCmd = &cobra.Command{
+	Use:   "device",
+	Short: "show an f5 device",
+	Long:  "show the current state of an f5 device",
+	Run: func(cmd *cobra.Command, args []string) {
+		showDevice()
+	},
+}
+
 var showPoolCmd = &cobra.Command{
 	Use:   "pool",
 	Short: "show a pool",
