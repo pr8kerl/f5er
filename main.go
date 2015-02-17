@@ -68,6 +68,7 @@ func InitialiseConfig() {
 
 	viper.BindPFlag("pool", onlinePoolMemberCmd.Flags().Lookup("pool"))
 	viper.BindPFlag("pool", offlinePoolMemberCmd.Flags().Lookup("pool"))
+	viper.BindPFlag("input", f5Cmd.PersistentFlags().Lookup("input"))
 	if f5Cmd.PersistentFlags().Lookup("f5").Changed {
 		viper.Set("f5", f5Host)
 	}
@@ -294,6 +295,6 @@ func init() {
 }
 
 func main() {
-	//	f5Cmd.DebugFlags()
+	//f5Cmd.DebugFlags()
 	f5Cmd.Execute()
 }
