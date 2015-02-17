@@ -330,6 +330,59 @@ var deleteNodeCmd = &cobra.Command{
 	},
 }
 
+var showRuleCmd = &cobra.Command{
+	Use:   "rule",
+	Short: "show a rule",
+	Long:  "show the details of a rule",
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) < 1 {
+			showRules()
+		} else {
+			name := args[0]
+			showRule(name)
+		}
+	},
+}
+
+var addRuleCmd = &cobra.Command{
+	Use:   "rule",
+	Short: "add a rule",
+	Long:  "add a new rule",
+	Run: func(cmd *cobra.Command, args []string) {
+		checkRequiredFlag("input")
+		addRule()
+	},
+}
+
+var updateRuleCmd = &cobra.Command{
+	Use:   "rule",
+	Short: "update a rule",
+	Long:  "update an existing F5 rule",
+	Run: func(cmd *cobra.Command, args []string) {
+		checkRequiredFlag("input")
+		if len(args) < 1 {
+			log.Fatal("update rule requires a rule name as an argument (ie /partition/rulename )")
+		} else {
+			name := args[0]
+			updateRule(name)
+		}
+	},
+}
+
+var deleteRuleCmd = &cobra.Command{
+	Use:   "rule",
+	Short: "delete a rule",
+	Long:  "delete a rule",
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) < 1 {
+			log.Fatal("delete rule requires a rule name as an argument (ie /partition/rulename )")
+		} else {
+			name := args[0]
+			deleteRule(name)
+		}
+	},
+}
+
 // F5 Module data struct
 // to show all available modules when using show without args
 type LBModule struct {

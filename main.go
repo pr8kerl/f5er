@@ -258,6 +258,7 @@ func init() {
 	showCmd.AddCommand(showVirtualCmd)
 	showCmd.AddCommand(showNodeCmd)
 	showCmd.AddCommand(showDeviceCmd)
+	showCmd.AddCommand(showRuleCmd)
 
 	// add
 	f5Cmd.AddCommand(addCmd)
@@ -265,6 +266,7 @@ func init() {
 	addCmd.AddCommand(addPoolMemberCmd)
 	addCmd.AddCommand(addNodeCmd)
 	addCmd.AddCommand(addVirtualCmd)
+	addCmd.AddCommand(addRuleCmd)
 
 	// update
 	f5Cmd.AddCommand(updateCmd)
@@ -272,6 +274,7 @@ func init() {
 	updateCmd.AddCommand(updatePoolMemberCmd)
 	updateCmd.AddCommand(updateNodeCmd)
 	addCmd.AddCommand(updateVirtualCmd)
+	updateCmd.AddCommand(updateRuleCmd)
 
 	// delete
 	f5Cmd.AddCommand(deleteCmd)
@@ -279,6 +282,7 @@ func init() {
 	deleteCmd.AddCommand(deletePoolMemberCmd)
 	deleteCmd.AddCommand(deleteNodeCmd)
 	addCmd.AddCommand(deleteVirtualCmd)
+	deleteCmd.AddCommand(deleteRuleCmd)
 
 	// offline
 	f5Cmd.AddCommand(offlineCmd)

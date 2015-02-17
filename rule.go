@@ -13,8 +13,8 @@ import (
 {
   "kind":"tm:ltm:rule:rulecollectionstate",
   "selfLink":"https://localhost/mgmt/tm/ltm/rule?ver=11.6.0",
-    "items":[
-       {  
+  "items":[
+       {
           "kind":"tm:ltm:rule:rulestate",
           "name":"HTTP_to_HTTPS_redirect_301",
           "partition":"Common",
@@ -23,7 +23,7 @@ import (
           "selfLink":"https://localhost/mgmt/tm/ltm/rule/~Common~HTTP_to_HTTPS_redirect_301?ver=11.6.0",
           "apiAnonymous":"when HTTP_REQUEST {\n  HTTP::respond 301 Location \"https://[getfield [HTTP::host] : 1][HTTP::uri]\"\n}"
        },
-       {  
+       {
           "kind":"tm:ltm:rule:rulestate",
           "name":"_sys_APM_ExchangeSupport_OA_BasicAuth",
           "partition":"Common",
@@ -33,7 +33,7 @@ import (
           "apiAnonymous":"nodelete nowrite \n  bla - lots removed  ",
           "apiRawValues":{"verificationStatus":"signature-verified"}
        },
-       {  
+       {
           "kind":"tm:ltm:rule:rulestate",
           "name":"HTTP_to_HTTPS_redirect_301",
           "partition":"DMZ-Legacy",
@@ -41,19 +41,22 @@ import (
           "generation":1,
           "selfLink":"https://localhost/mgmt/tm/ltm/rule/~DMZ-Legacy~HTTP_to_HTTPS_redirect_301?ver=11.6.0",
           "apiAnonymous":"when HTTP_REQUEST {\n  HTTP::respond 301 Location \"https://[getfield [HTTP::host] : 1][HTTP::uri]\"\n}"}
-     ]
+  ]
 }
 */
 
-type LBRule struct {
-	Name            string     `json:"name"`
-	Partition       string     `json:"partition"`
-	Fullpath        string     `json:"fullPath"`
-	Generation      int        `json:"generation"`
-	ApiAnonymous    string     `json:"apiAnonymous"`
-	ApiRawValues    string     `json:"apiRawValues"`
+type LBRawValues struct {
+	VerificationStatus string `json:"verificationStatus"`
 }
 
+type LBRule struct {
+	Name         string      `json:"name"`
+	Partition    string      `json:"partition"`
+	Fullpath     string      `json:"fullPath"`
+	Generation   int         `json:"generation"`
+	ApiAnonymous string      `json:"apiAnonymous"`
+	ApiRawValues LBRawValues `json:"apiRawValues"`
+}
 
 type LBRules struct {
 	Items []LBRule `json:"items"`
@@ -153,7 +156,7 @@ func deleteRule(rname string) {
 	if err != nil {
 		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	} else {
-		log.Printf("%s : %s deleted\n", resp.HttpResponse().Status, nname)
+		log.Printf("%s : %s deleted\n", resp.HttpResponse().Status, rname)
 	}
 
 }
