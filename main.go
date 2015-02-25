@@ -13,18 +13,17 @@ import (
 )
 
 var (
-	f5Host      string
-	username    string
-	passwd      string
-	credentials map[string]string
-	debug       bool
-	cfgFile     string = "f5.json"
-	f5Input     string
-	f5Pool      string
-	transport   *http.Transport
-	client      *http.Client
-	session     napping.Session
-	now         bool
+	f5Host    string
+	username  string
+	passwd    string
+	debug     bool
+	cfgFile   string = "f5.json"
+	f5Input   string
+	f5Pool    string
+	transport *http.Transport
+	client    *http.Client
+	session   napping.Session
+	now       bool
 )
 
 type httperr struct {
@@ -39,6 +38,7 @@ type httperr struct {
 func InitialiseConfig() {
 	viper.SetConfigFile(cfgFile)
 	viper.AddConfigPath(".")
+	viper.SetDefault("f5", "192.168.0.1")
 	viper.SetDefault("debug", false)
 	viper.SetDefault("force", false)
 
@@ -48,28 +48,13 @@ func InitialiseConfig() {
 	}
 	viper.AutomaticEnv()
 
-	if !viper.IsSet("credentials") {
-		log.Fatal("no login credentials defined in config")
-	}
-	credentials = viper.GetStringMapString("credentials")
-	var ok bool
-	username, ok = credentials["username"]
-	if !ok {
-		log.Fatal("no username defined in config")
-	}
-	passwd, ok = credentials["passwd"]
-	if !ok {
-		log.Fatal("no passwd defined in config")
-	}
-	f5Host, ok = credentials["f5"]
-	if !ok {
-		log.Fatal("no f5 defined in config")
-	}
-
+	viper.BindPFlag("f5", f5Cmd.PersistentFlags().Lookup("f5"))
 	viper.BindPFlag("pool", onlinePoolMemberCmd.Flags().Lookup("pool"))
 	viper.BindPFlag("pool", offlinePoolMemberCmd.Flags().Lookup("pool"))
 	viper.BindPFlag("input", f5Cmd.PersistentFlags().Lookup("input"))
+
 	if f5Cmd.PersistentFlags().Lookup("f5").Changed {
+		// use cmdline f5 flag if supplied
 		viper.Set("f5", f5Host)
 	}
 	if f5Cmd.PersistentFlags().Lookup("input").Changed {
@@ -84,8 +69,29 @@ func InitialiseConfig() {
 	if onlinePoolMemberCmd.Flags().Lookup("pool").Changed {
 		viper.Set("pool", f5Pool)
 	}
+
 	debug = viper.GetBool("debug")
 	now = viper.GetBool("now")
+	username = viper.GetString("username")
+	passwd = viper.GetString("passwd")
+	f5Host = viper.GetString("f5")
+
+	if username == "" {
+		log.Fatalf("\nerror: missing required username configurable in %s\n\n", cfgFile)
+	}
+	if passwd == "" {
+		log.Fatalf("\nerror: missing required passwd configurable in %s\n\n", cfgFile)
+	}
+	// finally check that f5 is not an empty string (default)
+	//	if f5Host != "" {
+	//		viper.Set("f5", f5Host)
+	//	} else {
+	//		f5Host = viper.GetString("f5")
+	//	}
+	if f5Host == "" {
+		log.Fatalf("\nerror: missing required option --f5\n\n")
+	}
+
 }
 
 func checkRequiredFlag(flg string) {
@@ -294,11 +300,11 @@ func init() {
 
 	//	log.SetFlags(log.Ltime | log.Lshortfile)
 	log.SetFlags(0)
-	InitialiseConfig()
 
 }
 
 func main() {
+	InitialiseConfig()
 	//f5Cmd.DebugFlags()
 	f5Cmd.Execute()
 }
