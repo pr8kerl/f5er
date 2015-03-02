@@ -386,6 +386,20 @@ var deleteRuleCmd = &cobra.Command{
 	},
 }
 
+var showXactnCmd = &cobra.Command{
+	Use:   "xactn",
+	Short: "show a transaction",
+	Long:  "show a transaction",
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) < 1 {
+			showXactns()
+		} else {
+			xid := args[0]
+			showXactn(xid)
+		}
+	},
+}
+
 // F5 Module data struct
 // to show all available modules when using show without args
 type LBModule struct {
