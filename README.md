@@ -182,3 +182,47 @@ Take pool member offline, active sessions continue (drain)
 
 Enable a pool member
 {"state": "user-up", "session": "user-enabled"}  (Member Enabled in GUI)
+
+
+### transaction
+
+
+```
+POST https://192.168.25.42/mgmt/tm/transaction
+
+{
+"transId":1389812351,
+"state":"STARTED",
+"timeoutSeconds":30,
+"kind":"tm:transactionstate",
+"selfLink":"https://localhost/mgmt/tm/transaction/1389812351?ver=11.5.0"
+}
+
+
+GET https://192.168.25.42/mgmt/tm/transaction
+GET https://192.168.25.42/mgmt/tm/transaction/<transId>
+
+
+Modifying a transaction
+After you create a transaction, you can populate the transaction by adding commands. Individual commands
+comprise the operations that a transaction performs. Commands are added in the order they are received
+but you can delete commands or change the order of the commands in the transaction.
+1. To add a command to a transaction, use the POST method and specify the
+X-F5-REST-Coordination-Id HTTP header with the transaction ID value from the example
+(1389812351). In the example, the request creates a new pool and adds a single member to the pool.
+POST https://192.168.25.42/mgmt/tm/ltm/pool
+X-F5-REST-Coordination-Id:1389812351
+{
+"name":"tcb-xact-pool",
+"members": [ {"name":"192.168.25.32:80","description":"First pool for transactions"} ]
+}
+
+The response indicates that iControl® REST added the operation to the transaction.
+{
+"transId":1389812351,
+"state":"STARTED",
+"timeoutSeconds":30,
+"kind":"tm:transactionstate",
+"selfLink":"https://localhost/mgmt/tm/transaction/1389813931?ver=11.5.0"
+}
+```

@@ -49,42 +49,65 @@ import (
 		"link": "https://localhost/mgmt/tm/ltm/virtual/~DMZ~secpdv.gem.myob.com_443_vs/policies?ver=11.6.0",
 		"isSubcollection": true
 	},
-	"profilesReference": {
-		"link": "https://localhost/mgmt/tm/ltm/virtual/~DMZ~secpdv.gem.myob.com_443_vs/profiles?ver=11.6.0",
-		"isSubcollection": true,
-		"items": [
-			{
-				"kind": "tm:ltm:virtual:profiles:profilesstate",
-				"name": "tcp",
-				"partition": "Common",
-				"fullPath": "/Common/tcp",
-				"generation": 1,
-				"selfLink": "https://localhost/mgmt/tm/ltm/virtual/~DMZ~secpdv.gem.myob.com_443_vs/profiles/~Common~tcp?ver=11.6.0",
-				"context": "all"
-			}
-		]
-	}
+    "profilesReference": {
+        "link": "https://localhost/mgmt/tm/ltm/virtual/~DMZ~audmzagw-sit-bettacart-443-vs/profiles?ver=11.6.0",
+        "isSubcollection": true,
+        "items": [
+            {
+                "kind": "tm:ltm:virtual:profiles:profilesstate",
+                "name": "sit.store.myob.com.au",
+                "partition": "Common",
+                "fullPath": "/Common/sit.store.myob.com.au",
+                "generation": 42,
+                "selfLink": "https://localhost/mgmt/tm/ltm/virtual/~DMZ~audmzagw-sit-bettacart-443-vs/profiles/~Common~sit.store.myob.com.au?ver=11.6.0",
+                "context": "serverside"
+            },
+            {
+                "kind": "tm:ltm:virtual:profiles:profilesstate",
+                "name": "tcp",
+                "partition": "Common",
+                "fullPath": "/Common/tcp",
+                "generation": 42,
+                "selfLink": "https://localhost/mgmt/tm/ltm/virtual/~DMZ~audmzagw-sit-bettacart-443-vs/profiles/~Common~tcp?ver=11.6.0",
+                "context": "all"
+            }
+        ]
+    }
+
+
 
 	}
 */
 
+type LBVirtualProfile struct {
+	Name      string `json:"name"`
+	Partition string `json:"partition"`
+	FullPath  string `json:"fullPath"`
+	Context   string `json:"context"`
+}
+
+type LBVirtualProfileRef struct {
+	Items []LBVirtualProfile `json":items"`
+}
+
 type LBVirtual struct {
-	Name             string `json:"name"`
-	Path             string `json:"fullPath"`
-	Partition        string `json:"partition"`
-	Destination      string `json:"destination"`
-	Pool             string `json:"pool"`
-	AddressStatus    string `json:"addressStatus"`
-	AutoLastHop      string `json:"autoLasthop"`
-	CmpEnabled       string `json:"cmpEnabled"`
-	ConnectionLimit  int    `json:"connectionLimit"`
-	Enabled          bool   `json:"enabled"`
-	IpProtocol       string `json:"ipProtocol"`
-	Source           string `json:"source"`
-	SourcePort       string `json:"sourcePort"`
-	SynCookieStatus  string `json:"synCookieStatus"`
-	TranslateAddress string `json:"translateAddress"`
-	TranslatePort    string `json:"translatePort"`
+	Name             string              `json:"name"`
+	Path             string              `json:"fullPath"`
+	Partition        string              `json:"partition"`
+	Destination      string              `json:"destination"`
+	Pool             string              `json:"pool"`
+	AddressStatus    string              `json:"addressStatus"`
+	AutoLastHop      string              `json:"autoLasthop"`
+	CmpEnabled       string              `json:"cmpEnabled"`
+	ConnectionLimit  int                 `json:"connectionLimit"`
+	Enabled          bool                `json:"enabled"`
+	IpProtocol       string              `json:"ipProtocol"`
+	Source           string              `json:"source"`
+	SourcePort       string              `json:"sourcePort"`
+	SynCookieStatus  string              `json:"synCookieStatus"`
+	TranslateAddress string              `json:"translateAddress"`
+	TranslatePort    string              `json:"translatePort"`
+	Profiles         LBVirtualProfileRef `json:"profilesReference"`
 }
 
 type LBVirtuals struct {
