@@ -279,7 +279,7 @@ func init() {
 	updateCmd.AddCommand(updatePoolCmd)
 	updateCmd.AddCommand(updatePoolMemberCmd)
 	updateCmd.AddCommand(updateNodeCmd)
-	addCmd.AddCommand(updateVirtualCmd)
+	updateCmd.AddCommand(updateVirtualCmd)
 	updateCmd.AddCommand(updateRuleCmd)
 
 	// delete
@@ -287,7 +287,7 @@ func init() {
 	deleteCmd.AddCommand(deletePoolCmd)
 	deleteCmd.AddCommand(deletePoolMemberCmd)
 	deleteCmd.AddCommand(deleteNodeCmd)
-	addCmd.AddCommand(deleteVirtualCmd)
+	deleteCmd.AddCommand(deleteVirtualCmd)
 	deleteCmd.AddCommand(deleteRuleCmd)
 
 	// offline
