@@ -386,17 +386,13 @@ var deleteRuleCmd = &cobra.Command{
 	},
 }
 
-var showXactnCmd = &cobra.Command{
-	Use:   "xactn",
-	Short: "show a transaction",
-	Long:  "show a transaction",
+var showStackCmd = &cobra.Command{
+	Use:   "stack",
+	Short: "show a stack transaction",
+	Long:  "show a stack transaction",
 	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) < 1 {
-			showXactns()
-		} else {
-			xid := args[0]
-			showXactn(xid)
-		}
+		checkRequiredFlag("input")
+		showStack()
 	},
 }
 

@@ -265,7 +265,7 @@ func init() {
 	showCmd.AddCommand(showNodeCmd)
 	showCmd.AddCommand(showDeviceCmd)
 	showCmd.AddCommand(showRuleCmd)
-	showCmd.AddCommand(showXactnCmd)
+	showCmd.AddCommand(showStackCmd)
 
 	// add
 	f5Cmd.AddCommand(addCmd)
