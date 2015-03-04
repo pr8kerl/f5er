@@ -13,17 +13,19 @@ import (
 )
 
 var (
-	sessn  napping.Session
-	tlscfg tls.Config
-	tsport http.Transport
-	clnt   http.Client
+	sessn   napping.Session
+	tlscfg  tls.Config
+	tsport  http.Transport
+	clnt    http.Client
+	headers http.Header
+	debug   bool
 )
 
 const (
-	RESTGET = iota
-	RESTPOST
-	RESTPUT
-	RESTDELETE
+	GET = iota
+	POST
+	PUT
+	DELETE
 )
 
 type httperr struct {
@@ -42,6 +44,7 @@ func InitSession() {
 		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
 	}
 	clnt = http.Client{Transport: &tsport}
+	headers = make(http.Header)
 
 	//
 	// Setup HTTP Basic auth for this session (ONLY use this with SSL).  Auth
@@ -51,6 +54,7 @@ func InitSession() {
 		Client:   &clnt,
 		Log:      debug,
 		Userinfo: url.UserPassword(username, passwd),
+		Header:   &headers,
 	}
 
 }
@@ -65,15 +69,16 @@ func SendRequest(u string, method int, sess *napping.Session, pload interface{},
 		err  error
 		resp *napping.Response
 	)
+	sess.Log = debug
 
 	switch method {
-	case RESTGET:
+	case GET:
 		resp, err = sess.Get(u, nil, &res, &e)
-	case RESTPOST:
+	case POST:
 		resp, err = sess.Post(u, &pload, &res, &e)
-	case RESTPUT:
+	case PUT:
 		resp, err = sess.Put(u, &pload, &res, &e)
-	case RESTDELETE:
+	case DELETE:
 		resp, err = sess.Delete(u, &res, &e)
 	}
 

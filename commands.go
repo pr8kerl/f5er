@@ -396,6 +396,16 @@ var showStackCmd = &cobra.Command{
 	},
 }
 
+var addStackCmd = &cobra.Command{
+	Use:   "stack",
+	Short: "add a stack",
+	Long:  "add a new stack",
+	Run: func(cmd *cobra.Command, args []string) {
+		checkRequiredFlag("input")
+		addStack()
+	},
+}
+
 // F5 Module data struct
 // to show all available modules when using show without args
 type LBModule struct {

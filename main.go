@@ -16,7 +16,6 @@ var (
 	f5Host    string
 	username  string
 	passwd    string
-	debug     bool
 	cfgFile   string = "f5.json"
 	f5Input   string
 	f5Pool    string
@@ -40,6 +39,7 @@ func InitialiseConfig() {
 	viper.AutomaticEnv()
 
 	viper.BindPFlag("f5", f5Cmd.PersistentFlags().Lookup("f5"))
+	viper.BindPFlag("debug", f5Cmd.PersistentFlags().Lookup("debug"))
 	viper.BindPFlag("pool", onlinePoolMemberCmd.Flags().Lookup("pool"))
 	viper.BindPFlag("pool", offlinePoolMemberCmd.Flags().Lookup("pool"))
 	viper.BindPFlag("input", f5Cmd.PersistentFlags().Lookup("input"))
@@ -47,6 +47,9 @@ func InitialiseConfig() {
 	if f5Cmd.PersistentFlags().Lookup("f5").Changed {
 		// use cmdline f5 flag if supplied
 		viper.Set("f5", f5Host)
+	}
+	if f5Cmd.PersistentFlags().Lookup("debug").Changed {
+		viper.Set("debug", true)
 	}
 	if f5Cmd.PersistentFlags().Lookup("input").Changed {
 		viper.Set("input", f5Input)
@@ -265,6 +268,7 @@ func init() {
 	addCmd.AddCommand(addNodeCmd)
 	addCmd.AddCommand(addVirtualCmd)
 	addCmd.AddCommand(addRuleCmd)
+	addCmd.AddCommand(addStackCmd)
 
 	// update
 	f5Cmd.AddCommand(updateCmd)
@@ -297,6 +301,7 @@ func init() {
 
 func main() {
 	InitialiseConfig()
+	InitSession()
 	//f5Cmd.DebugFlags()
 	f5Cmd.Execute()
 }

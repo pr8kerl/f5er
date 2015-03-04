@@ -177,7 +177,7 @@ func addPool() {
 		log.Fatal(err)
 	}
 
-	// convert json to a node struct
+	// convert json to a pool struct
 	err = json.Unmarshal(dat, &body)
 	if err != nil {
 		log.Fatal(err)

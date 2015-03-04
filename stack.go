@@ -20,6 +20,8 @@ type LBTransaction struct {
 	State   string `json:"state"`
 }
 
+type LBEmptyBody struct{}
+
 /*
 {
 "transId":1389812351,
@@ -34,8 +36,6 @@ type LBTransaction struct {
 
 func showStack() {
 
-	InitSession()
-
 	//	xid := strings.Replace(xname, "/", "~", -1)
 	//	u := "https://" + f5Host + "/mgmt/tm/transaction/" + xid
 	stack := LBStack{}
@@ -46,7 +46,7 @@ func showStack() {
 		log.Fatal(err)
 	}
 
-	// convert json to a node struct
+	// convert json to a stack struct
 	err = json.Unmarshal(dat, &stack)
 	if err != nil {
 		log.Fatal(err)
@@ -64,8 +64,7 @@ func showStack() {
 
 		node := strings.Replace(nde, "/", "~", -1)
 		u := "https://" + f5Host + "/mgmt/tm/ltm/node/" + node
-		//err, resp := GetRequest(u, &nres)
-		err, resp := SendRequest(u, RESTGET, &sessn, nil, &nres)
+		err, resp := SendRequest(u, GET, &sessn, nil, &nres)
 		if err != nil {
 			log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 		}
@@ -86,7 +85,7 @@ func showStack() {
 		pool := strings.Replace(jpool.FullPath, "/", "~", -1)
 		u := "https://" + f5Host + "/mgmt/tm/ltm/pool/" + pool + "?expandSubcollections=true"
 
-		err, resp := GetRequest(u, &pres)
+		err, resp := SendRequest(u, GET, &sessn, nil, &pres)
 		if err != nil {
 			log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 		}
@@ -106,7 +105,8 @@ func showStack() {
 		virtual := strings.Replace(virt.FullPath, "/", "~", -1)
 		u := "https://" + f5Host + "/mgmt/tm/ltm/virtual/" + virtual + "?expandSubcollections=true"
 
-		err, resp := GetRequest(u, &vres)
+		sessn.Header.Set("Haribo", "macht kinder froh")
+		err, resp := SendRequest(u, GET, &sessn, nil, &vres)
 		if err != nil {
 			log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 		}
@@ -118,21 +118,31 @@ func showStack() {
 
 func addStack() {
 
-	//	u := "https://" + f5Host + "/mgmt/tm/transaction"
 	stack := LBStack{}
-
 	// read in json file
 	dat, err := ioutil.ReadFile(f5Input)
 	if err != nil {
 		log.Fatal(err)
 	}
 
-	// convert json to a node struct
+	// convert json to a stack struct
 	err = json.Unmarshal(dat, &stack)
 	if err != nil {
 		log.Fatal(err)
 	}
 
+	u := "https://" + f5Host + "/mgmt/tm/transaction"
+	body := LBEmptyBody{}
+	tres := LBTransaction{}
+	err, resp := SendRequest(u, POST, &sessn, &body, &tres)
+	if err != nil {
+		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
+	}
+	printResponse(&tres)
+
+	tid := fmt.Sprintf("%d", tres.TransId)
+	fmt.Printf("created transaction id: %s\n", tid)
+	sessn.Header.Set("X-F5-REST-Coordination-Id", tid)
 	// post the request
 	//	err, resp := PostRequest(u, &body, &res)
 	//	if err != nil {
