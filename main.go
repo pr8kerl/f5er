@@ -20,20 +20,11 @@ var (
 	cfgFile   string = "f5.json"
 	f5Input   string
 	f5Pool    string
+	session   napping.Session
 	transport *http.Transport
 	client    *http.Client
-	session   napping.Session
 	now       bool
 )
-
-type httperr struct {
-	Message string
-	Errors  []struct {
-		Resource string
-		Field    string
-		Code     string
-	}
-}
 
 func InitialiseConfig() {
 	viper.SetConfigFile(cfgFile)

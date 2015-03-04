@@ -14,7 +14,27 @@ type LBStack struct {
 	Virtual json.RawMessage              `json:"virtual"`
 }
 
+type LBTransaction struct {
+	TransId int    `json:"transId"`
+	Timeout int    `json:"timeoutSeconds"`
+	State   string `json:"state"`
+}
+
+/*
+{
+"transId":1389812351,
+"state":"STARTED",
+"timeoutSeconds":30,
+"kind":"tm:transactionstate",
+"selfLink":"https://localhost/mgmt/tm/transaction/1389812351?ver=11.5.0"
+}
+
+ func SendRequest(u string, method int, sess *napping.Session, pload interface{}, res interface{}) (error, *napping.Response) {
+*/
+
 func showStack() {
+
+	InitSession()
 
 	//	xid := strings.Replace(xname, "/", "~", -1)
 	//	u := "https://" + f5Host + "/mgmt/tm/transaction/" + xid
@@ -44,7 +64,8 @@ func showStack() {
 
 		node := strings.Replace(nde, "/", "~", -1)
 		u := "https://" + f5Host + "/mgmt/tm/ltm/node/" + node
-		err, resp := GetRequest(u, &nres)
+		//err, resp := GetRequest(u, &nres)
+		err, resp := SendRequest(u, RESTGET, &sessn, nil, &nres)
 		if err != nil {
 			log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 		}
