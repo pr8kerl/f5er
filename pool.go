@@ -39,7 +39,7 @@ import (
 type LBPoolMember struct {
 	Name            string `json:"name"`
 	Partition       string `json:"partition"`
-	Fullpath        string `json:"fullPath"`
+	FullPath        string `json:"fullPath"`
 	Address         string `json:"address"`
 	ConnectionLimit int    `json:"connectionLimit"`
 	DynamicRatio    int    `json:"dynamicRatio"`
@@ -104,7 +104,7 @@ type MemberState struct {
 
 type LBPool struct {
 	Name                   string          `json:"name"`
-	Fullpath               string          `json:"fullPath"`
+	FullPath               string          `json:"fullPath"`
 	Generation             int             `json:"generation"`
 	AllowNat               string          `json:"allowNat"`
 	AllowSnat              string          `json:"allowSnat"`
@@ -143,8 +143,8 @@ func showPools() {
 	}
 
 	for _, v := range res.Items {
-		//fmt.Printf("pool:\t%s\n", v.Fullpath)
-		fmt.Printf("%s\n", v.Fullpath)
+		//fmt.Printf("pool:\t%s\n", v.FullPath)
+		fmt.Printf("%s\n", v.FullPath)
 	}
 }
 

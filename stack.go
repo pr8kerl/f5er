@@ -9,8 +9,9 @@ import (
 )
 
 type LBStack struct {
-	Nodes []map[string]json.RawMessage `json:"nodes"`
-	Pool  json.RawMessage              `json:"pool"`
+	Nodes   []map[string]json.RawMessage `json:"nodes"`
+	Pool    json.RawMessage              `json:"pool"`
+	Virtual json.RawMessage              `json:"virtual"`
 }
 
 func showStack() {
@@ -33,8 +34,9 @@ func showStack() {
 
 	nres := LBNode{}
 
+	// show nodes
 	for count, n := range stack.Nodes {
-		//fmt.Printf("pool:\t%s\n", v.Fullpath)
+		//fmt.Printf("pool:\t%s\n", v.FullPath)
 		nde := string(n["fullPath"])
 		// because its read ffrom a map - strip the quotes
 		nde = strings.Replace(nde, "\"", "", -1)
@@ -50,6 +52,7 @@ func showStack() {
 
 	}
 
+	// show pool
 	if len(stack.Pool) > 0 {
 
 		pres := LBPool{}
@@ -58,8 +61,8 @@ func showStack() {
 			log.Fatal(err)
 		}
 
-		fmt.Printf("\npool: %s\n", jpool.Fullpath)
-		pool := strings.Replace(jpool.Fullpath, "/", "~", -1)
+		fmt.Printf("\npool: %s\n", jpool.FullPath)
+		pool := strings.Replace(jpool.FullPath, "/", "~", -1)
 		u := "https://" + f5Host + "/mgmt/tm/ltm/pool/" + pool + "?expandSubcollections=true"
 
 		err, resp := GetRequest(u, &pres)
@@ -67,6 +70,26 @@ func showStack() {
 			log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 		}
 		printResponse(&pres)
+
+	}
+	// show virtual
+	if len(stack.Virtual) > 0 {
+
+		vres := LBVirtual{}
+		virt := LBVirtual{}
+		if err := json.Unmarshal(stack.Virtual, &virt); err != nil {
+			log.Fatal(err)
+		}
+
+		fmt.Printf("\nvirtual: %s\n", virt.FullPath)
+		virtual := strings.Replace(virt.FullPath, "/", "~", -1)
+		u := "https://" + f5Host + "/mgmt/tm/ltm/virtual/" + virtual + "?expandSubcollections=true"
+
+		err, resp := GetRequest(u, &vres)
+		if err != nil {
+			log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
+		}
+		printResponse(&vres)
 
 	}
 

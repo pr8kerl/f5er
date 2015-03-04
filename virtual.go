@@ -92,7 +92,7 @@ type LBVirtualProfileRef struct {
 
 type LBVirtual struct {
 	Name             string              `json:"name"`
-	Path             string              `json:"fullPath"`
+	FullPath         string              `json:"fullPath"`
 	Partition        string              `json:"partition"`
 	Destination      string              `json:"destination"`
 	Pool             string              `json:"pool"`
@@ -125,7 +125,7 @@ func showVirtuals() {
 	}
 
 	for _, v := range res.Items {
-		fmt.Printf("%s\n", v.Path)
+		fmt.Printf("%s\n", v.FullPath)
 	}
 
 }
