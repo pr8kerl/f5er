@@ -45,7 +45,7 @@ type LBNodeFQDN struct {
 type LBNode struct {
 	Name            string     `json:"name"`
 	Partition       string     `json:"partition"`
-	Fullpath        string     `json:"fullPath"`
+	FullPath        string     `json:"fullPath"`
 	Generation      int        `json:"generation"`
 	Address         string     `json:"address"`
 	ConnectionLimit int        `json:"connectionLimit"`
@@ -77,8 +77,8 @@ func showNodes() {
 	}
 
 	for _, v := range res.Items {
-		//fmt.Printf("pool:\t%s\n", v.Fullpath)
-		fmt.Printf("%s\n", v.Fullpath)
+		//fmt.Printf("pool:\t%s\n", v.FullPath)
+		fmt.Printf("%s\n", v.FullPath)
 	}
 }
 

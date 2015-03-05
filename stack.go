@@ -9,9 +9,9 @@ import (
 )
 
 type LBStack struct {
-	Nodes   []map[string]json.RawMessage `json:"nodes"`
-	Pool    json.RawMessage              `json:"pool"`
-	Virtual json.RawMessage              `json:"virtual"`
+	Nodes   []json.RawMessage `json:"nodes"`
+	Pool    json.RawMessage   `json:"pool"`
+	Virtual json.RawMessage   `json:"virtual"`
 }
 
 type LBTransaction struct {
@@ -52,24 +52,23 @@ func showStack() {
 		log.Fatal(err)
 	}
 
-	nres := LBNode{}
-
 	// show nodes
 	for count, n := range stack.Nodes {
-		//fmt.Printf("pool:\t%s\n", v.FullPath)
-		nde := string(n["fullPath"])
-		// because its read ffrom a map - strip the quotes
-		nde = strings.Replace(nde, "\"", "", -1)
-		fmt.Printf("\nnode[%d]: %s\n", count, nde)
 
-		node := strings.Replace(nde, "/", "~", -1)
+		nres := LBNode{}
+		nde := LBNode{}
+		if err := json.Unmarshal(n, &nde); err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("\nnode[%d]: %s\n", count, nde.FullPath)
+
+		node := strings.Replace(nde.FullPath, "/", "~", -1)
 		u := "https://" + f5Host + "/mgmt/tm/ltm/node/" + node
 		err, resp := SendRequest(u, GET, &sessn, nil, &nres)
 		if err != nil {
 			log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 		}
 		printResponse(&nres)
-
 	}
 
 	// show pool
@@ -81,7 +80,7 @@ func showStack() {
 			log.Fatal(err)
 		}
 
-		fmt.Printf("\npool: %s\n", jpool.FullPath)
+		log.Printf("\npool: %s\n", jpool.FullPath)
 		pool := strings.Replace(jpool.FullPath, "/", "~", -1)
 		u := "https://" + f5Host + "/mgmt/tm/ltm/pool/" + pool + "?expandSubcollections=true"
 
@@ -101,7 +100,7 @@ func showStack() {
 			log.Fatal(err)
 		}
 
-		fmt.Printf("\nvirtual: %s\n", virt.FullPath)
+		log.Printf("\nvirtual: %s\n", virt.FullPath)
 		virtual := strings.Replace(virt.FullPath, "/", "~", -1)
 		u := "https://" + f5Host + "/mgmt/tm/ltm/virtual/" + virtual + "?expandSubcollections=true"
 
@@ -141,12 +140,49 @@ func addStack() {
 	printResponse(&tres)
 
 	tid := fmt.Sprintf("%d", tres.TransId)
-	fmt.Printf("created transaction id: %s\n", tid)
+	log.Printf("created transaction id: %s\n", tid)
 	sessn.Header.Set("X-F5-REST-Coordination-Id", tid)
-	// post the request
-	//	err, resp := PostRequest(u, &body, &res)
-	//	if err != nil {
-	//		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
-	//	}
-	//	printResponse(&res)
+
+	// add nodes
+	nres := LBNode{}
+	nde := LBNode{}
+	for count, n := range stack.Nodes {
+
+		if err := json.Unmarshal(n, &nde); err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("\nnode[%d]: %s\n", count, nde.FullPath)
+
+		node := strings.Replace(nde.FullPath, "/", "~", -1)
+		u := "https://" + f5Host + "/mgmt/tm/ltm/node/" + node
+		err, resp := SendRequest(u, POST, &sessn, &nde, &nres)
+		if err != nil {
+			log.Fatalf("%s : error adding %s : %s\n", resp.HttpResponse().Status, node, err)
+		} else {
+			log.Printf("%s : %s added\n", resp.HttpResponse().Status, node)
+		}
+		printResponse(&nres)
+	}
+
+	// add pool
+	if len(stack.Pool) > 0 {
+
+		pres := LBPool{}
+		jpool := LBPool{}
+		if err := json.Unmarshal(stack.Pool, &jpool); err != nil {
+			log.Fatal(err)
+		}
+
+		log.Printf("\npool: %s\n", jpool.FullPath)
+		pool := strings.Replace(jpool.FullPath, "/", "~", -1)
+		u := "https://" + f5Host + "/mgmt/tm/ltm/pool/" + pool + "?expandSubcollections=true"
+
+		err, resp := SendRequest(u, GET, &sessn, &jpool, &pres)
+		if err != nil {
+			log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
+		}
+		printResponse(&pres)
+
+	}
+
 }
