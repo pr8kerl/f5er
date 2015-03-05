@@ -1,0 +1,111 @@
+{
+  "nodes": [
+    {
+      "name": "node01",
+      "partition": "PARTITION",
+      "fullPath": "/PARTITION/node01",
+      "address": "192.168.0.1%2",
+      "connectionLimit": 0,
+      "fqdn": {
+          "addressFamily": "ipv4",
+          "autopopulate": "disabled",
+          "downInterval": 5,
+          "interval": 3600
+      },
+      "logging": "disabled",
+      "monitor": "/Common/icmp ",
+      "rateLimit": "disabled"
+    },
+    {
+      "name": "node02",
+      "partition": "PARTITION",
+      "fullPath": "/PARTITION/node02",
+      "address": "192.168.0.2%2",
+      "connectionLimit": 0,
+      "fqdn": {
+          "addressFamily": "ipv4",
+          "autopopulate": "disabled",
+          "downInterval": 5,
+          "interval": 3600
+      },
+      "logging": "disabled",
+      "monitor": "/Common/icmp ",
+      "rateLimit": "disabled"
+    }
+  ],
+
+	"pool": {
+	    "name": "example-pool",
+      "partition": "PARTITION",
+      "fullPath": "/PARTITION/example-pool",
+      "allowNat": "yes",
+      "allowSnat": "yes",
+      "ignorePersistedWeight": "disabled",
+      "ipTosToClient": "pass-through",
+      "ipTosToServer": "pass-through",
+      "linkQosToClient": "pass-through",
+      "linkQosToServer": "pass-through",
+      "loadBalancingMode": "round-robin",
+      "minActiveMembers": 0,
+      "minUpMembers": 0,
+      "minUpMembersAction": "failover",
+      "minUpMembersChecking": "disabled",
+      "monitor": "/Common/https_head_f5",
+      "queueDepthLimit": 0,
+      "queueOnConnectionLimit": "disabled",
+      "queueTimeLimit": 0,
+      "reselectTries": 0,
+      "serviceDownAction": "none",
+      "slowRampTime": 10,
+      "members": [
+      		{
+      			"name": "node01:443",
+      			"partition": "PARTITION",
+      			"fullPath": "/PARTITION/node01:443",
+      			"address": "192.168.0.1%2",
+      			"connectionLimit": 0,
+      			"dynamicRatio": 1,
+      			"inheritProfile": "enabled",
+      			"logging": "disabled",
+      			"monitor": "default",
+      			"priorityGroup": 0,
+      			"rateLimit": "disabled",
+      			"ratio": 1
+      		},
+      		{
+      			"name": "node02:443",
+      			"partition": "PARTITION",
+      			"fullPath": "/PARTITION/node02:443",
+      			"address": "192.168.0.2%2",
+      			"connectionLimit": 0,
+      			"dynamicRatio": 1,
+      			"inheritProfile": "enabled",
+      			"logging": "disabled",
+      			"monitor": "default",
+      			"priorityGroup": 0,
+      			"rateLimit": "disabled",
+      			"ratio": 1
+      		}
+      ]
+  },
+
+  "virtual": {
+    "name": "example-virtual-server",
+    "fullPath": "/PARTITION/example-virtual-server",
+    "partition": "PARTITION",
+    "destination": "/PARTITION/192.168.100.1%2:443",
+    "pool": "/PARTITION/example-pool",
+    "addressStatus": "yes",
+    "autoLasthop": "default",
+    "cmpEnabled": "yes",
+    "connectionLimit": 0,
+    "enabled": true,
+    "ipProtocol": "tcp",
+    "source": "0.0.0.0%2/0",
+    "sourcePort": "preserve",
+    "synCookieStatus": "not-activated",
+    "translateAddress": "enabled",
+    "translatePort": "enabled"
+  }
+
+}

@@ -2,11 +2,15 @@
 
 A golang F5 rest plaything
 
-## To do
-Everything.  
-Well not quite.
+Supports nodes, pools, poolmembers, and virtuals in full - so far.
 
-Supports pools, poolmembers and nodes in full - so far.
+Create, modify and delete F5 objects easily, using json input files.
+
+A convenience entity called a **stack** can be used to act upon nodes, their pool and its virtual server as one.
+
+Supports the REST methods GET (show), POST (create), PUT (update) and DELETE (delete).
+
+Most commands will display the response in json as provide by the F5 device. Please note that although the response json may look similar to input json, some json object fields differ. For example, pool members within a pool are displayed within a membersReference object in a response, however members must be defined as an array within the **members** field in a pool object. Also some json object response fields are read-only and cannot be used with an input object (the object supplied in the body of a POST or PUT operation.
 
 ## credentials
 
@@ -23,6 +27,44 @@ The expected file is **f5.json**.
 }
 ```
 
+## help
+
+Use the help command to display hints and available subcommands
+
+```
+./f5er help show
+show current state of F5 objects. Show requires an object, eg. f5er show pool
+
+Usage: 
+  f5er show [flags]
+  f5er show [command]
+
+Available Commands: 
+  pool                      show a pool
+  poolmember                show pool members
+  virtual                   show a virtual server
+  node                      show a node
+  device                    show an f5 device
+  rule                      show a rule
+  stack                     show a stack transaction
+
+ Available Flags:
+  -d, --debug=false: debug output
+  -f, --f5="": IP or hostname of F5 to poke
+  -h, --help=false: help for show
+  -i, --input="": input json f5 configuration
+
+Additional help topics: 
+  f5er show    show F5 objects
+  f5er add     add F5 objects
+  f5er update  update F5 objects
+  f5er delete  delete F5 objects
+  f5er offline offline a pool member
+  f5er online  online a pool member
+  f5er help    Help about any command
+
+Use "f5er help [command]" for more information about that command.
+```
 
 ## Pools
 
@@ -30,7 +72,7 @@ The expected file is **f5.json**.
 
 Show all pools
 ```
-f5 show pool
+f5er show pool
 ```
 
 Display a single pool in detail
@@ -77,6 +119,8 @@ f5er offline poolmember --now --pool=/partition/poolname /partition/poolmember:p
 ```
 ## Bring a pool member online
 
+The opposite to the poolmember offline command
+
 ## cross-compile for windows
 Use [gox](https://github.com/mitchellh/gox).
 
@@ -100,25 +144,11 @@ Number of parallel builds: 4
 ```
 
 
-### Pool
+### Saved F5 snippets
 
-**https://x.x.x.x/mgmt/tm/ltm/pool/~DMZ~audmzbilltweb-sit_443_pool**
+These bits are saved here to serve as reminders to commands that could be supported in the future.
 
-```
-RawText
-{"kind":"tm:ltm:pool:poolstate","name":"audmzbilltweb-sit_443_pool","partition":"DMZ","fullPath":"/DMZ/audmzbilltweb-sit_443_pool","generation":211,"selfLink":"https://localhost/mgmt/tm/ltm/pool/~DMZ~audmzbilltweb-sit_443_pool?ver=11.6.0","allowNat":"yes","allowSnat":"yes","ignorePersistedWeight":"disabled","ipTosToClient":"pass-through","ipTosToServer":"pass-through","linkQosToClient":"pass-through","linkQosToServer":"pass-through","loadBalancingMode":"round-robin","minActiveMembers":0,"minUpMembers":0,"minUpMembersAction":"failover","minUpMembersChecking":"disabled","monitor":"min 1 of { /Common/tcp }","queueDepthLimit":0,"queueOnConnectionLimit":"disabled","queueTimeLimit":0,"reselectTries":0,"serviceDownAction":"none","slowRampTime":10,"membersReference":{"link":"https://localhost/mgmt/tm/ltm/pool/~DMZ~audmzbilltweb-sit_443_pool/members?ver=11.6.0","isSubcollection":true}}
-```
-
-### Members
-
-**https://x.x.x.x/mgmt/tm/ltm/pool/~DMZ~audmzbilltweb-sit_443_pool/members?ver=11.6.0**
-
-```
-{"kind":"tm:ltm:pool:members:memberscollectionstate","selfLink":"https://localhost/mgmt/tm/ltm/pool/~DMZ~audmzbilltweb-sit_443_pool/members?ver=11.6.0","items":[{"kind":"tm:ltm:pool:members:membersstate","name":"audmzbilltweb01-sit:443","partition":"DMZ","fullPath":"/DMZ/audmzbilltweb01-sit:443","generation":233,"selfLink":"https://localhost/mgmt/tm/ltm/pool/~DMZ~audmzbilltweb-sit_443_pool/members/~DMZ~audmzbilltweb01-sit:443?ver=11.6.0","address":"x.x.x.x%6","connectionLimit":0,"dynamicRatio":1,"ephemeral":"false","fqdn":{"autopopulate":"disabled"},"inheritProfile":"enabled","logging":"disabled","monitor":"default","priorityGroup":0,"rateLimit":"disabled","ratio":1,"session":"monitor-enabled","state":"up"},{"kind":"tm:ltm:pool:members:membersstate","name":"audmzbilltweb02-sit:443","partition":"DMZ","fullPath":"/DMZ/audmzbilltweb02-sit:443","generation":153,"selfLink":"https://localhost/mgmt/tm/ltm/pool/~DMZ~audmzbilltweb-sit_443_pool/members/~DMZ~audmzbilltweb02-sit:443?ver=11.6.0","address":"x.x.x.x%6","connectionLimit":0,"dynamicRatio":1,"ephemeral":"false","fqdn":{"autopopulate":"disabled"},"inheritProfile":"enabled","logging":"disabled","monitor":"default","priorityGroup":0,"rateLimit":"disabled","ratio":1,"session":"monitor-enabled","state":"up"}]}
-```
-
-
-### cluster member status
+#### cluster member status
 ```
 curl -sk -u admin:admin -H "Content-Type: application/json" -X GET https://x.x.x.x/mgmt/tm/cm/failover-status 
 {
@@ -152,14 +182,9 @@ curl -sk -u admin:admin -H "Content-Type: application/json" -X GET https://x.x.x
 
 ```
 
-### config sync
+#### config sync
 ```
 curl -sk -u admin:admin -H "Content-Type: application/json" -X POST -d '{"command":"run","utilCmdArgs":"config-sync to-group pair-group-name"}' https://x.x.x.x/mgmt/tm/cm
-```
-
-### show interesting info about device
-```
-curl -sk -u admin:admin -H "Content-Type: application/json" https://x.x.x.x/mgmt/tm/cm/device
 ```
 
 ### show pool member stats
@@ -184,7 +209,7 @@ Enable a pool member
 {"state": "user-up", "session": "user-enabled"}  (Member Enabled in GUI)
 
 
-### transaction
+#### transaction info
 
 
 ```
