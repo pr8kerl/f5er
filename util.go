@@ -25,6 +25,7 @@ const (
 	GET = iota
 	POST
 	PUT
+	PATCH
 	DELETE
 )
 
@@ -78,6 +79,8 @@ func SendRequest(u string, method int, sess *napping.Session, pload interface{},
 		resp, err = sess.Post(u, &pload, &res, &e)
 	case PUT:
 		resp, err = sess.Put(u, &pload, &res, &e)
+	case PATCH:
+		resp, err = sess.Patch(u, &pload, &res, &e)
 	case DELETE:
 		resp, err = sess.Delete(u, &res, &e)
 	}

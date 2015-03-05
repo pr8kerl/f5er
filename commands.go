@@ -406,6 +406,26 @@ var addStackCmd = &cobra.Command{
 	},
 }
 
+var updateStackCmd = &cobra.Command{
+	Use:   "stack",
+	Short: "update a stack",
+	Long:  "update a stack",
+	Run: func(cmd *cobra.Command, args []string) {
+		checkRequiredFlag("input")
+		updateStack()
+	},
+}
+
+var deleteStackCmd = &cobra.Command{
+	Use:   "stack",
+	Short: "delete a stack",
+	Long:  "delete a stack",
+	Run: func(cmd *cobra.Command, args []string) {
+		checkRequiredFlag("input")
+		deleteStack()
+	},
+}
+
 // F5 Module data struct
 // to show all available modules when using show without args
 type LBModule struct {

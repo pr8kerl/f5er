@@ -277,6 +277,7 @@ func init() {
 	updateCmd.AddCommand(updateNodeCmd)
 	updateCmd.AddCommand(updateVirtualCmd)
 	updateCmd.AddCommand(updateRuleCmd)
+	updateCmd.AddCommand(updateStackCmd)
 
 	// delete
 	f5Cmd.AddCommand(deleteCmd)
@@ -285,6 +286,7 @@ func init() {
 	deleteCmd.AddCommand(deleteNodeCmd)
 	deleteCmd.AddCommand(deleteVirtualCmd)
 	deleteCmd.AddCommand(deleteRuleCmd)
+	deleteCmd.AddCommand(deleteStackCmd)
 
 	// offline
 	f5Cmd.AddCommand(offlineCmd)
