@@ -26,6 +26,24 @@ type LBTransactionState struct {
 	State string `json:"state"`
 }
 
+type LBNodeFQDNUpdate struct {
+	AutoPopulate string `json:"autopopulate"`
+	DownInterval int    `json:"downInterval"`
+	Interval     int    `json:"interval"`
+}
+
+type LBNodeUpdate struct {
+	Name            string           `json:"name"`
+	Partition       string           `json:"partition"`
+	FullPath        string           `json:"fullPath"`
+	Generation      int              `json:"generation"`
+	ConnectionLimit int              `json:"connectionLimit"`
+	Fqdn            LBNodeFQDNUpdate `json:"fqdn"`
+	Logging         string           `json:"logging"`
+	Monitor         string           `json:"monitor"`
+	RateLimit       string           `json:"rateLimit"`
+}
+
 /*
 {
 "transId":1389812351,
@@ -61,7 +79,9 @@ func showStack() {
 
 		nres := LBNode{}
 		nde := LBNode{}
-		if err := json.Unmarshal(n, &nde); err != nil {
+		// convert json to a node struct
+		err = json.Unmarshal(n, &nde)
+		if err != nil {
 			log.Fatal(err)
 		}
 		log.Printf("\nnode[%d]: %s\n", count, nde.FullPath)
@@ -70,7 +90,7 @@ func showStack() {
 		u := "https://" + f5Host + "/mgmt/tm/ltm/node/" + node
 		err, resp := SendRequest(u, GET, &sessn, nil, &nres)
 		if err != nil {
-			log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
+			log.Printf("%s : %s\n", resp.HttpResponse().Status, err)
 		}
 		printResponse(&nres)
 	}
@@ -90,7 +110,7 @@ func showStack() {
 
 		err, resp := SendRequest(u, GET, &sessn, nil, &pres)
 		if err != nil {
-			log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
+			log.Printf("%s : %s\n", resp.HttpResponse().Status, err)
 		}
 		printResponse(&pres)
 
@@ -111,7 +131,7 @@ func showStack() {
 		sessn.Header.Set("Haribo", "macht kinder froh")
 		err, resp := SendRequest(u, GET, &sessn, nil, &vres)
 		if err != nil {
-			log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
+			log.Printf("%s : %s\n", resp.HttpResponse().Status, err)
 		}
 		printResponse(&vres)
 
@@ -153,12 +173,15 @@ func addStack() {
 
 		nres := LBNode{}
 		nde := LBNode{}
-		if err := json.Unmarshal(n, &nde); err != nil {
+		// convert json to a node struct
+		err = json.Unmarshal(n, &nde)
+		if err != nil {
 			log.Fatal(err)
 		}
 		log.Printf("\nnode[%d]: %s\n", count, nde.FullPath)
 
 		u := "https://" + f5Host + "/mgmt/tm/ltm/node"
+		// send the raw json - not the struct - some fields may be omiitted from the input intentionally and the struct will insert empty fields
 		err, resp := SendRequest(u, POST, &sessn, &n, &nres)
 		if err != nil {
 			log.Fatalf("%s : error adding %s : %s\n", resp.HttpResponse().Status, nde.FullPath, err)
@@ -246,7 +269,6 @@ func updateStack() {
 	if err != nil {
 		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	}
-	printResponse(&tres)
 
 	tid := fmt.Sprintf("%d", tres.TransId)
 	log.Printf("created transaction id: %s\n", tid)
@@ -257,17 +279,20 @@ func updateStack() {
 	for count, n := range stack.Nodes {
 
 		nres := LBNode{}
-		nde := LBNode{}
-		if err := json.Unmarshal(n, &nde); err != nil {
+		nde := LBNodeUpdate{}
+		// convert json to a node struct
+		err = json.Unmarshal(n, &nde)
+		if err != nil {
 			log.Fatal(err)
 		}
+
 		log.Printf("\nnode[%d]: %s\n", count, nde.FullPath)
 
-		node := strings.Replace(nde.FullPath, "/", "~", -1)
-		u := "https://" + f5Host + "/mgmt/tm/ltm/node/" + node
-		err, resp := SendRequest(u, PUT, &sessn, &n, &nres)
+		npath := strings.Replace(nde.FullPath, "/", "~", -1)
+		u := "https://" + f5Host + "/mgmt/tm/ltm/node/" + npath
+		err, resp := SendRequest(u, PUT, &sessn, &nde, &nres)
 		if err != nil {
-			log.Fatalf("%s : %s : %s\n", resp.HttpResponse().Status, node, err)
+			log.Fatalf("%s : %s : %s\n", resp.HttpResponse().Status, nde.FullPath, err)
 		} else {
 			log.Printf("%s : node[%d] %s updated\n", resp.HttpResponse().Status, count, nde.FullPath)
 		}
@@ -354,7 +379,6 @@ func deleteStack() {
 	if err != nil {
 		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	}
-	printResponse(&tres)
 
 	tid := fmt.Sprintf("%d", tres.TransId)
 	log.Printf("created transaction id: %s\n", tid)
@@ -410,7 +434,9 @@ func deleteStack() {
 
 		nres := LBNode{}
 		nde := LBNode{}
-		if err := json.Unmarshal(n, &nde); err != nil {
+		// convert json to a node struct
+		err = json.Unmarshal(n, &nde)
+		if err != nil {
 			log.Fatal(err)
 		}
 		log.Printf("\nnode[%d]: %s\n", count, nde.FullPath)
@@ -419,7 +445,7 @@ func deleteStack() {
 		u := "https://" + f5Host + "/mgmt/tm/ltm/node/" + node
 		err, resp := SendRequest(u, DELETE, &sessn, nil, &nres)
 		if err != nil {
-			log.Fatalf("%s : error deleting %s : %s\n", resp.HttpResponse().Status, node, err)
+			log.Fatalf("%s : error deleting %s : %s\n", resp.HttpResponse().Status, nde.FullPath, err)
 		} else {
 			log.Printf("%s : node[%d] %s deleted\n", resp.HttpResponse().Status, count, nde.FullPath)
 		}

@@ -47,14 +47,14 @@ type LBNode struct {
 	Partition       string     `json:"partition"`
 	FullPath        string     `json:"fullPath"`
 	Generation      int        `json:"generation"`
-	Address         string     `json:"address"`
+	Address         string     `json:"address,omitEmpty"`
 	ConnectionLimit int        `json:"connectionLimit"`
 	Fqdn            LBNodeFQDN `json:"fqdn"`
 	Logging         string     `json:"logging"`
 	Monitor         string     `json:"monitor"`
 	RateLimit       string     `json:"rateLimit"`
-	Session         string     `json:"session"`
-	State           string     `json:"state"`
+	Session         string     `json:"session,omitEmpty"`
+	State           string     `json:"state,omitEmpty"`
 }
 
 type LBNodeRef struct {
