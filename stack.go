@@ -140,11 +140,11 @@ func addStack() {
 	err, resp := SendRequest(u, POST, &sessn, &empty, &tres)
 	if err != nil {
 		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
+	} else {
+		log.Printf("%s : transaction %d created\n", resp.HttpResponse().Status, tres.TransId)
 	}
-	printResponse(&tres)
 
 	tid := fmt.Sprintf("%d", tres.TransId)
-	log.Printf("created transaction id: %s\n", tid)
 	// set the transaction header
 	sessn.Header.Set("X-F5-REST-Coordination-Id", tid)
 
@@ -209,15 +209,17 @@ func addStack() {
 
 	}
 
-	// if we made it here - commit the transaction
+	// if we made it here - commit the transaction - remove the transaction header first
+	sessn.Header.Del("X-F5-REST-Coordination-Id")
+
 	u = "https://" + f5Host + "/mgmt/tm/transaction/" + tid
 	body := LBTransaction{State: "VALIDATING"}
 	tres = LBTransaction{}
 	err, resp = SendRequest(u, PATCH, &sessn, &body, &tres)
 	if err != nil {
-		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
+		log.Fatalf("\n%s : %s\n", resp.HttpResponse().Status, err)
 	} else {
-		log.Printf("%s : transaction %d committed\n", resp.HttpResponse().Status, tid)
+		log.Printf("\n%s : transaction %s committed\n", resp.HttpResponse().Status, tid)
 	}
 
 }
@@ -251,7 +253,7 @@ func updateStack() {
 	// set the transaction header
 	sessn.Header.Set("X-F5-REST-Coordination-Id", tid)
 
-	// add nodes
+	// nodes
 	for count, n := range stack.Nodes {
 
 		nres := LBNode{}
@@ -265,13 +267,13 @@ func updateStack() {
 		u := "https://" + f5Host + "/mgmt/tm/ltm/node/" + node
 		err, resp := SendRequest(u, PUT, &sessn, &n, &nres)
 		if err != nil {
-			log.Fatalf("%s : error adding %s : %s\n", resp.HttpResponse().Status, node, err)
+			log.Fatalf("%s : %s : %s\n", resp.HttpResponse().Status, node, err)
 		} else {
-			log.Printf("%s : node[%d] %s added\n", resp.HttpResponse().Status, count, node)
+			log.Printf("%s : node[%d] %s updated\n", resp.HttpResponse().Status, count, nde.FullPath)
 		}
 	}
 
-	// add pool
+	// pool
 	if len(stack.Pool) > 0 {
 
 		pres := LBPool{}
@@ -286,9 +288,9 @@ func updateStack() {
 
 		err, resp := SendRequest(u, PUT, &sessn, &stack.Pool, &pres)
 		if err != nil {
-			log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
+			log.Fatalf("%s : %s : %s\n", resp.HttpResponse().Status, jpool.FullPath, err)
 		} else {
-			log.Printf("%s : pool %s added\n", resp.HttpResponse().Status, pool)
+			log.Printf("%s : pool %s updated\n", resp.HttpResponse().Status, jpool.FullPath)
 		}
 
 	}
@@ -308,22 +310,24 @@ func updateStack() {
 
 		err, resp := SendRequest(u, PUT, &sessn, &stack.Virtual, &vres)
 		if err != nil {
-			log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
+			log.Fatalf("%s : %s : %s\n", resp.HttpResponse().Status, virt.FullPath, err)
 		} else {
-			log.Printf("%s : virtual %s added\n", resp.HttpResponse().Status, virtual)
+			log.Printf("%s : virtual %s updated\n", resp.HttpResponse().Status, virt.FullPath)
 		}
 
 	}
 
 	// if we made it here - commit the transaction
+	sessn.Header.Del("X-F5-REST-Coordination-Id")
+
 	u = "https://" + f5Host + "/mgmt/tm/transaction/" + tid
 	body := LBTransaction{State: "VALIDATING"}
 	tres = LBTransaction{}
 	err, resp = SendRequest(u, PATCH, &sessn, &body, &tres)
 	if err != nil {
-		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
+		log.Fatalf("\n%s : %s\n", resp.HttpResponse().Status, err)
 	} else {
-		log.Printf("%s : transaction %d committed\n", resp.HttpResponse().Status, tid)
+		log.Printf("\n%s : transaction %s committed\n", resp.HttpResponse().Status, tid)
 	}
 
 }
@@ -357,49 +361,7 @@ func deleteStack() {
 	// set the transaction header
 	sessn.Header.Set("X-F5-REST-Coordination-Id", tid)
 
-	// add nodes
-	for count, n := range stack.Nodes {
-
-		nres := LBNode{}
-		nde := LBNode{}
-		if err := json.Unmarshal(n, &nde); err != nil {
-			log.Fatal(err)
-		}
-		log.Printf("\nnode[%d]: %s\n", count, nde.FullPath)
-
-		node := strings.Replace(nde.FullPath, "/", "~", -1)
-		u := "https://" + f5Host + "/mgmt/tm/ltm/node/" + node
-		err, resp := SendRequest(u, DELETE, &sessn, nil, &nres)
-		if err != nil {
-			log.Fatalf("%s : error deleting %s : %s\n", resp.HttpResponse().Status, node, err)
-		} else {
-			log.Printf("%s : node[%d] %s deleted\n", resp.HttpResponse().Status, count, node)
-		}
-	}
-
-	// add pool
-	if len(stack.Pool) > 0 {
-
-		pres := LBPool{}
-		jpool := LBPool{}
-		if err := json.Unmarshal(stack.Pool, &jpool); err != nil {
-			log.Fatal(err)
-		}
-
-		log.Printf("\npool: %s\n", jpool.FullPath)
-		pool := strings.Replace(jpool.FullPath, "/", "~", -1)
-		u := "https://" + f5Host + "/mgmt/tm/ltm/pool/" + pool
-
-		err, resp := SendRequest(u, PUT, &sessn, &stack.Pool, &pres)
-		if err != nil {
-			log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
-		} else {
-			log.Printf("%s : pool %s deleted\n", resp.HttpResponse().Status, pool)
-		}
-
-	}
-
-	// add virtual
+	// virtual
 	if len(stack.Virtual) > 0 {
 
 		vres := LBVirtual{}
@@ -416,20 +378,64 @@ func deleteStack() {
 		if err != nil {
 			log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 		} else {
-			log.Printf("%s : virtual %s deleted\n", resp.HttpResponse().Status, virtual)
+			log.Printf("%s : virtual %s deleted\n", resp.HttpResponse().Status, virt.FullPath)
 		}
 
 	}
 
+	// pool
+	if len(stack.Pool) > 0 {
+
+		pres := LBPool{}
+		jpool := LBPool{}
+		if err := json.Unmarshal(stack.Pool, &jpool); err != nil {
+			log.Fatal(err)
+		}
+
+		log.Printf("\npool: %s\n", jpool.FullPath)
+		pool := strings.Replace(jpool.FullPath, "/", "~", -1)
+		u := "https://" + f5Host + "/mgmt/tm/ltm/pool/" + pool
+
+		err, resp := SendRequest(u, PUT, &sessn, &stack.Pool, &pres)
+		if err != nil {
+			log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
+		} else {
+			log.Printf("%s : pool %s deleted\n", resp.HttpResponse().Status, jpool.FullPath)
+		}
+
+	}
+
+	// nodes
+	for count, n := range stack.Nodes {
+
+		nres := LBNode{}
+		nde := LBNode{}
+		if err := json.Unmarshal(n, &nde); err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("\nnode[%d]: %s\n", count, nde.FullPath)
+
+		node := strings.Replace(nde.FullPath, "/", "~", -1)
+		u := "https://" + f5Host + "/mgmt/tm/ltm/node/" + node
+		err, resp := SendRequest(u, DELETE, &sessn, nil, &nres)
+		if err != nil {
+			log.Fatalf("%s : error deleting %s : %s\n", resp.HttpResponse().Status, node, err)
+		} else {
+			log.Printf("%s : node[%d] %s deleted\n", resp.HttpResponse().Status, count, nde.FullPath)
+		}
+	}
+
 	// if we made it here - commit the transaction
+	sessn.Header.Del("X-F5-REST-Coordination-Id")
+
 	u = "https://" + f5Host + "/mgmt/tm/transaction/" + tid
 	body := LBTransaction{State: "VALIDATING"}
 	tres = LBTransaction{}
 	err, resp = SendRequest(u, PATCH, &sessn, &body, &tres)
 	if err != nil {
-		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
+		log.Fatalf("\n%s : %s\n", resp.HttpResponse().Status, err)
 	} else {
-		log.Printf("%s : transaction %d committed\n", resp.HttpResponse().Status, tid)
+		log.Printf("\n%s : transaction %s committed\n", resp.HttpResponse().Status, tid)
 	}
 
 }
