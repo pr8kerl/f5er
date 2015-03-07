@@ -27,9 +27,8 @@ type LBTransactionState struct {
 }
 
 type LBNodeFQDNUpdate struct {
-	AutoPopulate string `json:"autopopulate"`
-	DownInterval int    `json:"downInterval"`
-	Interval     int    `json:"interval"`
+	DownInterval int `json:"downInterval"`
+	Interval     int `json:"interval"`
 }
 
 type LBNodeUpdate struct {
@@ -91,8 +90,9 @@ func showStack() {
 		err, resp := SendRequest(u, GET, &sessn, nil, &nres)
 		if err != nil {
 			log.Printf("%s : %s\n", resp.HttpResponse().Status, err)
+		} else {
+			printResponse(&nres)
 		}
-		printResponse(&nres)
 	}
 
 	// show pool
@@ -111,8 +111,9 @@ func showStack() {
 		err, resp := SendRequest(u, GET, &sessn, nil, &pres)
 		if err != nil {
 			log.Printf("%s : %s\n", resp.HttpResponse().Status, err)
+		} else {
+			printResponse(&pres)
 		}
-		printResponse(&pres)
 
 	}
 	// show virtual
@@ -132,8 +133,9 @@ func showStack() {
 		err, resp := SendRequest(u, GET, &sessn, nil, &vres)
 		if err != nil {
 			log.Printf("%s : %s\n", resp.HttpResponse().Status, err)
+		} else {
+			printResponse(&vres)
 		}
-		printResponse(&vres)
 
 	}
 
@@ -398,7 +400,7 @@ func deleteStack() {
 		virtual := strings.Replace(virt.FullPath, "/", "~", -1)
 		u := "https://" + f5Host + "/mgmt/tm/ltm/virtual/" + virtual
 
-		err, resp := SendRequest(u, PUT, &sessn, &stack.Virtual, &vres)
+		err, resp := SendRequest(u, DELETE, &sessn, &stack.Virtual, &vres)
 		if err != nil {
 			log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 		} else {
@@ -420,7 +422,7 @@ func deleteStack() {
 		pool := strings.Replace(jpool.FullPath, "/", "~", -1)
 		u := "https://" + f5Host + "/mgmt/tm/ltm/pool/" + pool
 
-		err, resp := SendRequest(u, PUT, &sessn, &stack.Pool, &pres)
+		err, resp := SendRequest(u, DELETE, &sessn, &stack.Pool, &pres)
 		if err != nil {
 			log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 		} else {
@@ -429,7 +431,20 @@ func deleteStack() {
 
 	}
 
-	// nodes
+	// if we made it here - commit the transaction
+	sessn.Header.Del("X-F5-REST-Coordination-Id")
+
+	u = "https://" + f5Host + "/mgmt/tm/transaction/" + tid
+	body := LBTransaction{State: "VALIDATING"}
+	tres = LBTransaction{}
+	err, resp = SendRequest(u, PATCH, &sessn, &body, &tres)
+	if err != nil {
+		log.Fatalf("\n%s : %s\n", resp.HttpResponse().Status, err)
+	} else {
+		log.Printf("\n%s : transaction %s committed\n", resp.HttpResponse().Status, tid)
+	}
+
+	// delete nodes outside of transaction - pools depend on them and won't delete otherwise
 	for count, n := range stack.Nodes {
 
 		nres := LBNode{}
@@ -449,19 +464,6 @@ func deleteStack() {
 		} else {
 			log.Printf("%s : node[%d] %s deleted\n", resp.HttpResponse().Status, count, nde.FullPath)
 		}
-	}
-
-	// if we made it here - commit the transaction
-	sessn.Header.Del("X-F5-REST-Coordination-Id")
-
-	u = "https://" + f5Host + "/mgmt/tm/transaction/" + tid
-	body := LBTransaction{State: "VALIDATING"}
-	tres = LBTransaction{}
-	err, resp = SendRequest(u, PATCH, &sessn, &body, &tres)
-	if err != nil {
-		log.Fatalf("\n%s : %s\n", resp.HttpResponse().Status, err)
-	} else {
-		log.Printf("\n%s : transaction %s committed\n", resp.HttpResponse().Status, tid)
 	}
 
 }

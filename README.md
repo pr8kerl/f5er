@@ -10,7 +10,7 @@ A convenience entity called a **stack** can be used to act upon nodes, their poo
 
 Supports the REST methods GET (show), POST (create), PUT (update) and DELETE (delete).
 
-Most commands will display the response in json as provide by the F5 device. Please note that although the response json may look similar to input json, some json object fields differ. For example, pool members within a pool are displayed within a membersReference object in a response, however members must be defined as an array within the **members** field in a pool object. Also some json object response fields are read-only and cannot be used with an input object (the object supplied in the body of a POST or PUT operation.
+Most commands will display the response in json as provide by the F5 device. Please note that although the response json may look similar to input json, some json object fields differ. For example, pool members within a pool are displayed within a membersReference object in a response, however members must be defined as an array within the **members** array in a pool object. Also some json object response fields are read-only and cannot be used with an input object (the object supplied in the body of a POST or PUT operation.
 
 ## credentials
 
