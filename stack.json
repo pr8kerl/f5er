@@ -34,8 +34,8 @@
     }
   ],
 
-	"pool": {
-	    "name": "example-pool",
+  "pool": {
+      "name": "example-pool",
       "partition": "PARTITION",
       "fullPath": "/PARTITION/example-pool",
       "allowNat": "yes",

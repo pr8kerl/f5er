@@ -19,9 +19,9 @@ The expected file is **f5.json**.
 
 ```
 {
-  				"f5": "192.168.0.100",
-					"username": "admin",
-					"passwd": "admin"
+  "f5": "192.168.0.100",
+  "username": "admin",
+  "passwd": "admin"
 }
 ```
 
@@ -67,6 +67,7 @@ Use "f5er help [command]" for more information about that command.
 ## Device
 
 The following command will display info about the F5 device or cluster. Handy to see which is active/standby.
+Only show is supported for device.
 
 ```
 ./f5er show device
@@ -84,6 +85,29 @@ The following command will display info about the F5 device or cluster. Handy to
 		"managementIP": "192.168.0.101"
 	}
 ]
+```
+
+## Stacks
+
+This is a convenience construct and does not exist within F5 terminology. 
+It effectively allows commands to work on multiple nodes, a single pool and a single virtual server in one operation. It uses a REST transaction to do so.
+Look at the file stack.json to see how to structure the input file.
+Show, add, update and delete operations are supported.
+
+```
+./f5er help add stack
+add a new stack
+
+Usage: 
+  f5er add stack [flags]
+
+ Available Flags:
+  -d, --debug=false: debug output
+  -f, --f5="": IP or hostname of F5 to poke
+  -h, --help=false: help for stack
+  -i, --input="": input json f5 configuration
+
+
 ```
 
 ## Pools
@@ -128,7 +152,7 @@ When pool members are created/modified, the current pool member info is always o
 
 Additionally, pool members can be manually brought online or taken offline.
 
-### take a pool member offline
+### Offline a poolmember
 
 Provide the pool name and pool member. The following will manually mark a pool member offline. Active sessions will continue until they naturally end. This allows connection draining.
 ```
@@ -139,11 +163,11 @@ To take a pool member offline immediately, provide the **--now** command line op
 ```
 f5er offline poolmember --now --pool=/partition/poolname /partition/poolmember:portnumber
 ```
-## Bring a pool member online
+### Bring a pool member online
 
 The opposite to the poolmember offline command
 
-## cross-compile for windows
+# cross-compile for windows
 Use [gox](https://github.com/mitchellh/gox).
 
 * install
@@ -166,7 +190,7 @@ Number of parallel builds: 4
 ```
 
 
-### Saved F5 snippets
+# Saved F5 snippets
 
 These bits are saved here to serve as reminders to commands that could be supported in the future.
 
