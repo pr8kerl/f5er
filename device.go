@@ -61,7 +61,7 @@ func showDevice() {
 	u := "https://" + f5Host + "/mgmt/tm/cm/device"
 	res := LBDeviceRef{}
 
-	err, resp := GetRequest(u, &res)
+	err, resp := SendRequest(u, GET, &sessn, nil, &res)
 	if err != nil {
 		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	}

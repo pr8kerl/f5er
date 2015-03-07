@@ -134,10 +134,10 @@ type LBPools struct {
 
 func showPools() {
 
-	url := "https://" + f5Host + "/mgmt/tm/ltm/pool"
+	u := "https://" + f5Host + "/mgmt/tm/ltm/pool"
 	res := LBPools{}
 
-	err, resp := GetRequest(url, &res)
+	err, resp := SendRequest(u, GET, &sessn, nil, &res)
 	if err != nil {
 		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	}
@@ -155,7 +155,7 @@ func showPool(pname string) {
 	u := "https://" + f5Host + "/mgmt/tm/ltm/pool/" + pool + "?expandSubcollections=true"
 	res := LBPool{}
 
-	err, resp := GetRequest(u, &res)
+	err, resp := SendRequest(u, GET, &sessn, nil, &res)
 	if err != nil {
 		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	}
@@ -184,7 +184,7 @@ func addPool() {
 	}
 
 	// post the request
-	err, resp := PostRequest(u, &body, &res)
+	err, resp := SendRequest(u, POST, &sessn, &body, &res)
 	if err != nil {
 		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	}
@@ -212,7 +212,7 @@ func updatePool(pname string) {
 	}
 
 	// put the request
-	err, resp := PutRequest(u, &body, &res)
+	err, resp := SendRequest(u, PUT, &sessn, &body, &res)
 	if err != nil {
 		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	}
@@ -224,9 +224,9 @@ func deletePool(pname string) {
 
 	pool := strings.Replace(pname, "/", "~", -1)
 	u := "https://" + f5Host + "/mgmt/tm/ltm/pool/" + pool
-	result := json.RawMessage{}
+	res := json.RawMessage{}
 
-	err, resp := DeleteRequest(u, &result)
+	err, resp := SendRequest(u, DELETE, &sessn, nil, &res)
 	if err != nil {
 		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	} else {
@@ -242,7 +242,7 @@ func showPoolMembers(pname string) {
 	u := "https://" + f5Host + "/mgmt/tm/ltm/pool/" + pool + "/members"
 	res := LBPoolMembers{}
 
-	err, resp := GetRequest(u, &res)
+	err, resp := SendRequest(u, GET, &sessn, nil, &res)
 	if err != nil {
 		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	}
@@ -272,7 +272,7 @@ func addPoolMembers(pname string) {
 	}
 
 	// post the request
-	err, resp := PostRequest(u, &body, &res)
+	err, resp := SendRequest(u, POST, &sessn, &body, &res)
 	if err != nil {
 		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	}
@@ -300,7 +300,7 @@ func updatePoolMembers(pname string) {
 	}
 
 	// put the request
-	err, resp := PutRequest(u, &body, &res)
+	err, resp := SendRequest(u, PUT, &sessn, &body, &res)
 	if err != nil {
 		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	}
@@ -312,9 +312,9 @@ func deletePoolMembers(pname string) {
 
 	pool := strings.Replace(pname, "/", "~", -1)
 	u := "https://" + f5Host + "/mgmt/tm/ltm/pool/" + pool + "/members"
-	result := json.RawMessage{}
+	res := json.RawMessage{}
 
-	err, resp := DeleteRequest(u, &result)
+	err, resp := SendRequest(u, DELETE, &sessn, nil, &res)
 	if err != nil {
 		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	} else {
@@ -337,7 +337,7 @@ func onlinePoolMember(mname string) {
 	body := MemberState{"user-up", "user-enabled"}
 
 	// put the request
-	err, resp := PutRequest(u, &body, &res)
+	err, resp := SendRequest(u, PUT, &sessn, &body, &res)
 	if err != nil {
 		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	} else {
@@ -367,7 +367,7 @@ func offlinePoolMember(mname string) {
 	}
 
 	// put the request
-	err, resp := PutRequest(u, &body, &res)
+	err, resp := SendRequest(u, PUT, &sessn, &body, &res)
 	if err != nil {
 		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	} else {

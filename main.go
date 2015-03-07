@@ -1,15 +1,11 @@
 package main
 
 import (
-	"crypto/tls"
-	"errors"
 	"fmt"
-	//	"github.com/kr/pretty"
 	"github.com/jmcvetta/napping"
 	"github.com/spf13/viper"
 	"log"
 	"net/http"
-	"net/url"
 )
 
 var (
@@ -92,153 +88,6 @@ func checkRequiredFlag(flg string) {
 	if !viper.IsSet(flg) {
 		log.SetFlags(0)
 		log.Fatalf("\nerror: missing required option --%s\n\n", flg)
-	}
-}
-
-func bail(msg string) {
-	log.SetFlags(0)
-	log.Fatalf("\n%s\n\n", msg)
-}
-
-func GetRequest(u string, res interface{}) (error, *napping.Response) {
-
-	// REST connection setup
-	transport = &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
-	client = &http.Client{Transport: transport}
-	//
-	// Setup HTTP Basic auth for this session (ONLY use this with SSL).  Auth
-	// can also be configured on a per-request basis when using Send().
-	//
-	session = napping.Session{
-		Client:   client,
-		Log:      debug,
-		Userinfo: url.UserPassword(username, passwd),
-	}
-	//
-	// Send request to server
-	//
-	e := httperr{}
-	resp, err := session.Get(u, nil, &res, &e)
-	if err != nil {
-		return err, resp
-	}
-	if resp.Status() == 401 {
-		return errors.New("unauthorised - check your username and passwd"), resp
-	}
-	if resp.Status() >= 300 {
-		return errors.New(e.Message), resp
-	} else {
-
-		// all is good in the world
-		return nil, resp
-	}
-}
-
-func DeleteRequest(u string, res interface{}) (error, *napping.Response) {
-
-	// REST connection setup
-	transport = &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
-	client = &http.Client{Transport: transport}
-	//
-	// Setup HTTP Basic auth for this session (ONLY use this with SSL).  Auth
-	// can also be configured on a per-request basis when using Send().
-	//
-	session = napping.Session{
-		Client:   client,
-		Log:      debug,
-		Userinfo: url.UserPassword(username, passwd),
-	}
-	//
-	// Send request to server
-	//
-	e := httperr{}
-	resp, err := session.Delete(u, &res, &e)
-	if err != nil {
-		return err, resp
-	}
-	if resp.Status() == 401 {
-		return errors.New("unauthorised - check your username and passwd"), resp
-	}
-	if resp.Status() >= 300 {
-		return errors.New(e.Message), resp
-	} else {
-		// all is good in the world
-		return nil, resp
-	}
-}
-
-func PostRequest(u string, pload interface{}, res interface{}) (error, *napping.Response) {
-
-	// REST connection setup
-	transport = &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
-	client = &http.Client{Transport: transport}
-	//
-	// Setup HTTP Basic auth for this session (ONLY use this with SSL).  Auth
-	// can also be configured on a per-request basis when using Send().
-	//
-	session = napping.Session{
-		Client:   client,
-		Log:      debug,
-		Userinfo: url.UserPassword(username, passwd),
-	}
-	//
-	// Send request to server
-	//
-	e := httperr{}
-	resp, err := session.Post(u, &pload, &res, &e)
-	if err != nil {
-		return err, resp
-	}
-	if resp.Status() == 401 {
-		return errors.New("unauthorised - check your username and passwd"), resp
-	}
-	if resp.Status() >= 300 {
-		return errors.New(e.Message), resp
-	} else {
-
-		// all is good in the world
-		return nil, resp
-	}
-}
-
-func PutRequest(u string, pload interface{}, res interface{}) (error, *napping.Response) {
-
-	// REST connection setup
-	transport = &http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-	}
-	client = &http.Client{Transport: transport}
-	//
-	// Setup HTTP Basic auth for this session (ONLY use this with SSL).  Auth
-	// can also be configured on a per-request basis when using Send().
-	//
-	session = napping.Session{
-		Client:   client,
-		Log:      debug,
-		Userinfo: url.UserPassword(username, passwd),
-	}
-	//
-	// Send request to server
-	//
-	e := httperr{}
-	resp, err := session.Put(u, &pload, &res, &e)
-	if err != nil {
-		return err, resp
-	}
-	if resp.Status() == 401 {
-		return errors.New("unauthorised - check your username and passwd"), resp
-	}
-	if resp.Status() >= 300 {
-		return errors.New(e.Message), resp
-	} else {
-		// all is good in the world
-		return nil, resp
 	}
 }
 

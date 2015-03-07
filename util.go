@@ -208,3 +208,8 @@ func printResponse(input interface{}) {
 	fmt.Println(string(jsonresp))
 
 }
+
+func bail(msg string) {
+	log.SetFlags(0)
+	log.Fatalf("\n%s\n\n", msg)
+}

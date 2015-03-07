@@ -445,7 +445,7 @@ func show() {
 	u := "https://" + f5Host + "/mgmt/tm/ltm"
 	res := LBModules{}
 
-	err, resp := GetRequest(u, &res)
+	err, resp := SendRequest(u, GET, &sessn, nil, &res)
 	if err != nil {
 		log.Fatalf("%d: %s\n", resp.Status(), err)
 	}

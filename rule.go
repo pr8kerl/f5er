@@ -64,10 +64,10 @@ type LBRules struct {
 
 func showRules() {
 
-	url := "https://" + f5Host + "/mgmt/tm/ltm/rule"
+	u := "https://" + f5Host + "/mgmt/tm/ltm/rule"
 	res := LBRules{}
 
-	err, resp := GetRequest(url, &res)
+	err, resp := SendRequest(u, GET, &sessn, nil, &res)
 	if err != nil {
 		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	}
@@ -83,7 +83,7 @@ func showRule(rname string) {
 	u := "https://" + f5Host + "/mgmt/tm/ltm/rule/" + rule
 	res := LBRule{}
 
-	err, resp := GetRequest(u, &res)
+	err, resp := SendRequest(u, GET, &sessn, nil, &res)
 	if err != nil {
 		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	}
@@ -112,7 +112,7 @@ func addRule() {
 	}
 
 	// post the request
-	err, resp := PostRequest(u, &body, &res)
+	err, resp := SendRequest(u, POST, &sessn, &body, &res)
 	if err != nil {
 		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	}
@@ -139,7 +139,7 @@ func updateRule(rname string) {
 	}
 
 	// put the request
-	err, resp := PutRequest(u, &body, &res)
+	err, resp := SendRequest(u, PUT, &sessn, &body, &res)
 	if err != nil {
 		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	}
@@ -150,9 +150,9 @@ func deleteRule(rname string) {
 
 	rule := strings.Replace(rname, "/", "~", -1)
 	u := "https://" + f5Host + "/mgmt/tm/ltm/rule/" + rule
-	result := json.RawMessage{}
+	res := json.RawMessage{}
 
-	err, resp := DeleteRequest(u, &result)
+	err, resp := SendRequest(u, DELETE, &sessn, nil, &res)
 	if err != nil {
 		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	} else {

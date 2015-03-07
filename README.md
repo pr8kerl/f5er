@@ -19,11 +19,9 @@ The expected file is **f5.json**.
 
 ```
 {
-	"credentials": {
   				"f5": "192.168.0.100",
 					"username": "admin",
 					"passwd": "admin"
-	}
 }
 ```
 
@@ -32,7 +30,7 @@ The expected file is **f5.json**.
 Use the help command to display hints and available subcommands
 
 ```
-./f5er help show
+f5er help show
 show current state of F5 objects. Show requires an object, eg. f5er show pool
 
 Usage: 
@@ -66,7 +64,31 @@ Additional help topics:
 Use "f5er help [command]" for more information about that command.
 ```
 
+## Device
+
+The following command will display info about the F5 device or cluster. Handy to see which is active/standby.
+
+```
+./f5er show device
+[
+	{
+		"name": "bigip-1.example.com",
+		"fullPath": "/Common/bigip-1.example.com",
+		"failoverState": "standby",
+		"managementIP": "192.168.0.100"
+	},
+	{
+		"name": "bigip-2.example.com",
+		"fullPath": "/Common/bigip-2.example.com",
+		"failoverState": "active",
+		"managementIP": "192.168.0.101"
+	}
+]
+```
+
 ## Pools
+
+Show, add, delete and update a single pool.
 
 ### Show pools
 
@@ -95,7 +117,7 @@ You can modify the config of an existing pool, including the pool members.
 Again, provide a json input file with the updated configuration
 
 ```
-f5er update pool --input 
+f5er update pool --input=pool.json
 ```
 
 

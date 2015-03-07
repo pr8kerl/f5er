@@ -68,10 +68,10 @@ type LBNodes struct {
 
 func showNodes() {
 
-	url := "https://" + f5Host + "/mgmt/tm/ltm/node"
+	u := "https://" + f5Host + "/mgmt/tm/ltm/node"
 	res := LBNodes{}
 
-	err, resp := GetRequest(url, &res)
+	err, resp := SendRequest(u, GET, &sessn, nil, &res)
 	if err != nil {
 		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	}
@@ -89,7 +89,7 @@ func showNode(nname string) {
 	u := "https://" + f5Host + "/mgmt/tm/ltm/node/" + node
 	res := LBNode{}
 
-	err, resp := GetRequest(u, &res)
+	err, resp := SendRequest(u, GET, &sessn, nil, &res)
 	if err != nil {
 		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	}
@@ -118,7 +118,7 @@ func addNode() {
 	}
 
 	// post the request
-	err, resp := PostRequest(u, &body, &res)
+	err, resp := SendRequest(u, POST, &sessn, &body, &res)
 	if err != nil {
 		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	}
@@ -145,7 +145,7 @@ func updateNode(nname string) {
 	}
 
 	// put the request
-	err, resp := PutRequest(u, &body, &res)
+	err, resp := SendRequest(u, PUT, &sessn, &body, &res)
 	if err != nil {
 		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	}
@@ -157,9 +157,9 @@ func deleteNode(nname string) {
 	//u := "https://" + f5Host + "/mgmt/tm/ltm/pool/~" + partition + "~" + pname + "?expandSubcollections=true"
 	node := strings.Replace(nname, "/", "~", -1)
 	u := "https://" + f5Host + "/mgmt/tm/ltm/node/" + node
-	result := json.RawMessage{}
+	res := json.RawMessage{}
 
-	err, resp := DeleteRequest(u, &result)
+	err, resp := SendRequest(u, DELETE, &sessn, nil, &res)
 	if err != nil {
 		log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 	} else {
