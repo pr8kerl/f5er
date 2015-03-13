@@ -32,7 +32,6 @@ func InitialiseConfig() {
 	if err != nil {
 		fmt.Printf("Can't find your config file: %s\n", cfgFile)
 	}
-	viper.AutomaticEnv()
 
 	viper.BindPFlag("f5", f5Cmd.PersistentFlags().Lookup("f5"))
 	viper.BindPFlag("debug", f5Cmd.PersistentFlags().Lookup("debug"))
