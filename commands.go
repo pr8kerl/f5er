@@ -280,6 +280,59 @@ var deleteVirtualCmd = &cobra.Command{
 	},
 }
 
+var showPolicyCmd = &cobra.Command{
+	Use:   "policy",
+	Short: "show a policy",
+	Long:  "show the current state of a policy",
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) < 1 {
+			showPolicies()
+		} else {
+			name := args[0]
+			showPolicy(name)
+		}
+	},
+}
+
+var addPolicyCmd = &cobra.Command{
+	Use:   "policy",
+	Short: "add a policy",
+	Long:  "add a new policy",
+	Run: func(cmd *cobra.Command, args []string) {
+		checkRequiredFlag("input")
+		addPolicy()
+	},
+}
+
+var updatePolicyCmd = &cobra.Command{
+	Use:   "policy",
+	Short: "update a policy",
+	Long:  "update an existing F5 policy",
+	Run: func(cmd *cobra.Command, args []string) {
+		checkRequiredFlag("input")
+		if len(args) < 1 {
+			log.Fatal("update policy requires a policy name as an argument (ie /partition/policy )")
+		} else {
+			name := args[0]
+			updatePolicy(name)
+		}
+	},
+}
+
+var deletePolicyCmd = &cobra.Command{
+	Use:   "policy",
+	Short: "delete a policy",
+	Long:  "delete a policy",
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) < 1 {
+			log.Fatal("delete policy requires a policy name as an argument (ie /partition/policy )")
+		} else {
+			name := args[0]
+			deletePolicy(name)
+		}
+	},
+}
+
 var showNodeCmd = &cobra.Command{
 	Use:   "node",
 	Short: "show a node",

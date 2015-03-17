@@ -167,17 +167,18 @@ f5er offline poolmember --now --pool=/partition/poolname /partition/poolmember:p
 
 The opposite to the poolmember offline command
 
-# cross-compile for windows
+# cross-compile 
+
 Use [gox](https://github.com/mitchellh/gox).
 
-* install
+* install gox
 ```
 go get github.com/mitchellh/gox
 ```
 
-* compile cross-compilation build chain
+* compile cross-compilation build chain for windows 32/64 bit
 ```
-gox -build-toolchain
+gox -build-toolchain -os="windows"
 ```
 
 * create windows binaries
