@@ -46,9 +46,19 @@ import (
 		"vsIndex": 145,
 
 	"policiesReference": {
-		"link": "https://localhost/mgmt/tm/ltm/virtual/~DMZ~secpdv.gem.myob.com_443_vs/policies?ver=11.6.0",
+        "link":"https://localhost/mgmt/tm/ltm/virtual/~DMZ-Legacy~audmzisa-sit.store.myob.com.au_443_vs/policies?ver=11.6.0",
 		"isSubcollection": true
-	},
+        "items":[
+          {
+            "kind":"tm:ltm:virtual:policies:policiesstate",
+            "name":"SNAT_VLAN8_Nodes",
+            "partition":"DMZ-Legacy",
+            "fullPath":"/DMZ-Legacy/SNAT_VLAN8_Nodes",
+            "generation":1,
+            "selfLink":"https://localhost/mgmt/tm/ltm/virtual/~DMZ-Legacy~audmzisa-sit.store.myob.com.au_443_vs/policies/~DMZ- Legacy~SNAT_VLAN8_Nodes?ver=11.6.0"
+          }
+        ]
+    },
     "profilesReference": {
         "link": "https://localhost/mgmt/tm/ltm/virtual/~DMZ~audmzagw-sit-bettacart-443-vs/profiles?ver=11.6.0",
         "isSubcollection": true,
@@ -79,6 +89,16 @@ import (
 	}
 */
 
+type LBVirtualPolicy struct {
+	Name      string `json:"name"`
+	Partition string `json:"partition"`
+	FullPath  string `json:"fullPath"`
+}
+
+type LBVirtualPoliciesRef struct {
+	Items []LBVirtualPolicy `json":items"`
+}
+
 type LBVirtualProfile struct {
 	Name      string `json:"name"`
 	Partition string `json:"partition"`
@@ -91,23 +111,24 @@ type LBVirtualProfileRef struct {
 }
 
 type LBVirtual struct {
-	Name             string              `json:"name"`
-	FullPath         string              `json:"fullPath"`
-	Partition        string              `json:"partition"`
-	Destination      string              `json:"destination"`
-	Pool             string              `json:"pool"`
-	AddressStatus    string              `json:"addressStatus"`
-	AutoLastHop      string              `json:"autoLasthop"`
-	CmpEnabled       string              `json:"cmpEnabled"`
-	ConnectionLimit  int                 `json:"connectionLimit"`
-	Enabled          bool                `json:"enabled"`
-	IpProtocol       string              `json:"ipProtocol"`
-	Source           string              `json:"source"`
-	SourcePort       string              `json:"sourcePort"`
-	SynCookieStatus  string              `json:"synCookieStatus"`
-	TranslateAddress string              `json:"translateAddress"`
-	TranslatePort    string              `json:"translatePort"`
-	Profiles         LBVirtualProfileRef `json:"profilesReference"`
+	Name             string               `json:"name"`
+	FullPath         string               `json:"fullPath"`
+	Partition        string               `json:"partition"`
+	Destination      string               `json:"destination"`
+	Pool             string               `json:"pool"`
+	AddressStatus    string               `json:"addressStatus"`
+	AutoLastHop      string               `json:"autoLasthop"`
+	CmpEnabled       string               `json:"cmpEnabled"`
+	ConnectionLimit  int                  `json:"connectionLimit"`
+	Enabled          bool                 `json:"enabled"`
+	IpProtocol       string               `json:"ipProtocol"`
+	Source           string               `json:"source"`
+	SourcePort       string               `json:"sourcePort"`
+	SynCookieStatus  string               `json:"synCookieStatus"`
+	TranslateAddress string               `json:"translateAddress"`
+	TranslatePort    string               `json:"translatePort"`
+	Profiles         LBVirtualProfileRef  `json:"profilesReference"`
+	Policies         LBVirtualPoliciesRef `json:"policiesReference"`
 }
 
 type LBVirtuals struct {
