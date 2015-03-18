@@ -9,32 +9,6 @@ import (
 	"log"
 )
 
-/*
-	{
-		"kind": "tm:ltm:pool:members:membersstate",
-		"name": "audmzbilltweb04-pdv:443",
-		"partition": "DMZ",
-		"fullPath": "/DMZ/audmzbilltweb04-pdv:443",
-		"generation": 1,
-		"selfLink": "https://localhost/mgmt/tm/ltm/pool/~DMZ~audmzbilltweb-pdv_443_pool/members/~DMZ~audmzbilltweb04-pdv:443?ver=11.6.0",
-		"address": "10.60.61.214%6",
-		"connectionLimit": 0,
-		"dynamicRatio": 1,
-		"ephemeral": "false",
-		"fqdn": {
-			"autopopulate": "disabled"
-		},
-		"inheritProfile": "enabled",
-		"logging": "disabled",
-		"monitor": "default",
-		"priorityGroup": 0,
-		"rateLimit": "disabled",
-		"ratio": 1,
-		"session": "monitor-enabled",
-		"state": "up"
-	}
-
-*/
 // a pool member
 type LBPoolMember struct {
 	Name            string `json:"name"`

@@ -9,32 +9,6 @@ import (
 	"log"
 )
 
-/*
-{
-				  "kind":"tm:ltm:node:nodecollectionstate",
-					"selfLink":"https://localhost/mgmt/tm/ltm/node?ver=11.6.0",
-					"items":[
-					  {
-                    "kind":"tm:ltm:node:nodestate",
-										"name":"audmzagw03-audmzapi",
-										"partition":"DMZ-Legacy",
-										"fullPath":"/DMZ-Legacy/audmzagw03-audmzapi",
-										"generation":1,
-										"selfLink":"https://localhost/mgmt/tm/ltm/node/~DMZ-Legacy~audmzagw03-audmzapi?ver=11.6.0",
-										"address":"10.60.8.147%5",
-										"connectionLimit":0,
-										"dynamicRatio":1,
-										"ephemeral":"false",
-										"fqdn":{"addressFamily":"ipv4","autopopulate":"disabled","downInterval":5,"interval":3600},
-										"logging":"disabled",
-										"monitor":"default",
-										"rateLimit":"disabled",
-										"ratio":1,
-										"session":"user-enabled",
-										"state":"unchecked"
-						},
-*/
-
 type LBNodeFQDN struct {
 	AddressFamily string `json:"addressFamily"`
 	AutoPopulate  string `json:"autopopulate"`

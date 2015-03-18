@@ -9,41 +9,6 @@ import (
 	"log"
 )
 
-/*
-{
-  "kind":"tm:ltm:rule:rulecollectionstate",
-  "selfLink":"https://localhost/mgmt/tm/ltm/rule?ver=11.6.0",
-  "items":[
-       {
-          "kind":"tm:ltm:rule:rulestate",
-          "name":"HTTP_to_HTTPS_redirect_301",
-          "partition":"Common",
-          "fullPath":"/Common/HTTP_to_HTTPS_redirect_301",
-          "generation":1,
-          "selfLink":"https://localhost/mgmt/tm/ltm/rule/~Common~HTTP_to_HTTPS_redirect_301?ver=11.6.0",
-          "apiAnonymous":"when HTTP_REQUEST {\n  HTTP::respond 301 Location \"https://[getfield [HTTP::host] : 1][HTTP::uri]\"\n}"
-       },
-       {
-          "kind":"tm:ltm:rule:rulestate",
-          "name":"_sys_APM_ExchangeSupport_OA_BasicAuth",
-          "partition":"Common",
-          "fullPath":"/Common/_sys_APM_ExchangeSupport_OA_BasicAuth",
-          "generation":1,
-          "selfLink":"https://localhost/mgmt/tm/ltm/rule/~Common~_sys_APM_ExchangeSupport_OA_BasicAuth?ver=11.6.0",
-          "apiAnonymous":"nodelete nowrite \n  bla - lots removed  ",
-          "apiRawValues":{"verificationStatus":"signature-verified"}
-       },
-       {
-          "kind":"tm:ltm:rule:rulestate",
-          "name":"HTTP_to_HTTPS_redirect_301",
-          "partition":"DMZ-Legacy",
-          "fullPath":"/DMZ-Legacy/HTTP_to_HTTPS_redirect_301",
-          "generation":1,
-          "selfLink":"https://localhost/mgmt/tm/ltm/rule/~DMZ-Legacy~HTTP_to_HTTPS_redirect_301?ver=11.6.0",
-          "apiAnonymous":"when HTTP_REQUEST {\n  HTTP::respond 301 Location \"https://[getfield [HTTP::host] : 1][HTTP::uri]\"\n}"}
-  ]
-}
-*/
 
 type LBRawValues struct {
 	VerificationStatus string `json:"verificationStatus"`
