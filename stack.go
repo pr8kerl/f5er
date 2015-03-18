@@ -9,9 +9,9 @@ import (
 )
 
 type LBStack struct {
-	Nodes   []json.RawMessage `json:"nodes"`
-	Pool    json.RawMessage   `json:"pool"`
-	Virtual json.RawMessage   `json:"virtual"`
+	Nodes    []json.RawMessage `json:"nodes"`
+	Pool     json.RawMessage   `json:"pool"`
+	Virtuals []json.RawMessage `json:"virtuals"`
 }
 
 type LBTransaction struct {
@@ -117,15 +117,15 @@ func showStack() {
 
 	}
 	// show virtual
-	if len(stack.Virtual) > 0 {
+	for count, v := range stack.Virtuals {
 
 		vres := LBVirtual{}
 		virt := LBVirtual{}
-		if err := json.Unmarshal(stack.Virtual, &virt); err != nil {
+		if err := json.Unmarshal(v, &virt); err != nil {
 			log.Fatal(err)
 		}
 
-		log.Printf("\nvirtual: %s\n", virt.FullPath)
+		log.Printf("\nvirtual[%d]: %s\n", count, virt.FullPath)
 		virtual := strings.Replace(virt.FullPath, "/", "~", -1)
 		u := "https://" + f5Host + "/mgmt/tm/ltm/virtual/" + virtual + "?expandSubcollections=true"
 
@@ -214,18 +214,18 @@ func addStack() {
 	}
 
 	// add virtual
-	if len(stack.Virtual) > 0 {
+	for count, v := range stack.Virtuals {
 
 		vres := LBVirtual{}
 		virt := LBVirtual{}
-		if err := json.Unmarshal(stack.Virtual, &virt); err != nil {
+		if err := json.Unmarshal(v, &virt); err != nil {
 			log.Fatal(err)
 		}
 
-		log.Printf("\nvirtual: %s\n", virt.FullPath)
+		log.Printf("\nvirtual[%d]: %s\n", count, virt.FullPath)
 		u := "https://" + f5Host + "/mgmt/tm/ltm/virtual"
 
-		err, resp := SendRequest(u, POST, &sessn, &stack.Virtual, &vres)
+		err, resp := SendRequest(u, POST, &sessn, &v, &vres)
 		if err != nil {
 			log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 		} else {
@@ -323,19 +323,19 @@ func updateStack() {
 	}
 
 	// add virtual
-	if len(stack.Virtual) > 0 {
+	for count, v := range stack.Virtuals {
 
 		vres := LBVirtual{}
 		virt := LBVirtual{}
-		if err := json.Unmarshal(stack.Virtual, &virt); err != nil {
+		if err := json.Unmarshal(v, &virt); err != nil {
 			log.Fatal(err)
 		}
 
-		log.Printf("\nvirtual: %s\n", virt.FullPath)
+		log.Printf("\nvirtual[%d]: %s\n", count, virt.FullPath)
 		virtual := strings.Replace(virt.FullPath, "/", "~", -1)
 		u := "https://" + f5Host + "/mgmt/tm/ltm/virtual/" + virtual
 
-		err, resp := SendRequest(u, PUT, &sessn, &stack.Virtual, &vres)
+		err, resp := SendRequest(u, PUT, &sessn, &v, &vres)
 		if err != nil {
 			log.Fatalf("%s : %s : %s\n", resp.HttpResponse().Status, virt.FullPath, err)
 		} else {
@@ -388,19 +388,19 @@ func deleteStack() {
 	sessn.Header.Set("X-F5-REST-Coordination-Id", tid)
 
 	// virtual
-	if len(stack.Virtual) > 0 {
+	for count, v := range stack.Virtuals {
 
 		vres := LBVirtual{}
 		virt := LBVirtual{}
-		if err := json.Unmarshal(stack.Virtual, &virt); err != nil {
+		if err := json.Unmarshal(v, &virt); err != nil {
 			log.Fatal(err)
 		}
 
-		log.Printf("\nvirtual: %s\n", virt.FullPath)
+		log.Printf("\nvirtual[%d]: %s\n", count, virt.FullPath)
 		virtual := strings.Replace(virt.FullPath, "/", "~", -1)
 		u := "https://" + f5Host + "/mgmt/tm/ltm/virtual/" + virtual
 
-		err, resp := SendRequest(u, DELETE, &sessn, &stack.Virtual, &vres)
+		err, resp := SendRequest(u, DELETE, &sessn, &v, &vres)
 		if err != nil {
 			log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 		} else {

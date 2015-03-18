@@ -108,6 +108,7 @@ func init() {
 	showCmd.AddCommand(showPolicyCmd)
 	showCmd.AddCommand(showDeviceCmd)
 	showCmd.AddCommand(showRuleCmd)
+	showCmd.AddCommand(showClientSslCmd)
 	showCmd.AddCommand(showStackCmd)
 
 	// add
@@ -118,6 +119,7 @@ func init() {
 	addCmd.AddCommand(addPolicyCmd)
 	addCmd.AddCommand(addVirtualCmd)
 	addCmd.AddCommand(addRuleCmd)
+	addCmd.AddCommand(addClientSslCmd)
 	addCmd.AddCommand(addStackCmd)
 
 	// update
@@ -128,6 +130,7 @@ func init() {
 	updateCmd.AddCommand(updatePolicyCmd)
 	updateCmd.AddCommand(updateVirtualCmd)
 	updateCmd.AddCommand(updateRuleCmd)
+	updateCmd.AddCommand(updateClientSslCmd)
 	updateCmd.AddCommand(updateStackCmd)
 
 	// delete
@@ -138,6 +141,7 @@ func init() {
 	deleteCmd.AddCommand(deletePolicyCmd)
 	deleteCmd.AddCommand(deleteVirtualCmd)
 	deleteCmd.AddCommand(deleteRuleCmd)
+	deleteCmd.AddCommand(deleteClientSslCmd)
 	deleteCmd.AddCommand(deleteStackCmd)
 
 	// offline
