@@ -230,18 +230,29 @@ curl -sk -u admin:admin -H "Content-Type: application/json" -X GET https://x.x.x
 ```
 
 #### config sync
+
 ```
 curl -sk -u admin:admin -H "Content-Type: application/json" -X POST -d '{"command":"run","utilCmdArgs":"config-sync to-group pair-group-name"}' https://x.x.x.x/mgmt/tm/cm
 ```
 
 ### show pool member stats
+
 ```
 curl -sk -u admin:admin -H "Content-Type: application/json" https://x.x.x.x/mgmt/tm/ltm/pool/~DMZ~audmzbilltweb-sit_443_pool/members/stats
 ```
 
 ### show partitions
+
 ```
 curl -sk -u admin:admin -H "Content-Type: application/json" https://x.x.x.x/mgmt/tm/sys/folder
+```
+
+### certificates/keys etc
+
+```
+curl -sk -u admin:admin -H "Content-Type: application/json" https://x.x.x.x/mgmt/tm/sys/crypto/
+curl -sk -u admin:admin -H "Content-Type: application/json" https://x.x.x.x/mgmt/tm/sys/crypto/cert
+curl -sk -u admin:admin -H "Content-Type: application/json" https://x.x.x.x/mgmt/tm/sys/crypto/key
 ```
 
 ### pool member status

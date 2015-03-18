@@ -158,7 +158,7 @@ func addVirtual() {
 		log.Fatal(err)
 	}
 
-	// convert json to a node struct
+	// convert json to a virtual struct
 	err = json.Unmarshal(dat, &body)
 	if err != nil {
 		log.Fatal(err)
@@ -185,7 +185,7 @@ func updateVirtual(vname string) {
 		log.Fatal(err)
 	}
 
-	// convert json to a node struct
+	// convert json to a virtual struct
 	err = json.Unmarshal(dat, &body)
 	if err != nil {
 		log.Fatal(err)
@@ -202,7 +202,7 @@ func updateVirtual(vname string) {
 func deleteVirtual(vname string) {
 
 	vname = strings.Replace(vname, "/", "~", -1)
-	u := "https://" + f5Host + "/mgmt/tm/ltm/node/" + vname
+	u := "https://" + f5Host + "/mgmt/tm/ltm/virtual/" + vname
 	res := json.RawMessage{}
 
 	err, resp := SendRequest(u, DELETE, &sessn, nil, &res)
