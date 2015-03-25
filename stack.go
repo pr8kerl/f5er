@@ -52,7 +52,6 @@ type LBNodeUpdate struct {
 "selfLink":"https://localhost/mgmt/tm/transaction/1389812351?ver=11.5.0"
 }
 
- func SendRequest(u string, method int, sess *napping.Session, pload interface{}, res interface{}) (error, *napping.Response) {
 */
 
 func showStack() {
@@ -64,13 +63,13 @@ func showStack() {
 	// read in json file
 	dat, err := ioutil.ReadFile(f5Input)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("error reading input json file: %s\n", err)
 	}
 
 	// convert json to a stack struct
 	err = json.Unmarshal(dat, &stack)
 	if err != nil {
-		log.Fatal(err)
+		log.Fatalf("error unmarshaling input json file into a stack: %s\n", err)
 	}
 
 	// show nodes

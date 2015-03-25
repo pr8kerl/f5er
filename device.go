@@ -16,7 +16,6 @@ type LBDeviceState struct {
 	ManagementIP  string `json:"managementIP"`
 }
 
-
 func showDevice() {
 
 	u := "https://" + f5Host + "/mgmt/tm/cm/device"

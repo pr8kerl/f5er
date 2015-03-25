@@ -9,7 +9,6 @@ import (
 	"log"
 )
 
-
 type LBRawValues struct {
 	VerificationStatus string `json:"verificationStatus"`
 }

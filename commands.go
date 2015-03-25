@@ -492,6 +492,59 @@ var deleteClientSslCmd = &cobra.Command{
 	},
 }
 
+var showMonitorHttpCmd = &cobra.Command{
+	Use:   "monitor-http",
+	Short: "show a monitor-http profile",
+	Long:  "show the details of a monitor-http profile",
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) < 1 {
+			showMonitorsHttp()
+		} else {
+			name := args[0]
+			showMonitorHttp(name)
+		}
+	},
+}
+
+var addMonitorHttpCmd = &cobra.Command{
+	Use:   "monitor-http",
+	Short: "add a monitor-http profile",
+	Long:  "add a new monitor-http profile",
+	Run: func(cmd *cobra.Command, args []string) {
+		checkRequiredFlag("input")
+		addMonitorHttp()
+	},
+}
+
+var updateMonitorHttpCmd = &cobra.Command{
+	Use:   "monitor-http",
+	Short: "update a monitor-http profile",
+	Long:  "update an existing F5 monitor-http profile",
+	Run: func(cmd *cobra.Command, args []string) {
+		checkRequiredFlag("input")
+		if len(args) < 1 {
+			log.Fatal("update monitor-http requires a monitor-http profile name as an argument (ie /partition/monitorname )")
+		} else {
+			name := args[0]
+			updateMonitorHttp(name)
+		}
+	},
+}
+
+var deleteMonitorHttpCmd = &cobra.Command{
+	Use:   "monitor-http",
+	Short: "delete a monitor-http profile",
+	Long:  "delete a rule",
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) < 1 {
+			log.Fatal("delete monitor-http requires a monitor-http profile name as an argument (ie /partition/profilename )")
+		} else {
+			name := args[0]
+			deleteMonitorHttp(name)
+		}
+	},
+}
+
 var showStackCmd = &cobra.Command{
 	Use:   "stack",
 	Short: "show a stack transaction",

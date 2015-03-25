@@ -9,7 +9,6 @@ import (
 	//	"github.com/kr/pretty"
 )
 
-
 type LBVirtualPolicy struct {
 	Name      string `json:"name"`
 	Partition string `json:"partition"`

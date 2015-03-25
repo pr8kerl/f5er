@@ -9,7 +9,7 @@ all: f5er
 update: $(DEPS)
 	GOPATH=$(GOPATH) go get -u $^
 
-f5er: main.go util.go commands.go pool.go virtual.go node.go device.go rule.go stack.go policy.go client-ssl.go
+f5er: main.go util.go commands.go pool.go virtual.go node.go device.go rule.go stack.go policy.go client-ssl.go monitor-http.go
     # always format code
 		GOPATH=$(GOPATH) go fmt $^
     # binary

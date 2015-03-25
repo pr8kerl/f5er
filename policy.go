@@ -9,7 +9,6 @@ import (
 	"log"
 )
 
-
 type LBPolicyConditions struct {
 	Name            string   `json:"name"`
 	FullPath        string   `json:"fullPath"`
