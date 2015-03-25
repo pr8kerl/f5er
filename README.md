@@ -2,7 +2,7 @@
 
 A golang F5 rest plaything
 
-Supports nodes, pools, poolmembers, and virtuals in full - so far.
+Supports nodes, pools, poolmembers, virtuals, nodes, policies, irules, client-ssl profiles and http monitors in full - so far.
 
 Create, modify and delete F5 objects easily, using json input files.
 
@@ -11,6 +11,8 @@ A convenience entity called a **stack** can be used to act upon nodes, their poo
 Supports the REST methods GET (show), POST (create), PUT (update) and DELETE (delete).
 
 Most commands will display the response in json as provide by the F5 device. Please note that although the response json may look similar to input json, some json object fields differ. For example, pool members within a pool are displayed within a membersReference object in a response, however members must be defined as an array within the **members** array in a pool object. Also some json object response fields are read-only and cannot be used with an input object (the object supplied in the body of a POST or PUT operation.
+
+
 
 ## credentials
 
@@ -30,23 +32,26 @@ The expected file is **f5.json**.
 Use the help command to display hints and available subcommands
 
 ```
-f5er help show
+./f5er help show
 show current state of F5 objects. Show requires an object, eg. f5er show pool
 
 Usage: 
   f5er show [flags]
   f5er show [command]
-
 Available Commands: 
-  pool                      show a pool
-  poolmember                show pool members
-  virtual                   show a virtual server
-  node                      show a node
-  device                    show an f5 device
-  rule                      show a rule
-  stack                     show a stack transaction
+  pool         show a pool
+  poolmember   show pool members
+  virtual      show a virtual server
+  node         show a node
+  policy       show a policy
+  device       show an f5 device
+  rule         show a rule
+  client-ssl   show a client-ssl profile
+  monitor-http show a monitor-http profile
+  stack        show a stack transaction
 
- Available Flags:
+
+Global Flags:
   -d, --debug=false: debug output
   -f, --f5="": IP or hostname of F5 to poke
   -h, --help=false: help for show
@@ -61,7 +66,8 @@ Additional help topics:
   f5er online  online a pool member
   f5er help    Help about any command
 
-Use "f5er help [command]" for more information about that command.
+Use "f5er help [command]" for more information about a command.
+
 ```
 
 ## Device
@@ -90,7 +96,7 @@ Only show is supported for device.
 ## Stacks
 
 This is a convenience construct and does not exist within F5 terminology. 
-It effectively allows commands to work on multiple nodes, a single pool and a single virtual server in one operation. It uses a REST transaction to do so.
+It effectively allows commands to work on multiple nodes, a single pool and multiple virtual servers in one operation. It uses a REST transaction to do so.
 Look at the file stack.json to see how to structure the input file.
 Show, add, update and delete operations are supported.
 
