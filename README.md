@@ -1,6 +1,6 @@
 # f5er
 
-A golang F5 rest plaything
+A golang F5 rest client plaything
 
 Supports nodes, pools, poolmembers, virtuals, nodes, policies, irules, client-ssl profiles and http monitors in full - so far.
 
