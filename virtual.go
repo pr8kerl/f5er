@@ -49,6 +49,7 @@ type LBVirtual struct {
 	TranslatePort    string               `json:"translatePort"`
 	Profiles         LBVirtualProfileRef  `json:"profilesReference"`
 	Policies         LBVirtualPoliciesRef `json:"policiesReference"`
+	Rules            []string             `json:"rules"`
 }
 
 type LBVirtuals struct {
