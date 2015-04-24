@@ -26,30 +26,37 @@ type LBVirtualProfile struct {
 	Context   string `json:"context"`
 }
 
+type LBVirtualPersistProfile struct {
+	Name      string `json:"name"`
+	Partition string `json:"partition"`
+	TmDefault string `json:"tmDefault"`
+}
+
 type LBVirtualProfileRef struct {
 	Items []LBVirtualProfile `json":items"`
 }
 
 type LBVirtual struct {
-	Name             string               `json:"name"`
-	FullPath         string               `json:"fullPath"`
-	Partition        string               `json:"partition"`
-	Destination      string               `json:"destination"`
-	Pool             string               `json:"pool"`
-	AddressStatus    string               `json:"addressStatus"`
-	AutoLastHop      string               `json:"autoLasthop"`
-	CmpEnabled       string               `json:"cmpEnabled"`
-	ConnectionLimit  int                  `json:"connectionLimit"`
-	Enabled          bool                 `json:"enabled"`
-	IpProtocol       string               `json:"ipProtocol"`
-	Source           string               `json:"source"`
-	SourcePort       string               `json:"sourcePort"`
-	SynCookieStatus  string               `json:"synCookieStatus"`
-	TranslateAddress string               `json:"translateAddress"`
-	TranslatePort    string               `json:"translatePort"`
-	Profiles         LBVirtualProfileRef  `json:"profilesReference"`
-	Policies         LBVirtualPoliciesRef `json:"policiesReference"`
-	Rules            []string             `json:"rules"`
+	Name             string                    `json:"name"`
+	FullPath         string                    `json:"fullPath"`
+	Partition        string                    `json:"partition"`
+	Destination      string                    `json:"destination"`
+	Pool             string                    `json:"pool"`
+	AddressStatus    string                    `json:"addressStatus"`
+	AutoLastHop      string                    `json:"autoLasthop"`
+	CmpEnabled       string                    `json:"cmpEnabled"`
+	ConnectionLimit  int                       `json:"connectionLimit"`
+	Enabled          bool                      `json:"enabled"`
+	IpProtocol       string                    `json:"ipProtocol"`
+	Source           string                    `json:"source"`
+	SourcePort       string                    `json:"sourcePort"`
+	SynCookieStatus  string                    `json:"synCookieStatus"`
+	TranslateAddress string                    `json:"translateAddress"`
+	TranslatePort    string                    `json:"translatePort"`
+	Profiles         LBVirtualProfileRef       `json:"profilesReference"`
+	Policies         LBVirtualPoliciesRef      `json:"policiesReference"`
+	Rules            []string                  `json:"rules"`
+	Persist          []LBVirtualPersistProfile `json:"persist"`
 }
 
 type LBVirtuals struct {
