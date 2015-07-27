@@ -10,7 +10,7 @@ import (
 
 type LBStack struct {
 	Nodes    []json.RawMessage `json:"nodes"`
-	Pool     json.RawMessage   `json:"pool"`
+	Pools    []json.RawMessage `json:"pools"`
 	Virtuals []json.RawMessage `json:"virtuals"`
 }
 
@@ -94,16 +94,16 @@ func showStack() {
 		}
 	}
 
-	// show pool
-	if len(stack.Pool) > 0 {
+	// show pools
+	for count, p := range stack.Pools {
 
 		pres := LBPool{}
 		jpool := LBPool{}
-		if err := json.Unmarshal(stack.Pool, &jpool); err != nil {
+		if err := json.Unmarshal(p, &jpool); err != nil {
 			log.Fatal(err)
 		}
 
-		log.Printf("\npool: %s\n", jpool.FullPath)
+		log.Printf("\npool[%d]: %s\n", count, jpool.FullPath)
 		pool := strings.Replace(jpool.FullPath, "/", "~", -1)
 		u := "https://" + f5Host + "/mgmt/tm/ltm/pool/" + pool + "?expandSubcollections=true"
 
@@ -191,23 +191,23 @@ func addStack() {
 		}
 	}
 
-	// add pool
-	if len(stack.Pool) > 0 {
+	// add pools
+	for count, p := range stack.Pools {
 
 		pres := LBPool{}
 		jpool := LBPool{}
-		if err := json.Unmarshal(stack.Pool, &jpool); err != nil {
+		if err := json.Unmarshal(p, &jpool); err != nil {
 			log.Fatal(err)
 		}
 
-		log.Printf("\npool: %s\n", jpool.FullPath)
+		log.Printf("\npool[%d]: %s\n", count, jpool.FullPath)
 		u := "https://" + f5Host + "/mgmt/tm/ltm/pool"
 
-		err, resp := SendRequest(u, POST, &sessn, &stack.Pool, &pres)
+		err, resp := SendRequest(u, POST, &sessn, &p, &pres)
 		if err != nil {
 			log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 		} else {
-			log.Printf("%s : pool %s added\n", resp.HttpResponse().Status, jpool.FullPath)
+			log.Printf("%s : pool[%d] %s added\n", resp.HttpResponse().Status, count, jpool.FullPath)
 		}
 
 	}
@@ -299,24 +299,24 @@ func updateStack() {
 		}
 	}
 
-	// pool
-	if len(stack.Pool) > 0 {
+	// pools
+	for count, p := range stack.Pools {
 
 		pres := LBPool{}
 		jpool := LBPool{}
-		if err := json.Unmarshal(stack.Pool, &jpool); err != nil {
+		if err := json.Unmarshal(p, &jpool); err != nil {
 			log.Fatal(err)
 		}
 
-		log.Printf("\npool: %s\n", jpool.FullPath)
+		log.Printf("\npool[%d]: %s\n", count, jpool.FullPath)
 		pool := strings.Replace(jpool.FullPath, "/", "~", -1)
 		u := "https://" + f5Host + "/mgmt/tm/ltm/pool/" + pool
 
-		err, resp := SendRequest(u, PUT, &sessn, &stack.Pool, &pres)
+		err, resp := SendRequest(u, PUT, &sessn, &p, &pres)
 		if err != nil {
 			log.Fatalf("%s : %s : %s\n", resp.HttpResponse().Status, jpool.FullPath, err)
 		} else {
-			log.Printf("%s : pool %s updated\n", resp.HttpResponse().Status, jpool.FullPath)
+			log.Printf("%s : pool[%d] %s updated\n", resp.HttpResponse().Status, count, jpool.FullPath)
 		}
 
 	}
@@ -408,24 +408,24 @@ func deleteStack() {
 
 	}
 
-	// pool
-	if len(stack.Pool) > 0 {
+	// pools
+	for count, p := range stack.Pools {
 
 		pres := LBPool{}
 		jpool := LBPool{}
-		if err := json.Unmarshal(stack.Pool, &jpool); err != nil {
+		if err := json.Unmarshal(p, &jpool); err != nil {
 			log.Fatal(err)
 		}
 
-		log.Printf("\npool: %s\n", jpool.FullPath)
+		log.Printf("\npool[%d]: %s\n", count, jpool.FullPath)
 		pool := strings.Replace(jpool.FullPath, "/", "~", -1)
 		u := "https://" + f5Host + "/mgmt/tm/ltm/pool/" + pool
 
-		err, resp := SendRequest(u, DELETE, &sessn, &stack.Pool, &pres)
+		err, resp := SendRequest(u, DELETE, &sessn, &p, &pres)
 		if err != nil {
 			log.Fatalf("%s : %s\n", resp.HttpResponse().Status, err)
 		} else {
-			log.Printf("%s : pool %s deleted\n", resp.HttpResponse().Status, jpool.FullPath)
+			log.Printf("%s : pool[%d] %s deleted\n", resp.HttpResponse().Status, count, jpool.FullPath)
 		}
 
 	}
