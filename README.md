@@ -12,6 +12,37 @@ Supports the REST methods GET (show), POST (create), PUT (update) and DELETE (de
 
 Most commands will display the response in json as provide by the F5 device. Please note that although the response json may look similar to input json, some json object fields differ. For example, pool members within a pool are displayed within a membersReference object in a response, however members must be defined as an array within the **members** array in a pool object. Also some json object response fields are read-only and cannot be used with an input object (the object supplied in the body of a POST or PUT operation.
 
+## Build
+
+For Linux
+* update go.env to match your GOROOT.
+* source go.env
+* run **make update** to get module requirements
+* run **make** to build the f5er binary
+* run **make** to build the f5er binary
+
+### cross-compile windows
+
+Use [gox](https://github.com/mitchellh/gox).
+
+* install gox
+```
+go get github.com/mitchellh/gox
+```
+
+* compile cross-compilation build chain for windows 32/64 bit
+```
+gox -build-toolchain -os="windows"
+```
+
+* create windows binaries
+```
+gox -os="windows"
+Number of parallel builds: 4
+
+-->     windows/386: _/home/ians/work/f5er
+-->   windows/amd64: _/home/ians/work/f5er
+```
 
 
 ## credentials
@@ -173,28 +204,6 @@ f5er offline poolmember --now --pool=/partition/poolname /partition/poolmember:p
 
 The opposite to the poolmember offline command
 
-# cross-compile 
-
-Use [gox](https://github.com/mitchellh/gox).
-
-* install gox
-```
-go get github.com/mitchellh/gox
-```
-
-* compile cross-compilation build chain for windows 32/64 bit
-```
-gox -build-toolchain -os="windows"
-```
-
-* create windows binaries
-```
-gox -os="windows"
-Number of parallel builds: 4
-
--->     windows/386: _/home/ians/work/f5er
--->   windows/amd64: _/home/ians/work/f5er
-```
 
 
 # Saved F5 snippets
@@ -213,23 +222,23 @@ curl -sk -u admin:admin -H "Content-Type: application/json" -X GET https://x.x.x
         "entries":{
           "color":{"description":"green"},
           "https://localhost/mgmt/tm/cm/failoverStatus/0/details":{
-            "nestedStats":{
-              "entries":{
-                "https://localhost/mgmt/tm/cm/failoverStatus/0/details/0":{
-                  "nestedStats":{
-                    "entries":{
-                      "details":{"description":"active for /Common/traffic-group-1"}
-                    }
+          "nestedStats":{
+            "entries":{
+              "https://localhost/mgmt/tm/cm/failoverStatus/0/details/0":{
+                "nestedStats":{
+                  "entries":{
+                    "details":{"description":"active for /Common/traffic-group-1"}
                   }
                 }
               }
             }
-          },
-          "status":{"description":"ACTIVE"},
-          "summary":{"description":"1/1 active"}
-        }
+          }
+        },
+        "status":{"description":"ACTIVE"},
+        "summary":{"description":"1/1 active"}
       }
     }
+  }
   }
 }
 
