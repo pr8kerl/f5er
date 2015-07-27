@@ -439,6 +439,59 @@ var deleteRuleCmd = &cobra.Command{
 	},
 }
 
+var showServerSslCmd = &cobra.Command{
+	Use:   "server-ssl",
+	Short: "show a server-ssl profile",
+	Long:  "show the details of a server-ssl profile",
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) < 1 {
+			showServerSsls()
+		} else {
+			name := args[0]
+			showServerSsl(name)
+		}
+	},
+}
+
+var addServerSslCmd = &cobra.Command{
+	Use:   "server-ssl",
+	Short: "add a server-ssl profile",
+	Long:  "add a new server-ssl profile",
+	Run: func(cmd *cobra.Command, args []string) {
+		checkRequiredFlag("input")
+		addServerSsl()
+	},
+}
+
+var updateServerSslCmd = &cobra.Command{
+	Use:   "server-ssl",
+	Short: "update a server-ssl profile",
+	Long:  "update an existing F5 server-ssl profile",
+	Run: func(cmd *cobra.Command, args []string) {
+		checkRequiredFlag("input")
+		if len(args) < 1 {
+			log.Fatal("update server-ssl requires a server-ssl profile name as an argument (ie /partition/profilename )")
+		} else {
+			name := args[0]
+			updateServerSsl(name)
+		}
+	},
+}
+
+var deleteServerSslCmd = &cobra.Command{
+	Use:   "server-ssl",
+	Short: "delete a server-ssl profile",
+	Long:  "delete a rule",
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) < 1 {
+			log.Fatal("delete server-ssl requires a server-ssl profile name as an argument (ie /partition/profilename )")
+		} else {
+			name := args[0]
+			deleteServerSsl(name)
+		}
+	},
+}
+
 var showClientSslCmd = &cobra.Command{
 	Use:   "client-ssl",
 	Short: "show a client-ssl profile",

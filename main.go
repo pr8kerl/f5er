@@ -109,6 +109,7 @@ func init() {
 	showCmd.AddCommand(showDeviceCmd)
 	showCmd.AddCommand(showRuleCmd)
 	showCmd.AddCommand(showClientSslCmd)
+	showCmd.AddCommand(showServerSslCmd)
 	showCmd.AddCommand(showMonitorHttpCmd)
 	showCmd.AddCommand(showStackCmd)
 
@@ -121,6 +122,7 @@ func init() {
 	addCmd.AddCommand(addVirtualCmd)
 	addCmd.AddCommand(addRuleCmd)
 	addCmd.AddCommand(addClientSslCmd)
+	addCmd.AddCommand(addServerSslCmd)
 	addCmd.AddCommand(addMonitorHttpCmd)
 	addCmd.AddCommand(addStackCmd)
 
@@ -133,6 +135,7 @@ func init() {
 	updateCmd.AddCommand(updateVirtualCmd)
 	updateCmd.AddCommand(updateRuleCmd)
 	updateCmd.AddCommand(updateClientSslCmd)
+	updateCmd.AddCommand(updateServerSslCmd)
 	updateCmd.AddCommand(updateMonitorHttpCmd)
 	updateCmd.AddCommand(updateStackCmd)
 
@@ -145,6 +148,7 @@ func init() {
 	deleteCmd.AddCommand(deleteVirtualCmd)
 	deleteCmd.AddCommand(deleteRuleCmd)
 	deleteCmd.AddCommand(deleteClientSslCmd)
+	deleteCmd.AddCommand(deleteServerSslCmd)
 	deleteCmd.AddCommand(deleteMonitorHttpCmd)
 	deleteCmd.AddCommand(deleteStackCmd)
 
