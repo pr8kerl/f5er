@@ -82,7 +82,7 @@ func SendRequest(u string, method int, sess *napping.Session, pload interface{},
 	case PATCH:
 		resp, err = sess.Patch(u, &pload, &res, &e)
 	case DELETE:
-		resp, err = sess.Delete(u, &res, &e)
+		resp, err = sess.Delete(u, nil, &res, &e)
 	}
 
 	if err != nil {
