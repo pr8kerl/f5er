@@ -2,7 +2,6 @@ package f5
 
 import (
 	"encoding/json"
-	"log"
 	"strings"
 )
 
@@ -77,7 +76,7 @@ func (f *Device) ShowPools() (error, *LBPools) {
 	u := "https://" + f.Hostname + "/mgmt/tm/ltm/pool"
 	res := LBPools{}
 
-	err, resp := f.sendRequest(u, GET, nil, &res)
+	err, _ := f.sendRequest(u, GET, nil, &res)
 	if err != nil {
 		return err, nil
 	} else {
@@ -92,7 +91,7 @@ func (f *Device) ShowPool(pname string) (error, *LBPool) {
 	u := "https://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool + "?expandSubcollections=true"
 	res := LBPool{}
 
-	err, resp := f.sendRequest(u, GET, nil, &res)
+	err, _ := f.sendRequest(u, GET, nil, &res)
 	if err != nil {
 		return err, nil
 	} else {
@@ -101,28 +100,15 @@ func (f *Device) ShowPool(pname string) (error, *LBPool) {
 
 }
 
-func (f *Device) AddPool() (error, *LBPool) {
+func (f *Device) AddPool(body *json.RawMessage) (error, *LBPool) {
+	// we use json.RawMessage so we can modify the input file without using a struct
+	// use of a struct will send all available fields, some of which can't be modified
 
 	u := "https://" + f.Hostname + "/mgmt/tm/ltm/pool"
 	res := LBPool{}
-	// we use raw so we can modify the input file without using a struct
-	// use of a struct will send all available fields, some of which can't be modified
-	body := json.RawMessage{}
-
-	// read in json file
-	dat, err := ioutil.ReadFile(f5Input)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// convert json to a pool struct
-	err = json.Unmarshal(dat, &body)
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	// post the request
-	err, resp := f.sendRequest(u, POST, &body, &res)
+	err, _ := f.sendRequest(u, POST, &body, &res)
 	if err != nil {
 		return err, nil
 	} else {
@@ -131,27 +117,14 @@ func (f *Device) AddPool() (error, *LBPool) {
 
 }
 
-func (f *Device) UpdatePool(pname string) (error, *LBPool) {
+func (f *Device) UpdatePool(pname string, body *json.RawMessage) (error, *LBPool) {
 
 	pool := strings.Replace(pname, "/", "~", -1)
 	u := "https://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool
 	res := LBPool{}
-	body := json.RawMessage{}
-
-	// read in json file
-	dat, err := ioutil.ReadFile(f5Input)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// convert json to a node struct
-	err = json.Unmarshal(dat, &body)
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	// put the request
-	err, resp := f.sendRequest(u, PUT, &body, &res)
+	err, _ := f.sendRequest(u, PUT, &body, &res)
 	if err != nil {
 		return err, nil
 	} else {
@@ -170,7 +143,7 @@ func (f *Device) DeletePool(pname string) (error, *Response) {
 	if err != nil {
 		return err, nil
 	} else {
-		return nil, &resp
+		return nil, resp
 	}
 
 }
@@ -181,7 +154,7 @@ func (f *Device) ShowPoolMembers(pname string) (error, *LBPoolMembers) {
 	u := "https://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool + "/members"
 	res := LBPoolMembers{}
 
-	err, resp := f.sendRequest(u, GET, nil, &res)
+	err, _ := f.sendRequest(u, GET, nil, &res)
 	if err != nil {
 		return err, nil
 	} else {
@@ -190,29 +163,14 @@ func (f *Device) ShowPoolMembers(pname string) (error, *LBPoolMembers) {
 
 }
 
-func (f *Device) AddPoolMembers(pname string) (error, *LBPoolMembers) {
+func (f *Device) AddPoolMembers(pname string, body *json.RawMessage) (error, *LBPoolMembers) {
 
 	pool := strings.Replace(pname, "/", "~", -1)
 	u := "https://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool + "/members"
 	res := LBPoolMembers{}
-	// we use raw so we can modify the input file without using a struct
-	// use of a struct will send all available fields, some of which can't be modified
-	body := json.RawMessage{}
-
-	// read in json file
-	dat, err := ioutil.ReadFile(f5Input)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// convert json to a node struct
-	err = json.Unmarshal(dat, &body)
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	// post the request
-	err, resp := f.sendRequest(u, POST, &body, &res)
+	err, _ := f.sendRequest(u, POST, &body, &res)
 	if err != nil {
 		return err, nil
 	} else {
@@ -221,27 +179,14 @@ func (f *Device) AddPoolMembers(pname string) (error, *LBPoolMembers) {
 
 }
 
-func (f *Device) UpdatePoolMembers(pname string) (error, *LBPoolMembers) {
+func (f *Device) UpdatePoolMembers(pname string, body *json.RawMessage) (error, *LBPoolMembers) {
 
 	pool := strings.Replace(pname, "/", "~", -1)
 	u := "https://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool + "/members"
 	res := LBPoolMembers{}
-	body := json.RawMessage{}
-
-	// read in json file
-	dat, err := ioutil.ReadFile(f5Input)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// convert json to a node struct
-	err = json.Unmarshal(dat, &body)
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	// put the request
-	err, resp := f.sendRequest(u, PUT, &body, &res)
+	err, _ := f.sendRequest(u, PUT, &body, &res)
 	if err != nil {
 		return err, nil
 	} else {
@@ -260,15 +205,16 @@ func (f *Device) DeletePoolMembers(pname string) (error, *Response) {
 	if err != nil {
 		return err, nil
 	} else {
-		return nil, &res
+		return nil, resp
 	}
 
 }
 
-func (f *Device) OnlinePoolMember(mname string) (error, *Response) {
+func (f *Device) OnlinePoolMember(pname string, mname string) (error, *Response) {
 
 	pmember := strings.Replace(mname, "/", "~", -1)
-	pool := strings.Replace(f5Pool, "/", "~", -1)
+	pool := strings.Replace(pname, "/", "~", -1)
+
 	u := "https://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool + "/members/" + pmember
 	res := json.RawMessage{}
 
@@ -277,22 +223,23 @@ func (f *Device) OnlinePoolMember(mname string) (error, *Response) {
 	   {"state": "user-up", "session": "user-disabled"} (Member Disabled in GUI)
 	   {"state": "user-up", "session": "user-enabled"}  (Member Enabled in GUI)
 	*/
-	body := MemberState{"user-up", "user-enabled"}
+	body := LBPoolMemberState{"user-up", "user-enabled"}
 
 	// put the request
 	err, resp := f.sendRequest(u, PUT, &body, &res)
 	if err != nil {
 		return err, nil
 	} else {
-		return nil, &resp
+		return nil, resp
 	}
 
 }
 
-func (f *Device) OfflinePoolMember(mname string) (error, *Response) {
+func (f *Device) OfflinePoolMember(pname string, mname string) (error, *Response) {
 
 	pmember := strings.Replace(mname, "/", "~", -1)
-	pool := strings.Replace(f5Pool, "/", "~", -1)
+	pool := strings.Replace(pname, "/", "~", -1)
+
 	u := "https://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool + "/members/" + pmember
 	res := json.RawMessage{}
 
@@ -301,19 +248,38 @@ func (f *Device) OfflinePoolMember(mname string) (error, *Response) {
 	   {"state": "user-up", "session": "user-disabled"} (Member Disabled in GUI)
 	   {"state": "user-up", "session": "user-enabled"}  (Member Enabled in GUI)
 	*/
-	var body MemberState
-	if now {
-		body = MemberState{"user-down", "user-disabled"}
-	} else {
-		body = MemberState{"user-up", "user-disabled"}
-	}
+	body := LBPoolMemberState{"user-up", "user-disabled"}
 
 	// put the request
 	err, resp := f.sendRequest(u, PUT, &body, &res)
 	if err != nil {
 		return err, nil
 	} else {
-		return nil, &res
+		return nil, resp
+	}
+
+}
+func (f *Device) OfflinePoolMemberForced(pname string, mname string) (error, *Response) {
+
+	pmember := strings.Replace(mname, "/", "~", -1)
+	pool := strings.Replace(pname, "/", "~", -1)
+
+	u := "https://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool + "/members/" + pmember
+	res := json.RawMessage{}
+
+	/*
+	   {"state": "user-down", "session": "user-disabled"} (Member Forced Offline in GUI)
+	   {"state": "user-up", "session": "user-disabled"} (Member Disabled in GUI)
+	   {"state": "user-up", "session": "user-enabled"}  (Member Enabled in GUI)
+	*/
+	body := LBPoolMemberState{"user-down", "user-disabled"}
+
+	// put the request
+	err, resp := f.sendRequest(u, PUT, &body, &res)
+	if err != nil {
+		return err, nil
+	} else {
+		return nil, resp
 	}
 
 }

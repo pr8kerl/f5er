@@ -1,9 +1,5 @@
 package f5
 
-import (
-	"log"
-)
-
 type LBDeviceRef struct {
 	Link  string          `json:"selfLink"`
 	Items []LBDeviceState `json":items"`
@@ -16,12 +12,12 @@ type LBDeviceState struct {
 	ManagementIP  string `json:"managementIP"`
 }
 
-func (f *Device) showDevice() (error, *LBDeviceRef) {
+func (f *Device) ShowDevice() (error, *LBDeviceRef) {
 
 	u := "https://" + f.Hostname + "/mgmt/tm/cm/device"
 	res := LBDeviceRef{}
 
-	err, resp := f.sendRequest(u, GET, nil, &res)
+	err, _ := f.sendRequest(u, GET, nil, &res)
 	if err != nil {
 		return err, nil
 	} else {

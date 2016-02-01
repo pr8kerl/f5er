@@ -93,12 +93,11 @@ func (f *Device) StartTransaction() (error, string) {
 	u := "https://" + f.Hostname + "/mgmt/tm/transaction"
 	empty := LBEmptyBody{}
 	tres := LBTransaction{}
-	err, resp := f.sendRequest(u, POST, &empty, &tres)
+	err, _ := f.sendRequest(u, POST, &empty, &tres)
 	if err != nil {
 		return err, ""
 	}
 
-	log.Printf("%s : transaction %d created\n", resp.Status, tres.TransId)
 	tid := fmt.Sprintf("%d", tres.TransId)
 	// set the transaction header
 	f.Session.Header.Set("X-F5-REST-Coordination-Id", tid)
@@ -114,11 +113,10 @@ func (f *Device) CommitTransaction(tid string) error {
 	u := "https://" + f.Hostname + "/mgmt/tm/transaction/" + tid
 	body := LBTransaction{State: "VALIDATING"}
 	tres := LBTransaction{}
-	err, resp := f.sendRequest(u, PATCH, &body, &tres)
+	err, _ := f.sendRequest(u, PATCH, &body, &tres)
 	if err != nil {
 		return err
 	}
-	log.Printf("\n%d : transaction %s committed\n", resp.Status, tid)
 
 	return nil
 
@@ -164,7 +162,7 @@ func (f *Device) sendRequest(u string, method int, pload interface{}, res interf
 	}
 }
 
-func (f *Device) PrintResponse(input interface{}) {
+func (f *Device) PrintObject(input interface{}) {
 
 	jsonresp, err := json.MarshalIndent(&input, "", "\t")
 	if err != nil {
@@ -172,4 +170,18 @@ func (f *Device) PrintResponse(input interface{}) {
 	}
 	log.Println(string(jsonresp))
 
+}
+
+// F5 Module data struct
+// to show all available modules when using show without args
+type LBModule struct {
+	Link string `json:"link"`
+}
+
+type LBModuleRef struct {
+	Reference LBModule `json:"reference"`
+}
+
+type LBModules struct {
+	Items []LBModuleRef `json:"items"`
 }

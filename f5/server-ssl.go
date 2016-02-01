@@ -2,58 +2,8 @@ package f5
 
 import (
 	"encoding/json"
-	"fmt"
-	"io/ioutil"
-	"log"
 	"strings"
 )
-
-/*
-{
-    "untrustedCertResponseControl": "drop",
-    "uncleanShutdown": "enabled",
-    "strictResume": "disabled",
-    "sslSignHash": "any",
-    "sslForwardProxyBypass": "disabled",
-    "sslForwardProxy": "disabled",
-    "sniRequire": "false",
-    "sniDefault": "false",
-    "expireCertResponseControl": "drop",
-    "defaultsFrom": "/Common/serverssl",
-    "ciphers": "DEFAULT",
-    "chain": "/Common/example-chain.crt",
-    "cert": "/Common/sit.store.example.com.au.crt",
-    "cacheTimeout": 3600,
-    "cacheSize": 262144,
-    "authenticateDepth": 9,
-    "kind": "tm:ltm:profile:server-ssl:server-sslstate",
-    "name": "sit.store.example.com.au",
-    "partition": "Common",
-    "fullPath": "/Common/sit.store.example.com.au",
-    "generation": 690,
-    "selfLink": "https://localhost/mgmt/tm/ltm/profile/server-ssl/~Common~sit.store.example.com.au?ver=11.6.0",
-    "alertTimeout": "10",
-    "authenticate": "once",
-    "genericAlert": "enabled",
-    "handshakeTimeout": "10",
-    "key": "/Common/sit.store.example.com.au.key",
-    "modSslMethods": "disabled",
-    "mode": "enabled",
-    "tmOptions": [
-      "dont-insert-empty-fragments"
-    ],
-    "peerCertMode": "ignore",
-    "proxySsl": "disabled",
-    "proxySslPassthrough": "disabled",
-    "renegotiatePeriod": "indefinite",
-    "renegotiateSize": "indefinite",
-    "renegotiation": "enabled",
-    "retainCertificate": "true",
-    "secureRenegotiation": "require-strict",
-    "sessionMirroring": "disabled",
-    "sessionTicket": "disabled"
-  },
-*/
 
 type LBServerSsl struct {
 	Name                         string   `json:"name"`
@@ -106,7 +56,7 @@ func (f *Device) ShowServerSsls() (error, *LBServerSsls) {
 	u := "https://" + f.Hostname + "/mgmt/tm/ltm/profile/server-ssl"
 	res := LBServerSsls{}
 
-	err, resp := f.sendRequest(u, GET, nil, &res)
+	err, _ := f.sendRequest(u, GET, nil, &res)
 	if err != nil {
 		return err, nil
 	} else {
@@ -121,7 +71,7 @@ func (f *Device) ShowServerSsl(sname string) (error, *LBServerSsl) {
 	u := "https://" + f.Hostname + "/mgmt/tm/ltm/profile/server-ssl/" + server
 	res := LBServerSsl{}
 
-	err, resp := f.sendRequest(u, GET, nil, &res)
+	err, _ := f.sendRequest(u, GET, nil, &res)
 	if err != nil {
 		return err, nil
 	} else {
@@ -130,28 +80,13 @@ func (f *Device) ShowServerSsl(sname string) (error, *LBServerSsl) {
 
 }
 
-func (f *Device) AddServerSsl() (error, *LBServerSsl) {
+func (f *Device) AddServerSsl(body *json.RawMessage) (error, *LBServerSsl) {
 
 	u := "https://" + f.Hostname + "/mgmt/tm/ltm/profile/server-ssl"
 	res := LBServerSsl{}
-	// we use raw so we can modify the input file without using a struct
-	// use of a struct will send all available fields, some of which can't be modified
-	body := json.RawMessage{}
-
-	// read in json file
-	dat, err := ioutil.ReadFile(f5Input)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// convert json to a node struct
-	err = json.Unmarshal(dat, &body)
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	// post the request
-	err, resp := f.sendRequest(u, POST, &body, &res)
+	err, _ := f.sendRequest(u, POST, &body, &res)
 	if err != nil {
 		return err, nil
 	} else {
@@ -160,27 +95,14 @@ func (f *Device) AddServerSsl() (error, *LBServerSsl) {
 
 }
 
-func (f *Device) UpdateServerSsl(sname string) (error, *LBServerSsl) {
+func (f *Device) UpdateServerSsl(sname string, body *json.RawMessage) (error, *LBServerSsl) {
 
 	server := strings.Replace(sname, "/", "~", -1)
 	u := "https://" + f.Hostname + "/mgmt/tm/ltm/profile/server-ssl/" + server
 	res := LBServerSsl{}
-	body := json.RawMessage{}
-
-	// read in json file
-	dat, err := ioutil.ReadFile(f5Input)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// convert json to a node struct
-	err = json.Unmarshal(dat, &body)
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	// put the request
-	err, resp := f.sendRequest(u, PUT, &body, &res)
+	err, _ := f.sendRequest(u, PUT, &body, &res)
 	if err != nil {
 		return err, nil
 	} else {
@@ -199,7 +121,7 @@ func (f *Device) DeleteServerSsl(sname string) (error, *Response) {
 	if err != nil {
 		return err, nil
 	} else {
-		return nil, &resp
+		return nil, resp
 	}
 
 }

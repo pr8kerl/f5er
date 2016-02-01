@@ -2,9 +2,6 @@ package f5
 
 import (
 	"encoding/json"
-	"fmt"
-	"io/ioutil"
-	"log"
 	"strings"
 )
 
@@ -30,7 +27,7 @@ func (f *Device) ShowRules() (error, *LBRules) {
 	u := "https://" + f.Hostname + "/mgmt/tm/ltm/rule"
 	res := LBRules{}
 
-	err, resp := f.sendRequest(u, GET, nil, &res)
+	err, _ := f.sendRequest(u, GET, nil, &res)
 	if err != nil {
 		return err, nil
 	} else {
@@ -45,7 +42,7 @@ func (f *Device) ShowRule(rname string) (error, *LBRule) {
 	u := "https://" + f.Hostname + "/mgmt/tm/ltm/rule/" + rule
 	res := LBRule{}
 
-	err, resp := f.sendRequest(u, GET, nil, &res)
+	err, _ := f.sendRequest(u, GET, nil, &res)
 	if err != nil {
 		return err, nil
 	} else {
@@ -54,28 +51,13 @@ func (f *Device) ShowRule(rname string) (error, *LBRule) {
 
 }
 
-func (f *Device) AddRule() (error, *LBRule) {
+func (f *Device) AddRule(body *json.RawMessage) (error, *LBRule) {
 
 	u := "https://" + f.Hostname + "/mgmt/tm/ltm/rule"
 	res := LBRule{}
-	// we use raw so we can modify the input file without using a struct
-	// use of a struct will send all available fields, some of which can't be modified
-	body := json.RawMessage{}
-
-	// read in json file
-	dat, err := ioutil.ReadFile(f5Input)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// convert json to a node struct
-	err = json.Unmarshal(dat, &body)
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	// post the request
-	err, resp := f.sendRequest(u, POST, &body, &res)
+	err, _ := f.sendRequest(u, POST, &body, &res)
 	if err != nil {
 		return err, nil
 	} else {
@@ -84,27 +66,14 @@ func (f *Device) AddRule() (error, *LBRule) {
 
 }
 
-func (f *Device) UpdateRule(rname string) (error, *LBRule) {
+func (f *Device) UpdateRule(rname string, body *json.RawMessage) (error, *LBRule) {
 
 	rule := strings.Replace(rname, "/", "~", -1)
 	u := "https://" + f.Hostname + "/mgmt/tm/ltm/rule/" + rule
 	res := LBRule{}
-	body := json.RawMessage{}
-
-	// read in json file
-	dat, err := ioutil.ReadFile(f5Input)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// convert json to a node struct
-	err = json.Unmarshal(dat, &body)
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	// put the request
-	err, resp := f.sendRequest(u, PUT, &body, &res)
+	err, _ := f.sendRequest(u, PUT, &body, &res)
 	if err != nil {
 		return err, nil
 	} else {
@@ -123,7 +92,7 @@ func (f *Device) DeleteRule(rname string) (error, *Response) {
 	if err != nil {
 		return err, nil
 	} else {
-		return nil, &res
+		return nil, resp
 	}
 
 }

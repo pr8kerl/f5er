@@ -2,9 +2,6 @@ package f5
 
 import (
 	"encoding/json"
-	"fmt"
-	"io/ioutil"
-	"log"
 	"strings"
 )
 
@@ -79,7 +76,7 @@ func (f *Device) ShowPolicies() (error, *LBPolicies) {
 	u := "https://" + f.Hostname + "/mgmt/tm/ltm/policy"
 	res := LBPolicies{}
 
-	err, resp := f.sendRequest(u, GET, nil, &res)
+	err, _ := f.sendRequest(u, GET, nil, &res)
 	if err != nil {
 		return err, nil
 	} else {
@@ -90,13 +87,11 @@ func (f *Device) ShowPolicies() (error, *LBPolicies) {
 
 func (f *Device) ShowPolicy(pname string) (error, *LBPolicy) {
 
-	//u := "https://" + f.Hostname + "/mgmt/tm/ltm/policy/~" + partition + "~" + pname + "?expandSubcollections=true"
-
 	policy := strings.Replace(pname, "/", "~", -1)
 	u := "https://" + f.Hostname + "/mgmt/tm/ltm/policy/" + policy + "?expandSubcollections=true"
 	res := LBPolicy{}
 
-	err, resp := f.sendRequest(u, GET, nil, &res)
+	err, _ := f.sendRequest(u, GET, nil, &res)
 	if err != nil {
 		return err, nil
 	} else {
@@ -105,28 +100,13 @@ func (f *Device) ShowPolicy(pname string) (error, *LBPolicy) {
 
 }
 
-func (f *Device) AddPolicy() (error, *LBPolicy) {
+func (f *Device) AddPolicy(body *json.RawMessage) (error, *LBPolicy) {
 
 	u := "https://" + f.Hostname + "/mgmt/tm/ltm/policy"
 	res := LBPolicy{}
-	// we use raw so we can modify the input file without using a struct
-	// use of a struct will send all available fields, some of which can't be modified
-	body := json.RawMessage{}
-
-	// read in json file
-	dat, err := ioutil.ReadFile(f5Input)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// convert json to a node struct
-	err = json.Unmarshal(dat, &body)
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	// post the request
-	err, resp := f.sendRequest(u, POST, &body, &res)
+	err, _ := f.sendRequest(u, POST, &body, &res)
 	if err != nil {
 		return err, nil
 	} else {
@@ -135,27 +115,14 @@ func (f *Device) AddPolicy() (error, *LBPolicy) {
 
 }
 
-func (f *Device) UpdatePolicy(pname string) (error, *LBPolicy) {
+func (f *Device) UpdatePolicy(pname string, body *json.RawMessage) (error, *LBPolicy) {
 
 	policy := strings.Replace(pname, "/", "~", -1)
 	u := "https://" + f.Hostname + "/mgmt/tm/ltm/policy/" + policy
 	res := LBPolicy{}
-	body := json.RawMessage{}
-
-	// read in json file
-	dat, err := ioutil.ReadFile(f5Input)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// convert json to a node struct
-	err = json.Unmarshal(dat, &body)
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	// put the request
-	err, resp := f.sendRequest(u, PUT, &body, &res)
+	err, _ := f.sendRequest(u, PUT, &body, &res)
 	if err != nil {
 		return err, nil
 	} else {
@@ -175,7 +142,7 @@ func (f *Device) DeletePolicy(pname string) (error, *Response) {
 	if err != nil {
 		return err, nil
 	} else {
-		return nil, &resp
+		return nil, resp
 	}
 
 }

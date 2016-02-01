@@ -2,9 +2,6 @@ package f5
 
 import (
 	"encoding/json"
-	"fmt"
-	"io/ioutil"
-	"log"
 	"strings"
 )
 
@@ -73,7 +70,7 @@ func (f *Device) ShowClientSsls() (error, *LBClientSsls) {
 	u := "https://" + f.Hostname + "/mgmt/tm/ltm/profile/client-ssl"
 	res := LBClientSsls{}
 
-	err, resp := f.sendRequest(u, GET, nil, &res)
+	err, _ := f.sendRequest(u, GET, nil, &res)
 	if err != nil {
 		return err, nil
 	} else {
@@ -84,10 +81,10 @@ func (f *Device) ShowClientSsls() (error, *LBClientSsls) {
 func (f *Device) ShowClientSsl(cname string) (error, *LBClientSsl) {
 
 	client := strings.Replace(cname, "/", "~", -1)
-	u := "https://" + f5Host + "/mgmt/tm/ltm/profile/client-ssl/" + client
+	u := "https://" + f.Hostname + "/mgmt/tm/ltm/profile/client-ssl/" + client
 	res := LBClientSsl{}
 
-	err, resp := f.sendRequest(u, GET, nil, &res)
+	err, _ := f.sendRequest(u, GET, nil, &res)
 	if err != nil {
 		return err, nil
 	} else {
@@ -96,27 +93,12 @@ func (f *Device) ShowClientSsl(cname string) (error, *LBClientSsl) {
 
 }
 
-func (f *Device) AddClientSsl() (error, *LBClientSsl) {
+func (f *Device) AddClientSsl(body *json.RawMessage) (error, *LBClientSsl) {
 
-	u := "https://" + f5Host + "/mgmt/tm/ltm/profile/client-ssl"
+	u := "https://" + f.Hostname + "/mgmt/tm/ltm/profile/client-ssl"
 	res := LBClientSsl{}
-	// we use raw so we can modify the input file without using a struct
-	// use of a struct will send all available fields, some of which can't be modified
-	body := json.RawMessage{}
 
-	// read in json file
-	dat, err := ioutil.ReadFile(f5Input)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// convert json to a node struct
-	err = json.Unmarshal(dat, &body)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	err, resp := f.sendRequest(u, POST, &body, &res)
+	err, _ := f.sendRequest(u, POST, &body, &res)
 	if err != nil {
 		return err, nil
 	} else {
@@ -125,27 +107,14 @@ func (f *Device) AddClientSsl() (error, *LBClientSsl) {
 
 }
 
-func (f *Device) UpdateClientSsl(cname string) (error, *LBClientSsl) {
+func (f *Device) UpdateClientSsl(cname string, body *json.RawMessage) (error, *LBClientSsl) {
 
 	client := strings.Replace(cname, "/", "~", -1)
-	u := "https://" + f5Host + "/mgmt/tm/ltm/profile/client-ssl/" + client
+	u := "https://" + f.Hostname + "/mgmt/tm/ltm/profile/client-ssl/" + client
 	res := LBClientSsl{}
-	body := json.RawMessage{}
-
-	// read in json file
-	dat, err := ioutil.ReadFile(f5Input)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// convert json to a node struct
-	err = json.Unmarshal(dat, &body)
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	// put the request
-	err, resp := f.sendRequest(u, PUT, &body, &res)
+	err, _ := f.sendRequest(u, PUT, &body, &res)
 	if err != nil {
 		return err, nil
 	} else {
@@ -157,14 +126,14 @@ func (f *Device) UpdateClientSsl(cname string) (error, *LBClientSsl) {
 func (f *Device) DeleteClientSsl(cname string) (error, *Response) {
 
 	client := strings.Replace(cname, "/", "~", -1)
-	u := "https://" + f5Host + "/mgmt/tm/ltm/profile/client-ssl/" + client
+	u := "https://" + f.Hostname + "/mgmt/tm/ltm/profile/client-ssl/" + client
 	res := json.RawMessage{}
 
 	err, resp := f.sendRequest(u, DELETE, nil, &res)
 	if err != nil {
 		return err, nil
 	} else {
-		return nil, &resp
+		return nil, resp
 	}
 
 }

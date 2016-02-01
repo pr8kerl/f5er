@@ -2,9 +2,6 @@ package f5
 
 import (
 	"encoding/json"
-	"fmt"
-	"io/ioutil"
-	"log"
 	"strings"
 )
 
@@ -39,12 +36,29 @@ type LBNodes struct {
 	Items []LBNode `json:"items"`
 }
 
+type LBNodeFQDNUpdate struct {
+	DownInterval int `json:"downInterval"`
+	Interval     int `json:"interval"`
+}
+
+type LBNodeUpdate struct {
+	Name            string           `json:"name"`
+	Partition       string           `json:"partition"`
+	FullPath        string           `json:"fullPath"`
+	Generation      int              `json:"generation"`
+	ConnectionLimit int              `json:"connectionLimit"`
+	Fqdn            LBNodeFQDNUpdate `json:"fqdn"`
+	Logging         string           `json:"logging"`
+	Monitor         string           `json:"monitor"`
+	RateLimit       string           `json:"rateLimit"`
+}
+
 func (f *Device) ShowNodes() (error, *LBNodes) {
 
 	u := "https://" + f.Hostname + "/mgmt/tm/ltm/node"
 	res := LBNodes{}
 
-	err, resp := f.sendRequest(u, GET, nil, &res)
+	err, _ := f.sendRequest(u, GET, nil, &res)
 	if err != nil {
 		return err, nil
 	} else {
@@ -60,7 +74,7 @@ func (f *Device) ShowNode(nname string) (error, *LBNode) {
 	u := "https://" + f.Hostname + "/mgmt/tm/ltm/node/" + node
 	res := LBNode{}
 
-	err, resp := f.sendRequest(u, GET, nil, &res)
+	err, _ := f.sendRequest(u, GET, nil, &res)
 	if err != nil {
 		return err, nil
 	} else {
@@ -69,28 +83,13 @@ func (f *Device) ShowNode(nname string) (error, *LBNode) {
 
 }
 
-func (f *Device) AddNode() (error, *LBNode) {
+func (f *Device) AddNode(body *json.RawMessage) (error, *LBNode) {
 
 	u := "https://" + f.Hostname + "/mgmt/tm/ltm/node"
 	res := LBNode{}
-	// we use raw so we can modify the input file without using a struct
-	// use of a struct will send all available fields, some of which can't be modified
-	body := json.RawMessage{}
-
-	// read in json file
-	dat, err := ioutil.ReadFile(f5Input)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// convert json to a node struct
-	err = json.Unmarshal(dat, &body)
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	// post the request
-	err, resp := f.sendRequest(u, POST, &body, &res)
+	err, _ := f.sendRequest(u, POST, &body, &res)
 	if err != nil {
 		return err, nil
 	} else {
@@ -99,27 +98,14 @@ func (f *Device) AddNode() (error, *LBNode) {
 
 }
 
-func (f *Device) UpdateNode(nname string) (error, *LBNode) {
+func (f *Device) UpdateNode(nname string, body *json.RawMessage) (error, *LBNode) {
 
 	node := strings.Replace(nname, "/", "~", -1)
 	u := "https://" + f.Hostname + "/mgmt/tm/ltm/node/" + node
 	res := LBNode{}
-	body := json.RawMessage{}
-
-	// read in json file
-	dat, err := ioutil.ReadFile(f5Input)
-	if err != nil {
-		log.Fatal(err)
-	}
-
-	// convert json to a node struct
-	err = json.Unmarshal(dat, &body)
-	if err != nil {
-		log.Fatal(err)
-	}
 
 	// put the request
-	err, resp := f.sendRequest(u, PUT, &body, &res)
+	err, _ := f.sendRequest(u, PUT, &body, &res)
 	if err != nil {
 		return err, nil
 	} else {
@@ -138,7 +124,7 @@ func (f *Device) DeleteNode(nname string) (error, *Response) {
 	if err != nil {
 		return err, nil
 	} else {
-		return nil, &res
+		return nil, resp
 	}
 
 }

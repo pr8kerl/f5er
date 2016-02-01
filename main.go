@@ -3,12 +3,14 @@ package main
 import (
 	"fmt"
 	"github.com/jmcvetta/napping"
+	"github.com/pr8kerl/f5er/f5"
 	"github.com/spf13/viper"
 	"log"
 	"net/http"
 )
 
 var (
+	appliance *f5.Device
 	f5Host    string
 	username  string
 	passwd    string
@@ -18,6 +20,7 @@ var (
 	session   napping.Session
 	transport *http.Transport
 	client    *http.Client
+	debug     bool
 	now       bool
 )
 
@@ -163,11 +166,11 @@ func init() {
 	//	log.SetFlags(log.Ltime | log.Lshortfile)
 	log.SetFlags(0)
 
+	InitialiseConfig()
+	appliance = f5.New(f5Host, username, passwd)
 }
 
 func main() {
-	InitialiseConfig()
-	InitSession()
 	//f5Cmd.DebugFlags()
 	f5Cmd.Execute()
 }

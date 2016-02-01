@@ -1,9 +1,11 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
+	"github.com/pr8kerl/f5er/f5"
 	"github.com/spf13/cobra"
-	//	"github.com/spf13/viper"
+	"io/ioutil"
 	"log"
 )
 
@@ -78,7 +80,7 @@ var showDeviceCmd = &cobra.Command{
 	Short: "show an f5 device",
 	Long:  "show the current state of an f5 device",
 	Run: func(cmd *cobra.Command, args []string) {
-		showDevice()
+		appliance.ShowDevice()
 	},
 }
 
@@ -88,10 +90,10 @@ var showPoolCmd = &cobra.Command{
 	Long:  "show the current state of a pool",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			showPools()
+			appliance.ShowPools()
 		} else {
 			name := args[0]
-			showPool(name)
+			appliance.ShowPool(name)
 		}
 	},
 }
@@ -102,7 +104,18 @@ var addPoolCmd = &cobra.Command{
 	Long:  "add a new pool",
 	Run: func(cmd *cobra.Command, args []string) {
 		checkRequiredFlag("input")
-		addPool()
+		body := json.RawMessage{}
+		// read in input file
+		dat, err := ioutil.ReadFile(f5Input)
+		if err != nil {
+			log.Fatal(err)
+		}
+		// convert bytes to a json message
+		err = json.Unmarshal(dat, &body)
+		if err != nil {
+			log.Fatal(err)
+		}
+		appliance.AddPool(&body)
 	},
 }
 
@@ -115,8 +128,19 @@ var updatePoolCmd = &cobra.Command{
 		if len(args) < 1 {
 			log.Fatal("update pool requires a pool name as an argument (ie /partition/poolname )")
 		} else {
-			name := args[0]
-			updatePool(name)
+			pname := args[0]
+			body := json.RawMessage{}
+			// read in input file
+			dat, err := ioutil.ReadFile(f5Input)
+			if err != nil {
+				log.Fatal(err)
+			}
+			// convert bytes to a json message
+			err = json.Unmarshal(dat, &body)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.UpdatePool(pname, &body)
 		}
 	},
 }
@@ -130,7 +154,7 @@ var deletePoolCmd = &cobra.Command{
 			log.Fatal("delete pool requires a pool name as an argument (ie /partition/poolname )")
 		} else {
 			name := args[0]
-			deletePool(name)
+			appliance.DeletePool(name)
 		}
 	},
 }
@@ -147,7 +171,7 @@ var showPoolMemberCmd = &cobra.Command{
 			log.Fatal("show poolmember requires a pool as an argument - in the form of /partition/poolname")
 		} else {
 			name := args[0]
-			showPoolMembers(name)
+			appliance.ShowPoolMembers(name)
 		}
 	},
 }
@@ -162,7 +186,18 @@ var addPoolMemberCmd = &cobra.Command{
 			log.Fatal("add poolmember requires a pool name as an argument (ie /partition/poolname )")
 		} else {
 			name := args[0]
-			addPoolMembers(name)
+			body := json.RawMessage{}
+			// read in input file
+			dat, err := ioutil.ReadFile(f5Input)
+			if err != nil {
+				log.Fatal(err)
+			}
+			// convert bytes to a json message
+			err = json.Unmarshal(dat, &body)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.AddPoolMembers(name, &body)
 		}
 	},
 }
@@ -177,7 +212,18 @@ var updatePoolMemberCmd = &cobra.Command{
 			log.Fatal("update poolmember requires a pool name as an argument (ie /partition/poolname )")
 		} else {
 			name := args[0]
-			updatePoolMembers(name)
+			body := json.RawMessage{}
+			// read in input file
+			dat, err := ioutil.ReadFile(f5Input)
+			if err != nil {
+				log.Fatal(err)
+			}
+			// convert bytes to a json message
+			err = json.Unmarshal(dat, &body)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.UpdatePoolMembers(name, &body)
 		}
 	},
 }
@@ -192,7 +238,7 @@ var deletePoolMemberCmd = &cobra.Command{
 			log.Fatal("delete poolmember requires a pool name as an argument (ie /partition/poolname )")
 		} else {
 			name := args[0]
-			deletePoolMembers(name)
+			appliance.DeletePoolMembers(name)
 		}
 	},
 }
@@ -207,7 +253,7 @@ var offlinePoolMemberCmd = &cobra.Command{
 			log.Fatal("offline poolmember requires a poolmember name as an argument (ie /partition/poolmember )")
 		} else {
 			name := args[0]
-			offlinePoolMember(name)
+			appliance.OfflinePoolMember(f5Pool, name)
 		}
 	},
 }
@@ -222,7 +268,7 @@ var onlinePoolMemberCmd = &cobra.Command{
 			log.Fatal("online poolmember requires a poolmember name as an argument (ie /partition/poolmember )")
 		} else {
 			name := args[0]
-			onlinePoolMember(name)
+			appliance.OnlinePoolMember(f5Pool, name)
 		}
 	},
 }
@@ -233,10 +279,10 @@ var showVirtualCmd = &cobra.Command{
 	Long:  "show the current state of a virtual server",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			showVirtuals()
+			appliance.ShowVirtuals()
 		} else {
 			name := args[0]
-			showVirtual(name)
+			appliance.ShowVirtual(name)
 		}
 	},
 }
@@ -247,7 +293,18 @@ var addVirtualCmd = &cobra.Command{
 	Long:  "add a new virtual server",
 	Run: func(cmd *cobra.Command, args []string) {
 		checkRequiredFlag("input")
-		addVirtual()
+		body := json.RawMessage{}
+		// read in input file
+		dat, err := ioutil.ReadFile(f5Input)
+		if err != nil {
+			log.Fatal(err)
+		}
+		// convert bytes to a json message
+		err = json.Unmarshal(dat, &body)
+		if err != nil {
+			log.Fatal(err)
+		}
+		appliance.AddVirtual(&body)
 	},
 }
 
@@ -261,7 +318,18 @@ var updateVirtualCmd = &cobra.Command{
 			log.Fatal("update virtual requires a virtual server name as an argument (ie /partition/virtualservername )")
 		} else {
 			name := args[0]
-			updateVirtual(name)
+			body := json.RawMessage{}
+			// read in input file
+			dat, err := ioutil.ReadFile(f5Input)
+			if err != nil {
+				log.Fatal(err)
+			}
+			// convert bytes to a json message
+			err = json.Unmarshal(dat, &body)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.UpdateVirtual(name, &body)
 		}
 	},
 }
@@ -275,7 +343,7 @@ var deleteVirtualCmd = &cobra.Command{
 			log.Fatal("delete virtual requires a virtual server name as an argument (ie /partition/virtualservername )")
 		} else {
 			name := args[0]
-			deleteVirtual(name)
+			appliance.DeleteVirtual(name)
 		}
 	},
 }
@@ -286,10 +354,10 @@ var showPolicyCmd = &cobra.Command{
 	Long:  "show the current state of a policy",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			showPolicies()
+			appliance.ShowPolicies()
 		} else {
 			name := args[0]
-			showPolicy(name)
+			appliance.ShowPolicy(name)
 		}
 	},
 }
@@ -300,7 +368,18 @@ var addPolicyCmd = &cobra.Command{
 	Long:  "add a new policy",
 	Run: func(cmd *cobra.Command, args []string) {
 		checkRequiredFlag("input")
-		addPolicy()
+		body := json.RawMessage{}
+		// read in input file
+		dat, err := ioutil.ReadFile(f5Input)
+		if err != nil {
+			log.Fatal(err)
+		}
+		// convert bytes to a json message
+		err = json.Unmarshal(dat, &body)
+		if err != nil {
+			log.Fatal(err)
+		}
+		appliance.AddPolicy(&body)
 	},
 }
 
@@ -314,7 +393,18 @@ var updatePolicyCmd = &cobra.Command{
 			log.Fatal("update policy requires a policy name as an argument (ie /partition/policy )")
 		} else {
 			name := args[0]
-			updatePolicy(name)
+			body := json.RawMessage{}
+			// read in input file
+			dat, err := ioutil.ReadFile(f5Input)
+			if err != nil {
+				log.Fatal(err)
+			}
+			// convert bytes to a json message
+			err = json.Unmarshal(dat, &body)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.UpdatePolicy(name, &body)
 		}
 	},
 }
@@ -328,7 +418,7 @@ var deletePolicyCmd = &cobra.Command{
 			log.Fatal("delete policy requires a policy name as an argument (ie /partition/policy )")
 		} else {
 			name := args[0]
-			deletePolicy(name)
+			appliance.DeletePolicy(name)
 		}
 	},
 }
@@ -339,10 +429,10 @@ var showNodeCmd = &cobra.Command{
 	Long:  "show the current state of a node",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			showNodes()
+			appliance.ShowNodes()
 		} else {
 			name := args[0]
-			showNode(name)
+			appliance.ShowNode(name)
 		}
 	},
 }
@@ -353,7 +443,18 @@ var addNodeCmd = &cobra.Command{
 	Long:  "add a new node",
 	Run: func(cmd *cobra.Command, args []string) {
 		checkRequiredFlag("input")
-		addNode()
+		body := json.RawMessage{}
+		// read in input file
+		dat, err := ioutil.ReadFile(f5Input)
+		if err != nil {
+			log.Fatal(err)
+		}
+		// convert bytes to a json message
+		err = json.Unmarshal(dat, &body)
+		if err != nil {
+			log.Fatal(err)
+		}
+		appliance.AddNode(&body)
 	},
 }
 
@@ -367,7 +468,18 @@ var updateNodeCmd = &cobra.Command{
 			log.Fatal("update node requires a node name as an argument (ie /partition/nodename )")
 		} else {
 			name := args[0]
-			updateNode(name)
+			body := json.RawMessage{}
+			// read in input file
+			dat, err := ioutil.ReadFile(f5Input)
+			if err != nil {
+				log.Fatal(err)
+			}
+			// convert bytes to a json message
+			err = json.Unmarshal(dat, &body)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.UpdateNode(name, &body)
 		}
 	},
 }
@@ -381,7 +493,7 @@ var deleteNodeCmd = &cobra.Command{
 			log.Fatal("delete node requires a node name as an argument (ie /partition/nodename )")
 		} else {
 			name := args[0]
-			deleteNode(name)
+			appliance.DeleteNode(name)
 		}
 	},
 }
@@ -392,10 +504,10 @@ var showRuleCmd = &cobra.Command{
 	Long:  "show the details of a rule",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			showRules()
+			appliance.ShowRules()
 		} else {
 			name := args[0]
-			showRule(name)
+			appliance.ShowRule(name)
 		}
 	},
 }
@@ -406,7 +518,18 @@ var addRuleCmd = &cobra.Command{
 	Long:  "add a new rule",
 	Run: func(cmd *cobra.Command, args []string) {
 		checkRequiredFlag("input")
-		addRule()
+		body := json.RawMessage{}
+		// read in input file
+		dat, err := ioutil.ReadFile(f5Input)
+		if err != nil {
+			log.Fatal(err)
+		}
+		// convert bytes to a json message
+		err = json.Unmarshal(dat, &body)
+		if err != nil {
+			log.Fatal(err)
+		}
+		appliance.AddRule(&body)
 	},
 }
 
@@ -420,7 +543,18 @@ var updateRuleCmd = &cobra.Command{
 			log.Fatal("update rule requires a rule name as an argument (ie /partition/rulename )")
 		} else {
 			name := args[0]
-			updateRule(name)
+			body := json.RawMessage{}
+			// read in input file
+			dat, err := ioutil.ReadFile(f5Input)
+			if err != nil {
+				log.Fatal(err)
+			}
+			// convert bytes to a json message
+			err = json.Unmarshal(dat, &body)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.UpdateRule(name, &body)
 		}
 	},
 }
@@ -434,7 +568,7 @@ var deleteRuleCmd = &cobra.Command{
 			log.Fatal("delete rule requires a rule name as an argument (ie /partition/rulename )")
 		} else {
 			name := args[0]
-			deleteRule(name)
+			appliance.DeleteRule(name)
 		}
 	},
 }
@@ -445,10 +579,10 @@ var showServerSslCmd = &cobra.Command{
 	Long:  "show the details of a server-ssl profile",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			showServerSsls()
+			appliance.ShowServerSsls()
 		} else {
 			name := args[0]
-			showServerSsl(name)
+			appliance.ShowServerSsl(name)
 		}
 	},
 }
@@ -459,7 +593,18 @@ var addServerSslCmd = &cobra.Command{
 	Long:  "add a new server-ssl profile",
 	Run: func(cmd *cobra.Command, args []string) {
 		checkRequiredFlag("input")
-		addServerSsl()
+		body := json.RawMessage{}
+		// read in input file
+		dat, err := ioutil.ReadFile(f5Input)
+		if err != nil {
+			log.Fatal(err)
+		}
+		// convert bytes to a json message
+		err = json.Unmarshal(dat, &body)
+		if err != nil {
+			log.Fatal(err)
+		}
+		appliance.AddServerSsl(&body)
 	},
 }
 
@@ -473,7 +618,18 @@ var updateServerSslCmd = &cobra.Command{
 			log.Fatal("update server-ssl requires a server-ssl profile name as an argument (ie /partition/profilename )")
 		} else {
 			name := args[0]
-			updateServerSsl(name)
+			body := json.RawMessage{}
+			// read in input file
+			dat, err := ioutil.ReadFile(f5Input)
+			if err != nil {
+				log.Fatal(err)
+			}
+			// convert bytes to a json message
+			err = json.Unmarshal(dat, &body)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.UpdateServerSsl(name, &body)
 		}
 	},
 }
@@ -487,7 +643,7 @@ var deleteServerSslCmd = &cobra.Command{
 			log.Fatal("delete server-ssl requires a server-ssl profile name as an argument (ie /partition/profilename )")
 		} else {
 			name := args[0]
-			deleteServerSsl(name)
+			appliance.DeleteServerSsl(name)
 		}
 	},
 }
@@ -498,10 +654,10 @@ var showClientSslCmd = &cobra.Command{
 	Long:  "show the details of a client-ssl profile",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			showClientSsls()
+			appliance.ShowClientSsls()
 		} else {
 			name := args[0]
-			showClientSsl(name)
+			appliance.ShowClientSsl(name)
 		}
 	},
 }
@@ -512,7 +668,18 @@ var addClientSslCmd = &cobra.Command{
 	Long:  "add a new client-ssl profile",
 	Run: func(cmd *cobra.Command, args []string) {
 		checkRequiredFlag("input")
-		addClientSsl()
+		body := json.RawMessage{}
+		// read in input file
+		dat, err := ioutil.ReadFile(f5Input)
+		if err != nil {
+			log.Fatal(err)
+		}
+		// convert bytes to a json message
+		err = json.Unmarshal(dat, &body)
+		if err != nil {
+			log.Fatal(err)
+		}
+		appliance.AddClientSsl(&body)
 	},
 }
 
@@ -525,8 +692,19 @@ var updateClientSslCmd = &cobra.Command{
 		if len(args) < 1 {
 			log.Fatal("update client-ssl requires a client-ssl profile name as an argument (ie /partition/profilename )")
 		} else {
+			body := json.RawMessage{}
+			// read in input file
+			dat, err := ioutil.ReadFile(f5Input)
+			if err != nil {
+				log.Fatal(err)
+			}
+			// convert bytes to a json message
+			err = json.Unmarshal(dat, &body)
+			if err != nil {
+				log.Fatal(err)
+			}
 			name := args[0]
-			updateClientSsl(name)
+			appliance.UpdateClientSsl(name, &body)
 		}
 	},
 }
@@ -540,7 +718,7 @@ var deleteClientSslCmd = &cobra.Command{
 			log.Fatal("delete client-ssl requires a client-ssl profile name as an argument (ie /partition/profilename )")
 		} else {
 			name := args[0]
-			deleteClientSsl(name)
+			appliance.DeleteClientSsl(name)
 		}
 	},
 }
@@ -551,10 +729,10 @@ var showMonitorHttpCmd = &cobra.Command{
 	Long:  "show the details of a monitor-http profile",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			showMonitorsHttp()
+			appliance.ShowMonitorsHttp()
 		} else {
 			name := args[0]
-			showMonitorHttp(name)
+			appliance.ShowMonitorHttp(name)
 		}
 	},
 }
@@ -565,7 +743,18 @@ var addMonitorHttpCmd = &cobra.Command{
 	Long:  "add a new monitor-http profile",
 	Run: func(cmd *cobra.Command, args []string) {
 		checkRequiredFlag("input")
-		addMonitorHttp()
+		body := json.RawMessage{}
+		// read in input file
+		dat, err := ioutil.ReadFile(f5Input)
+		if err != nil {
+			log.Fatal(err)
+		}
+		// convert bytes to a json message
+		err = json.Unmarshal(dat, &body)
+		if err != nil {
+			log.Fatal(err)
+		}
+		appliance.AddMonitorHttp(&body)
 	},
 }
 
@@ -579,7 +768,18 @@ var updateMonitorHttpCmd = &cobra.Command{
 			log.Fatal("update monitor-http requires a monitor-http profile name as an argument (ie /partition/monitorname )")
 		} else {
 			name := args[0]
-			updateMonitorHttp(name)
+			body := json.RawMessage{}
+			// read in input file
+			dat, err := ioutil.ReadFile(f5Input)
+			if err != nil {
+				log.Fatal(err)
+			}
+			// convert bytes to a json message
+			err = json.Unmarshal(dat, &body)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.UpdateMonitorHttp(name, &body)
 		}
 	},
 }
@@ -593,7 +793,7 @@ var deleteMonitorHttpCmd = &cobra.Command{
 			log.Fatal("delete monitor-http requires a monitor-http profile name as an argument (ie /partition/profilename )")
 		} else {
 			name := args[0]
-			deleteMonitorHttp(name)
+			appliance.DeleteMonitorHttp(name)
 		}
 	},
 }
@@ -638,24 +838,11 @@ var deleteStackCmd = &cobra.Command{
 	},
 }
 
-// F5 Module data struct
-// to show all available modules when using show without args
-type LBModule struct {
-	Link string `json:"link"`
-}
-
-type LBModuleRef struct {
-	Reference LBModule `json:"reference"`
-}
-
-type LBModules struct {
-	Items []LBModuleRef `json:"items"`
-}
-
 func show() {
 
 	u := "https://" + f5Host + "/mgmt/tm/ltm"
-	res := LBModules{}
+	res := f5.LBModules{}
+	appliance.ShowModules()
 
 	err, resp := SendRequest(u, GET, &sessn, nil, &res)
 	if err != nil {
