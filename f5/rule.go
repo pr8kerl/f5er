@@ -12,7 +12,7 @@ type LBRawValues struct {
 type LBRule struct {
 	Name         string      `json:"name"`
 	Partition    string      `json:"partition"`
-	Fullpath     string      `json:"fullPath"`
+	FullPath     string      `json:"fullPath"`
 	Generation   int         `json:"generation"`
 	ApiAnonymous string      `json:"apiAnonymous"`
 	ApiRawValues LBRawValues `json:"apiRawValues"`

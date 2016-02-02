@@ -8,7 +8,7 @@ import (
 type LBServerSsl struct {
 	Name                         string   `json:"name"`
 	Partition                    string   `json:"partition"`
-	Fullpath                     string   `json:"fullPath"`
+	FullPath                     string   `json:"fullPath"`
 	Generation                   int      `json:"generation"`
 	UntrustedCertResponseControl string   `json:"untrustedCertResponseControl"`
 	UncleanShutdown              string   `json:"uncleanShutdown"`

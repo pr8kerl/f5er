@@ -76,6 +76,7 @@ func showStack() {
 		if err := json.Unmarshal(v, &virt); err != nil {
 			log.Fatal(err)
 		}
+		log.Printf("\nvirtual[%d]: %s\n", count, virt.FullPath)
 
 		err, res := appliance.ShowVirtual(virt.FullPath)
 		if err != nil {

@@ -8,7 +8,7 @@ import (
 type LBClientSsl struct {
 	Name                            string           `json:"name"`
 	Partition                       string           `json:"partition"`
-	Fullpath                        string           `json:"fullPath"`
+	FullPath                        string           `json:"fullPath"`
 	Generation                      int              `json:"generation"`
 	AlertTimeout                    string           `json:"alertTimeout"`
 	AllowNonSsl                     string           `json:"allowNonSsl"`

@@ -185,3 +185,16 @@ type LBModuleRef struct {
 type LBModules struct {
 	Items []LBModuleRef `json:"items"`
 }
+
+func (f *Device) ShowModules() (error, *LBModules) {
+
+	u := "https://" + f.Hostname + "/mgmt/tm/ltm"
+	res := LBModules{}
+
+	err, _ := f.sendRequest(u, GET, nil, &res)
+	if err != nil {
+		return err, nil
+	} else {
+		return nil, &res
+	}
+}

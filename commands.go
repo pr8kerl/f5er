@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/pr8kerl/f5er/f5"
 	"github.com/spf13/cobra"
 	"io/ioutil"
 	"log"
@@ -80,7 +79,11 @@ var showDeviceCmd = &cobra.Command{
 	Short: "show an f5 device",
 	Long:  "show the current state of an f5 device",
 	Run: func(cmd *cobra.Command, args []string) {
-		appliance.ShowDevice()
+		err, res := appliance.ShowDevice()
+		if err != nil {
+			log.Fatal(err)
+		}
+		appliance.PrintObject(res)
 	},
 }
 
@@ -90,10 +93,20 @@ var showPoolCmd = &cobra.Command{
 	Long:  "show the current state of a pool",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			appliance.ShowPools()
+			err, res := appliance.ShowPools()
+			if err != nil {
+				log.Fatal(err)
+			}
+			for _, v := range res.Items {
+				fmt.Printf("%s\n", v.FullPath)
+			}
 		} else {
 			name := args[0]
-			appliance.ShowPool(name)
+			err, res := appliance.ShowPool(name)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.PrintObject(res)
 		}
 	},
 }
@@ -115,7 +128,12 @@ var addPoolCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
-		appliance.AddPool(&body)
+		err, res := appliance.AddPool(&body)
+		if err != nil {
+			log.Fatal(err)
+		}
+		appliance.PrintObject(res)
+
 	},
 }
 
@@ -140,7 +158,12 @@ var updatePoolCmd = &cobra.Command{
 			if err != nil {
 				log.Fatal(err)
 			}
-			appliance.UpdatePool(pname, &body)
+			err, res := appliance.UpdatePool(pname, &body)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.PrintObject(res)
+
 		}
 	},
 }
@@ -154,7 +177,11 @@ var deletePoolCmd = &cobra.Command{
 			log.Fatal("delete pool requires a pool name as an argument (ie /partition/poolname )")
 		} else {
 			name := args[0]
-			appliance.DeletePool(name)
+			err, res := appliance.DeletePool(name)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.PrintObject(res)
 		}
 	},
 }
@@ -171,7 +198,11 @@ var showPoolMemberCmd = &cobra.Command{
 			log.Fatal("show poolmember requires a pool as an argument - in the form of /partition/poolname")
 		} else {
 			name := args[0]
-			appliance.ShowPoolMembers(name)
+			err, res := appliance.ShowPoolMembers(name)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.PrintObject(res.Items)
 		}
 	},
 }
@@ -197,7 +228,11 @@ var addPoolMemberCmd = &cobra.Command{
 			if err != nil {
 				log.Fatal(err)
 			}
-			appliance.AddPoolMembers(name, &body)
+			err, res := appliance.AddPoolMembers(name, &body)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.PrintObject(res)
 		}
 	},
 }
@@ -223,7 +258,11 @@ var updatePoolMemberCmd = &cobra.Command{
 			if err != nil {
 				log.Fatal(err)
 			}
-			appliance.UpdatePoolMembers(name, &body)
+			err, res := appliance.UpdatePoolMembers(name, &body)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.PrintObject(res)
 		}
 	},
 }
@@ -238,7 +277,11 @@ var deletePoolMemberCmd = &cobra.Command{
 			log.Fatal("delete poolmember requires a pool name as an argument (ie /partition/poolname )")
 		} else {
 			name := args[0]
-			appliance.DeletePoolMembers(name)
+			err, res := appliance.DeletePoolMembers(name)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.PrintObject(res)
 		}
 	},
 }
@@ -253,7 +296,11 @@ var offlinePoolMemberCmd = &cobra.Command{
 			log.Fatal("offline poolmember requires a poolmember name as an argument (ie /partition/poolmember )")
 		} else {
 			name := args[0]
-			appliance.OfflinePoolMember(f5Pool, name)
+			err, res := appliance.OfflinePoolMember(f5Pool, name)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.PrintObject(res)
 		}
 	},
 }
@@ -268,7 +315,11 @@ var onlinePoolMemberCmd = &cobra.Command{
 			log.Fatal("online poolmember requires a poolmember name as an argument (ie /partition/poolmember )")
 		} else {
 			name := args[0]
-			appliance.OnlinePoolMember(f5Pool, name)
+			err, res := appliance.OnlinePoolMember(f5Pool, name)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.PrintObject(res)
 		}
 	},
 }
@@ -279,10 +330,20 @@ var showVirtualCmd = &cobra.Command{
 	Long:  "show the current state of a virtual server",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			appliance.ShowVirtuals()
+			err, res := appliance.ShowVirtuals()
+			if err != nil {
+				log.Fatal(err)
+			}
+			for _, v := range res.Items {
+				fmt.Printf("%s\n", v.FullPath)
+			}
 		} else {
 			name := args[0]
-			appliance.ShowVirtual(name)
+			err, res := appliance.ShowVirtual(name)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.PrintObject(res)
 		}
 	},
 }
@@ -304,7 +365,11 @@ var addVirtualCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
-		appliance.AddVirtual(&body)
+		err, res := appliance.AddVirtual(&body)
+		if err != nil {
+			log.Fatal(err)
+		}
+		appliance.PrintObject(res)
 	},
 }
 
@@ -329,7 +394,11 @@ var updateVirtualCmd = &cobra.Command{
 			if err != nil {
 				log.Fatal(err)
 			}
-			appliance.UpdateVirtual(name, &body)
+			err, res := appliance.UpdateVirtual(name, &body)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.PrintObject(res)
 		}
 	},
 }
@@ -343,7 +412,11 @@ var deleteVirtualCmd = &cobra.Command{
 			log.Fatal("delete virtual requires a virtual server name as an argument (ie /partition/virtualservername )")
 		} else {
 			name := args[0]
-			appliance.DeleteVirtual(name)
+			err, res := appliance.DeleteVirtual(name)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.PrintObject(res)
 		}
 	},
 }
@@ -354,10 +427,20 @@ var showPolicyCmd = &cobra.Command{
 	Long:  "show the current state of a policy",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			appliance.ShowPolicies()
+			err, res := appliance.ShowPolicies()
+			if err != nil {
+				log.Fatal(err)
+			}
+			for _, v := range res.Items {
+				fmt.Printf("%s\n", v.FullPath)
+			}
 		} else {
 			name := args[0]
-			appliance.ShowPolicy(name)
+			err, res := appliance.ShowPolicy(name)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.PrintObject(res)
 		}
 	},
 }
@@ -379,7 +462,11 @@ var addPolicyCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
-		appliance.AddPolicy(&body)
+		err, res := appliance.AddPolicy(&body)
+		if err != nil {
+			log.Fatal(err)
+		}
+		appliance.PrintObject(res)
 	},
 }
 
@@ -404,7 +491,11 @@ var updatePolicyCmd = &cobra.Command{
 			if err != nil {
 				log.Fatal(err)
 			}
-			appliance.UpdatePolicy(name, &body)
+			err, res := appliance.UpdatePolicy(name, &body)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.PrintObject(res)
 		}
 	},
 }
@@ -418,7 +509,11 @@ var deletePolicyCmd = &cobra.Command{
 			log.Fatal("delete policy requires a policy name as an argument (ie /partition/policy )")
 		} else {
 			name := args[0]
-			appliance.DeletePolicy(name)
+			err, res := appliance.DeletePolicy(name)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.PrintObject(res)
 		}
 	},
 }
@@ -429,10 +524,20 @@ var showNodeCmd = &cobra.Command{
 	Long:  "show the current state of a node",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			appliance.ShowNodes()
+			err, res := appliance.ShowNodes()
+			if err != nil {
+				log.Fatal(err)
+			}
+			for _, v := range res.Items {
+				fmt.Printf("%s\n", v.FullPath)
+			}
 		} else {
 			name := args[0]
-			appliance.ShowNode(name)
+			err, res := appliance.ShowNode(name)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.PrintObject(res)
 		}
 	},
 }
@@ -454,7 +559,11 @@ var addNodeCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
-		appliance.AddNode(&body)
+		err, res := appliance.AddNode(&body)
+		if err != nil {
+			log.Fatal(err)
+		}
+		appliance.PrintObject(res)
 	},
 }
 
@@ -479,7 +588,11 @@ var updateNodeCmd = &cobra.Command{
 			if err != nil {
 				log.Fatal(err)
 			}
-			appliance.UpdateNode(name, &body)
+			err, res := appliance.UpdateNode(name, &body)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.PrintObject(res)
 		}
 	},
 }
@@ -493,7 +606,11 @@ var deleteNodeCmd = &cobra.Command{
 			log.Fatal("delete node requires a node name as an argument (ie /partition/nodename )")
 		} else {
 			name := args[0]
-			appliance.DeleteNode(name)
+			err, res := appliance.DeleteNode(name)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.PrintObject(res)
 		}
 	},
 }
@@ -504,10 +621,20 @@ var showRuleCmd = &cobra.Command{
 	Long:  "show the details of a rule",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			appliance.ShowRules()
+			err, res := appliance.ShowRules()
+			if err != nil {
+				log.Fatal(err)
+			}
+			for _, v := range res.Items {
+				fmt.Printf("%s\n", v.FullPath)
+			}
 		} else {
 			name := args[0]
-			appliance.ShowRule(name)
+			err, res := appliance.ShowRule(name)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.PrintObject(res)
 		}
 	},
 }
@@ -529,7 +656,11 @@ var addRuleCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
-		appliance.AddRule(&body)
+		err, res := appliance.AddRule(&body)
+		if err != nil {
+			log.Fatal(err)
+		}
+		appliance.PrintObject(res)
 	},
 }
 
@@ -554,7 +685,11 @@ var updateRuleCmd = &cobra.Command{
 			if err != nil {
 				log.Fatal(err)
 			}
-			appliance.UpdateRule(name, &body)
+			err, res := appliance.UpdateRule(name, &body)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.PrintObject(res)
 		}
 	},
 }
@@ -568,7 +703,11 @@ var deleteRuleCmd = &cobra.Command{
 			log.Fatal("delete rule requires a rule name as an argument (ie /partition/rulename )")
 		} else {
 			name := args[0]
-			appliance.DeleteRule(name)
+			err, res := appliance.DeleteRule(name)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.PrintObject(res)
 		}
 	},
 }
@@ -579,10 +718,20 @@ var showServerSslCmd = &cobra.Command{
 	Long:  "show the details of a server-ssl profile",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			appliance.ShowServerSsls()
+			err, res := appliance.ShowServerSsls()
+			if err != nil {
+				log.Fatal(err)
+			}
+			for _, v := range res.Items {
+				fmt.Printf("%s\n", v.FullPath)
+			}
 		} else {
 			name := args[0]
-			appliance.ShowServerSsl(name)
+			err, res := appliance.ShowServerSsl(name)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.PrintObject(res)
 		}
 	},
 }
@@ -604,7 +753,11 @@ var addServerSslCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
-		appliance.AddServerSsl(&body)
+		err, res := appliance.AddServerSsl(&body)
+		if err != nil {
+			log.Fatal(err)
+		}
+		appliance.PrintObject(res)
 	},
 }
 
@@ -629,7 +782,11 @@ var updateServerSslCmd = &cobra.Command{
 			if err != nil {
 				log.Fatal(err)
 			}
-			appliance.UpdateServerSsl(name, &body)
+			err, res := appliance.UpdateServerSsl(name, &body)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.PrintObject(res)
 		}
 	},
 }
@@ -643,7 +800,11 @@ var deleteServerSslCmd = &cobra.Command{
 			log.Fatal("delete server-ssl requires a server-ssl profile name as an argument (ie /partition/profilename )")
 		} else {
 			name := args[0]
-			appliance.DeleteServerSsl(name)
+			err, res := appliance.DeleteServerSsl(name)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.PrintObject(res)
 		}
 	},
 }
@@ -654,10 +815,20 @@ var showClientSslCmd = &cobra.Command{
 	Long:  "show the details of a client-ssl profile",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			appliance.ShowClientSsls()
+			err, res := appliance.ShowClientSsls()
+			if err != nil {
+				log.Fatal(err)
+			}
+			for _, v := range res.Items {
+				fmt.Printf("%s\n", v.FullPath)
+			}
 		} else {
 			name := args[0]
-			appliance.ShowClientSsl(name)
+			err, res := appliance.ShowClientSsl(name)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.PrintObject(res)
 		}
 	},
 }
@@ -679,7 +850,11 @@ var addClientSslCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
-		appliance.AddClientSsl(&body)
+		err, res := appliance.AddClientSsl(&body)
+		if err != nil {
+			log.Fatal(err)
+		}
+		appliance.PrintObject(res)
 	},
 }
 
@@ -704,7 +879,11 @@ var updateClientSslCmd = &cobra.Command{
 				log.Fatal(err)
 			}
 			name := args[0]
-			appliance.UpdateClientSsl(name, &body)
+			err, res := appliance.UpdateClientSsl(name, &body)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.PrintObject(res)
 		}
 	},
 }
@@ -718,7 +897,11 @@ var deleteClientSslCmd = &cobra.Command{
 			log.Fatal("delete client-ssl requires a client-ssl profile name as an argument (ie /partition/profilename )")
 		} else {
 			name := args[0]
-			appliance.DeleteClientSsl(name)
+			err, res := appliance.DeleteClientSsl(name)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.PrintObject(res)
 		}
 	},
 }
@@ -729,10 +912,20 @@ var showMonitorHttpCmd = &cobra.Command{
 	Long:  "show the details of a monitor-http profile",
 	Run: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
-			appliance.ShowMonitorsHttp()
+			err, res := appliance.ShowMonitorsHttp()
+			if err != nil {
+				log.Fatal(err)
+			}
+			for _, v := range res.Items {
+				fmt.Printf("%s\n", v.FullPath)
+			}
 		} else {
 			name := args[0]
-			appliance.ShowMonitorHttp(name)
+			err, res := appliance.ShowMonitorHttp(name)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.PrintObject(res)
 		}
 	},
 }
@@ -754,7 +947,11 @@ var addMonitorHttpCmd = &cobra.Command{
 		if err != nil {
 			log.Fatal(err)
 		}
-		appliance.AddMonitorHttp(&body)
+		err, res := appliance.AddMonitorHttp(&body)
+		if err != nil {
+			log.Fatal(err)
+		}
+		appliance.PrintObject(res)
 	},
 }
 
@@ -779,7 +976,11 @@ var updateMonitorHttpCmd = &cobra.Command{
 			if err != nil {
 				log.Fatal(err)
 			}
-			appliance.UpdateMonitorHttp(name, &body)
+			err, res := appliance.UpdateMonitorHttp(name, &body)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.PrintObject(res)
 		}
 	},
 }
@@ -793,7 +994,11 @@ var deleteMonitorHttpCmd = &cobra.Command{
 			log.Fatal("delete monitor-http requires a monitor-http profile name as an argument (ie /partition/profilename )")
 		} else {
 			name := args[0]
-			appliance.DeleteMonitorHttp(name)
+			err, res := appliance.DeleteMonitorHttp(name)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.PrintObject(res)
 		}
 	},
 }
@@ -840,16 +1045,11 @@ var deleteStackCmd = &cobra.Command{
 
 func show() {
 
-	u := "https://" + f5Host + "/mgmt/tm/ltm"
-	res := f5.LBModules{}
-	appliance.ShowModules()
-
-	err, resp := SendRequest(u, GET, &sessn, nil, &res)
+	err, mods := appliance.ShowModules()
 	if err != nil {
-		log.Fatalf("%d: %s\n", resp.Status(), err)
+		log.Fatalf("cannot show modules: %s\n", err)
 	}
-
-	for _, v := range res.Items {
+	for _, v := range mods.Items {
 		fmt.Printf("module:\t%s\n", v.Reference.Link)
 	}
 
