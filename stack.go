@@ -562,6 +562,40 @@ func deleteStack() {
 
 	}
 
+	// pools
+	for count, p := range stack.Pools {
+
+		pool := f5.LBPool{}
+		if err := json.Unmarshal(p, &pool); err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("\npool[%d]: %s\n", count, pool.FullPath)
+
+		err, res := appliance.DeletePool(pool.FullPath)
+		if err != nil {
+			log.Printf("error deleting pool %s : %s\n", pool.FullPath, err)
+		} else {
+			appliance.PrintObject(&res)
+		}
+
+	}
+
+	// if we made it here - commit the transaction
+	err = appliance.CommitTransaction(tid)
+	if err != nil {
+		log.Printf("error commiting transaction %s : %s\n", tid, err)
+	} else {
+		log.Printf("transaction committed : %s\n\n", tid)
+	}
+
+	// another transaction for all the other objects
+	err, tid = appliance.StartTransaction()
+	if err != nil {
+		log.Fatalf("error creating transaction: %s\n", err)
+	} else {
+		log.Printf("transaction %s created\n", tid)
+	}
+
 	// delete policies
 	for count, n := range stack.Policies {
 
@@ -598,24 +632,6 @@ func deleteStack() {
 		err, res := appliance.DeleteRule(obj.FullPath)
 		if err != nil {
 			log.Printf("error deleting rule %s : %s\n", obj.FullPath, err)
-		} else {
-			appliance.PrintObject(&res)
-		}
-
-	}
-
-	// pools
-	for count, p := range stack.Pools {
-
-		pool := f5.LBPool{}
-		if err := json.Unmarshal(p, &pool); err != nil {
-			log.Fatal(err)
-		}
-		log.Printf("\npool[%d]: %s\n", count, pool.FullPath)
-
-		err, res := appliance.DeletePool(pool.FullPath)
-		if err != nil {
-			log.Printf("error deleting pool %s : %s\n", pool.FullPath, err)
 		} else {
 			appliance.PrintObject(&res)
 		}
@@ -664,14 +680,6 @@ func deleteStack() {
 
 	}
 
-	// if we made it here - commit the transaction
-	err = appliance.CommitTransaction(tid)
-	if err != nil {
-		log.Printf("error commiting transaction %s : %s\n", tid, err)
-	} else {
-		log.Printf("transaction committed : %s\n", tid)
-	}
-
 	// delete nodes outside of transaction - pools depend on them and won't delete otherwise
 	for count, n := range stack.Nodes {
 
@@ -689,6 +697,14 @@ func deleteStack() {
 		} else {
 			appliance.PrintObject(&res)
 		}
+	}
+
+	// if we made it here - commit the transaction
+	err = appliance.CommitTransaction(tid)
+	if err != nil {
+		log.Printf("error commiting transaction %s : %s\n", tid, err)
+	} else {
+		log.Printf("transaction committed : %s\n", tid)
 	}
 
 }

@@ -1,0 +1,161 @@
+{
+  "profiles-client-ssl": [
+    {
+      "name": "example.com",
+      "partition": "DMZ",
+      "fullPath": "/DMZ/example.com",
+      "cert": "/DMZ/example.com.crt",
+      "chain": "/Common/digicert-intermediate.crt",
+      "key": "/DMZ/example.com.key",
+      "certKeyChain": [
+        {
+          "name": "example.com",
+          "cert": "/DMZ/example.com.crt",
+          "chain": "/Common/digicert-intermediate.crt",
+          "key": "/DMZ/example.com.key"
+        }
+      ]
+    }
+  ],
+  "policies": [
+    {
+      "name": "webserver-rewrites",
+      "partition": "DMZ",
+      "fullPath": "/DMZ/webserver-rewrites",
+      "controls": [
+        "forwarding"
+      ],
+      "requires": [
+        "http",
+        "tcp"
+      ],
+      "strategy": "/Common/first-match",
+      "rules": [
+        {
+          "name": "\"match /blog\"",
+          "fullPath": "\"match /blog\"",
+          "actions": [
+            {
+              "name": "0",
+              "fullPath": "0",
+              "forward": true,
+              "pool": "/DMZ/blog-80-pool"
+            }
+          ],
+          "conditions": [
+            {
+              "name": "0",
+              "fullPath": "0",
+              "all": true,
+              "httpUri": true,
+              "request": true,
+              "startsWith": true,
+              "values": [
+                "/blog"
+              ]
+            }
+          ]
+        },
+        {
+          "name": "\"match /wiki\"",
+          "fullPath": "\"match /wiki\"",
+          "actions": [
+            {
+              "name": "0",
+              "fullPath": "0",
+              "forward": true,
+              "pool": "/DMZ/wiki-80-pool"
+            }
+          ],
+          "conditions": [
+            {
+              "name": "0",
+              "fullPath": "0",
+              "all": true,
+              "httpUri": true,
+              "request": true,
+              "startsWith": true,
+              "values": [
+                "/wiki"
+              ]
+            }
+          ]
+        }
+      ]
+    }
+  ],
+  "nodes": [
+    {
+      "name": "webserver01",
+      "fullPath": "/DMZ/webserver01",
+      "partition": "DMZ",
+      "address": "192.168.0.11%6",
+      "monitor": "/Common/icmp"
+    },
+    {
+      "name": "webserver02",
+      "fullPath": "/DMZ/webserver02",
+      "partition": "DMZ",
+      "address": "192.168.0.12%6",
+      "monitor": "/Common/icmp"
+    }
+  ],
+  "pools": [
+    {
+      "name": "webserver-80-pool",
+      "partition": "DMZ",
+      "fullPath": "/DMZ/webserver-80-pool",
+      "monitor": "/Common/http",
+      "members": [
+        {
+          "name": "webserver01:80",
+          "partition": "DMZ",
+          "fullPath": "/DMZ/webserver01:80",
+          "priorityGroup": 100
+        },
+        {
+          "name": "webserver02:80",
+          "partition": "DMZ",
+          "fullPath": "/DMZ/webserver02:80",
+          "priorityGroup": 100
+        },
+        {
+          "name": "audmz-maintenance-01:80",
+          "partition": "DMZ",
+          "fullPath": "/DMZ/audmz-maintenance-01:80",
+          "priorityGroup": 50
+        }
+      ]
+    }
+  ],
+  "virtuals": [
+    {
+      "name": "webserver-com-443-vs",
+      "fullPath": "/DMZ/webserver-com-443-vs",
+      "partition": "DMZ",
+      "destination": "/DMZ/192.168.1.10%6:443",
+      "pool": "/DMZ/webserver-80-pool",
+      "profiles": [
+        {
+          "name": "example.com",
+          "partition": "DMZ",
+          "fullPath": "/DMZ/example.com",
+          "context": "clientside"
+        },
+        {
+          "name": "http",
+          "partition": "Common",
+          "fullPath": "/Common/http",
+          "context": "all"
+        }
+      ],
+      "policies": [
+        {
+          "name": "webserver-rewrites",
+          "partition": "DMZ",
+          "fullPath": "/DMZ/webserver-rewrites"
+        }
+      ]
+    }
+  ]
+}
