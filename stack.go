@@ -8,9 +8,13 @@ import (
 )
 
 type LBStack struct {
-	Nodes    []json.RawMessage `json:"nodes"`
-	Pools    []json.RawMessage `json:"pools"`
-	Virtuals []json.RawMessage `json:"virtuals"`
+	ServerSsl []json.RawMessage `json:"profiles-server-ssl"`
+	ClientSsl []json.RawMessage `json:"profiles-client-ssl"`
+	Nodes     []json.RawMessage `json:"nodes"`
+	Pools     []json.RawMessage `json:"pools"`
+	Rules     []json.RawMessage `json:"rules"`
+	Policies  []json.RawMessage `json:"policies"`
+	Virtuals  []json.RawMessage `json:"virtuals"`
 }
 
 type LBEmptyBody struct{}
@@ -29,6 +33,46 @@ func showStack() {
 	err = json.Unmarshal(dat, &stack)
 	if err != nil {
 		log.Fatalf("error unmarshaling input json file into a stack: %s\n", err)
+	}
+
+	// show server-ssl
+	for count, n := range stack.ServerSsl {
+
+		obj := f5.LBServerSsl{}
+		// convert json to a struct
+		err = json.Unmarshal(n, &obj)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("\nserver-ssl[%d]: %s\n", count, obj.FullPath)
+
+		err, res := appliance.ShowServerSsl(obj.FullPath)
+		if err != nil {
+			log.Printf("error showing server-ssl %s : %s\n", obj.FullPath, err)
+		} else {
+			appliance.PrintObject(&res)
+		}
+
+	}
+
+	// show client-ssl
+	for count, n := range stack.ClientSsl {
+
+		obj := f5.LBClientSsl{}
+		// convert json to a struct
+		err = json.Unmarshal(n, &obj)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("\nclient-ssl[%d]: %s\n", count, obj.FullPath)
+
+		err, res := appliance.ShowClientSsl(obj.FullPath)
+		if err != nil {
+			log.Printf("error showing client-ssl %s : %s\n", obj.FullPath, err)
+		} else {
+			appliance.PrintObject(&res)
+		}
+
 	}
 
 	// show nodes
@@ -69,6 +113,47 @@ func showStack() {
 		}
 
 	}
+
+	// show rules
+	for count, n := range stack.Rules {
+
+		obj := f5.LBRule{}
+		// convert json to a struct
+		err = json.Unmarshal(n, &obj)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("\nrule[%d]: %s\n", count, obj.FullPath)
+
+		err, res := appliance.ShowRule(obj.FullPath)
+		if err != nil {
+			log.Printf("error showing rule %s : %s\n", obj.FullPath, err)
+		} else {
+			appliance.PrintObject(&res)
+		}
+
+	}
+
+	// show policies
+	for count, n := range stack.Policies {
+
+		obj := f5.LBPolicy{}
+		// convert json to an obj struct
+		err = json.Unmarshal(n, &obj)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("\npolicy[%d]: %s\n", count, obj.FullPath)
+
+		err, res := appliance.ShowPolicy(obj.FullPath)
+		if err != nil {
+			log.Printf("error showing policy %s : %s\n", obj.FullPath, err)
+		} else {
+			appliance.PrintObject(&res)
+		}
+
+	}
+
 	// show virtual
 	for count, v := range stack.Virtuals {
 
@@ -111,6 +196,48 @@ func addStack() {
 		log.Printf("transaction %s created\n", tid)
 	}
 
+	// add server-ssl
+	for count, n := range stack.ServerSsl {
+
+		obj := f5.LBServerSsl{}
+		// convert json to a struct - make sure it is valid
+		err = json.Unmarshal(n, &obj)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("\nserver-ssl[%d]: %s\n", count, obj.FullPath)
+
+		// use the raw json to add - only set minimal number of fields
+		err, res := appliance.AddServerSsl(&n)
+		if err != nil {
+			log.Printf("error adding server-ssl %s : %s\n", obj.FullPath, err)
+		} else {
+			appliance.PrintObject(&res)
+		}
+
+	}
+
+	// add client-ssl
+	for count, n := range stack.ClientSsl {
+
+		obj := f5.LBClientSsl{}
+		// convert json to a struct - make sure it is valid
+		err = json.Unmarshal(n, &obj)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("\nclient-ssl[%d]: %s\n", count, obj.FullPath)
+
+		// use the raw json to add - only set minimal number of fields
+		err, res := appliance.AddClientSsl(&n)
+		if err != nil {
+			log.Printf("error adding client-ssl %s : %s\n", obj.FullPath, err)
+		} else {
+			appliance.PrintObject(&res)
+		}
+
+	}
+
 	// add nodes
 	for count, n := range stack.Nodes {
 
@@ -144,6 +271,48 @@ func addStack() {
 		err, res := appliance.AddPool(&p)
 		if err != nil {
 			log.Printf("error adding pool %s : %s\n", pool.FullPath, err)
+		} else {
+			appliance.PrintObject(&res)
+		}
+
+	}
+
+	// add rules
+	for count, n := range stack.Rules {
+
+		obj := f5.LBRule{}
+		// convert json to a struct - make sure it is valid
+		err = json.Unmarshal(n, &obj)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("\nrule[%d]: %s\n", count, obj.FullPath)
+
+		// use the raw json to add - only set minimal number of fields
+		err, res := appliance.AddRule(&n)
+		if err != nil {
+			log.Printf("error adding rule %s : %s\n", obj.FullPath, err)
+		} else {
+			appliance.PrintObject(&res)
+		}
+
+	}
+
+	// add policies
+	for count, n := range stack.Policies {
+
+		obj := f5.LBPolicy{}
+		// convert json to a struct - make sure it is valid
+		err = json.Unmarshal(n, &obj)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("\npolicy[%d]: %s\n", count, obj.FullPath)
+
+		// use the raw json to add - only set minimal number of fields
+		err, res := appliance.AddPolicy(&n)
+		if err != nil {
+			log.Printf("error adding policy %s : %s\n", obj.FullPath, err)
 		} else {
 			appliance.PrintObject(&res)
 		}
@@ -202,6 +371,48 @@ func updateStack() {
 		log.Printf("transaction %s created\n", tid)
 	}
 
+	// update server-ssl
+	for count, n := range stack.ServerSsl {
+
+		obj := f5.LBServerSsl{}
+		// convert json to a struct - make sure it is valid
+		err = json.Unmarshal(n, &obj)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("\nserver-ssl[%d]: %s\n", count, obj.FullPath)
+
+		// use the raw json to add - only set minimal number of fields
+		err, res := appliance.UpdateServerSsl(obj.FullPath, &n)
+		if err != nil {
+			log.Printf("error updating server-ssl %s : %s\n", obj.FullPath, err)
+		} else {
+			appliance.PrintObject(&res)
+		}
+
+	}
+
+	// update client-ssl
+	for count, n := range stack.ServerSsl {
+
+		obj := f5.LBClientSsl{}
+		// convert json to a struct - make sure it is valid
+		err = json.Unmarshal(n, &obj)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("\nclient-ssl[%d]: %s\n", count, obj.FullPath)
+
+		// use the raw json to add - only set minimal number of fields
+		err, res := appliance.UpdateClientSsl(obj.FullPath, &n)
+		if err != nil {
+			log.Printf("error updating client-ssl %s : %s\n", obj.FullPath, err)
+		} else {
+			appliance.PrintObject(&res)
+		}
+
+	}
+
 	// nodes
 	for count, n := range stack.Nodes {
 
@@ -241,7 +452,49 @@ func updateStack() {
 
 	}
 
-	// add virtual
+	// update rules
+	for count, n := range stack.Rules {
+
+		obj := f5.LBRule{}
+		// convert json to a struct - make sure it is valid
+		err = json.Unmarshal(n, &obj)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("\nrule[%d]: %s\n", count, obj.FullPath)
+
+		// use the raw json to add - only set minimal number of fields
+		err, res := appliance.UpdateRule(obj.FullPath, &n)
+		if err != nil {
+			log.Printf("error updating rule %s : %s\n", obj.FullPath, err)
+		} else {
+			appliance.PrintObject(&res)
+		}
+
+	}
+
+	// update policies
+	for count, n := range stack.Policies {
+
+		obj := f5.LBPolicy{}
+		// convert json to a struct - make sure it is valid
+		err = json.Unmarshal(n, &obj)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("\npolicy[%d]: %s\n", count, obj.FullPath)
+
+		// use the raw json to add - only set minimal number of fields
+		err, res := appliance.UpdatePolicy(obj.FullPath, &n)
+		if err != nil {
+			log.Printf("error updating policy %s : %s\n", obj.FullPath, err)
+		} else {
+			appliance.PrintObject(&res)
+		}
+
+	}
+
+	// update virtual
 	for count, v := range stack.Virtuals {
 
 		virt := f5.LBVirtual{}
@@ -309,6 +562,48 @@ func deleteStack() {
 
 	}
 
+	// delete policies
+	for count, n := range stack.Policies {
+
+		obj := f5.LBPolicy{}
+		// convert json to a struct - make sure it is valid
+		err = json.Unmarshal(n, &obj)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("\npolicy[%d]: %s\n", count, obj.FullPath)
+
+		// use the raw json to add - only set minimal number of fields
+		err, res := appliance.DeletePolicy(obj.FullPath)
+		if err != nil {
+			log.Printf("error deleting policy %s : %s\n", obj.FullPath, err)
+		} else {
+			appliance.PrintObject(&res)
+		}
+
+	}
+
+	// delete rules
+	for count, n := range stack.Rules {
+
+		obj := f5.LBRule{}
+		// convert json to a struct - make sure it is valid
+		err = json.Unmarshal(n, &obj)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("\nrule[%d]: %s\n", count, obj.FullPath)
+
+		// use the raw json to add - only set minimal number of fields
+		err, res := appliance.DeleteRule(obj.FullPath)
+		if err != nil {
+			log.Printf("error deleting rule %s : %s\n", obj.FullPath, err)
+		} else {
+			appliance.PrintObject(&res)
+		}
+
+	}
+
 	// pools
 	for count, p := range stack.Pools {
 
@@ -321,6 +616,48 @@ func deleteStack() {
 		err, res := appliance.DeletePool(pool.FullPath)
 		if err != nil {
 			log.Printf("error deleting pool %s : %s\n", pool.FullPath, err)
+		} else {
+			appliance.PrintObject(&res)
+		}
+
+	}
+
+	// delete client-ssl
+	for count, n := range stack.ClientSsl {
+
+		obj := f5.LBClientSsl{}
+		// convert json to a struct - make sure it is valid
+		err = json.Unmarshal(n, &obj)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("\nclient-ssl[%d]: %s\n", count, obj.FullPath)
+
+		// use the raw json to add - only set minimal number of fields
+		err, res := appliance.DeleteClientSsl(obj.FullPath)
+		if err != nil {
+			log.Printf("error deleting client-ssl %s : %s\n", obj.FullPath, err)
+		} else {
+			appliance.PrintObject(&res)
+		}
+
+	}
+
+	// delete server-ssl
+	for count, n := range stack.ServerSsl {
+
+		obj := f5.LBServerSsl{}
+		// convert json to a struct - make sure it is valid
+		err = json.Unmarshal(n, &obj)
+		if err != nil {
+			log.Fatal(err)
+		}
+		log.Printf("\nserver-ssl[%d]: %s\n", count, obj.FullPath)
+
+		// use the raw json to add - only set minimal number of fields
+		err, res := appliance.DeleteServerSsl(obj.FullPath)
+		if err != nil {
+			log.Printf("error deleting server-ssl %s : %s\n", obj.FullPath, err)
 		} else {
 			appliance.PrintObject(&res)
 		}

@@ -111,6 +111,7 @@ func init() {
 	showCmd.AddCommand(showPolicyCmd)
 	showCmd.AddCommand(showDeviceCmd)
 	showCmd.AddCommand(showRuleCmd)
+	showCmd.AddCommand(showProfileCmd)
 	showCmd.AddCommand(showClientSslCmd)
 	showCmd.AddCommand(showServerSslCmd)
 	showCmd.AddCommand(showMonitorHttpCmd)

@@ -712,6 +712,30 @@ var deleteRuleCmd = &cobra.Command{
 	},
 }
 
+var showProfileCmd = &cobra.Command{
+	Use:   "profile",
+	Short: "show profiles",
+	Long:  "show profiles .\nProvide a profile type or a profile name with the full path like so: server-ssl/~partition~custom_server_ssl_name",
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) < 1 {
+			err, res := appliance.ShowProfiles()
+			if err != nil {
+				log.Fatal(err)
+			}
+			for _, v := range res.Items {
+				fmt.Printf("%s\n", v.Reference.Link)
+			}
+		} else {
+			name := args[0]
+			err, res := appliance.ShowProfile(name)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.PrintObject(res)
+		}
+	},
+}
+
 var showServerSslCmd = &cobra.Command{
 	Use:   "server-ssl",
 	Short: "show a server-ssl profile",

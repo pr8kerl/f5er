@@ -22,7 +22,7 @@ win64: main.go commands.go stack.go
 		# vet it
 		GOPATH=$(GOPATH) $(GO) tool vet $^
     # binary
-		GOOS=windows GOARCH=amd64 GOPATH=$(GOPATH) go build $(LDFLAGS) -o f5er-win-amd64.exe -v $^
+		GOOS=windows GOARCH=amd64 GOPATH=$(GOPATH) go build -o f5er-win-amd64.exe -v $^
 		touch f5er-win-amd64.exe
 
 .PHONY: $(DEPS) clean
