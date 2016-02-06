@@ -26,14 +26,26 @@ Check the Makefile. It now uses the native golang 1.5+ cross-compilation support
 
 ## credentials
 
-F5 ip address and login credentials are stored in a json input file in the current directory.
+### Environment variables
+You can use the following environment variables to specify the F5 device and credentials.
+```
+F5_DEVICE="192.168.0.100"
+F5_USERNAME="admin"
+F5_PASSWD="superSecretSquirrel"
+
+export F5_DEVICE F5_USERNAME F5_PASSWD
+```
+
+### Config file
+
+F5 ip address and login credentials can also be stored in a json input file in the current directory.
 The expected file is **f5.json**.
 
 ```
 {
-  "f5": "192.168.0.100",
+  "device": "192.168.0.100",
   "username": "admin",
-  "passwd": "admin"
+  "passwd": "superSecretSquirrel"
 }
 ```
 

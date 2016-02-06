@@ -1,7 +1,6 @@
 package main
 
 import (
-	"fmt"
 	"github.com/jmcvetta/napping"
 	"github.com/pr8kerl/f5er/f5"
 	"github.com/spf13/viper"
@@ -25,18 +24,21 @@ var (
 )
 
 func InitialiseConfig() {
+
 	viper.SetConfigFile(cfgFile)
 	viper.AddConfigPath(".")
-	viper.SetDefault("f5", "192.168.0.1")
+	viper.SetDefault("username", "admin")
 	viper.SetDefault("debug", false)
 	viper.SetDefault("force", false)
 
-	err := viper.ReadInConfig()
-	if err != nil {
-		fmt.Printf("Can't find your config file: %s\n", cfgFile)
-	}
+	viper.ReadInConfig()
 
-	viper.BindPFlag("f5", f5Cmd.PersistentFlags().Lookup("f5"))
+	viper.SetEnvPrefix("f5")
+	viper.BindEnv("device")
+	viper.BindEnv("username")
+	viper.BindEnv("passwd")
+
+	viper.BindPFlag("device", f5Cmd.PersistentFlags().Lookup("f5"))
 	viper.BindPFlag("debug", f5Cmd.PersistentFlags().Lookup("debug"))
 	viper.BindPFlag("pool", onlinePoolMemberCmd.Flags().Lookup("pool"))
 	viper.BindPFlag("pool", offlinePoolMemberCmd.Flags().Lookup("pool"))
@@ -44,7 +46,7 @@ func InitialiseConfig() {
 
 	if f5Cmd.PersistentFlags().Lookup("f5").Changed {
 		// use cmdline f5 flag if supplied
-		viper.Set("f5", f5Host)
+		viper.Set("device", f5Host)
 	}
 	if f5Cmd.PersistentFlags().Lookup("debug").Changed {
 		viper.Set("debug", true)
@@ -66,13 +68,13 @@ func InitialiseConfig() {
 	now = viper.GetBool("now")
 	username = viper.GetString("username")
 	passwd = viper.GetString("passwd")
-	f5Host = viper.GetString("f5")
+	f5Host = viper.GetString("device")
 
 	if username == "" {
-		log.Fatalf("\nerror: missing required username configurable in %s\n\n", cfgFile)
+		log.Fatalf("\nerror: missing username; use config file or F5_USERNAME environment variable\n\n")
 	}
 	if passwd == "" {
-		log.Fatalf("\nerror: missing required passwd configurable in %s\n\n", cfgFile)
+		log.Fatalf("\nerror: missing password; use config file or F5_PASSWD environment variable\n\n")
 	}
 	// finally check that f5 is not an empty string (default)
 	//	if f5Host != "" {
@@ -81,7 +83,7 @@ func InitialiseConfig() {
 	//		f5Host = viper.GetString("f5")
 	//	}
 	if f5Host == "" {
-		log.Fatalf("\nerror: missing required option --f5\n\n")
+		log.Fatalf("\nerror: missing f5 device hostname; use config file or F5_DEVICE environment variable\n\n")
 	}
 
 }
