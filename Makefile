@@ -2,11 +2,11 @@ GOROOT := /usr/local/go
 GOPATH := $(shell pwd)
 GOBIN  := $(GOPATH)/bin
 PATH   := $(GOROOT)/bin:$(PATH)
-DEPS   := code.google.com/p/gopass github.com/jmcvetta/napping github.com/spf13/cobra github.com/spf13/viper github.com/pr8kerl/f5er/f5
+DEPS   := github.com/jmcvetta/napping github.com/spf13/cobra github.com/spf13/viper github.com/pr8kerl/f5er/f5
 
 all: f5er
 
-update: $(DEPS)
+deps: $(DEPS)
 	GOPATH=$(GOPATH) go get -u $^
 
 f5er: main.go commands.go stack.go
