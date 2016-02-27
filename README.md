@@ -17,12 +17,14 @@ Most commands will display the response in json as provided by the F5 device. Pl
 For Linux
 * update go.env to match your GOROOT.
 * source go.env
-* run **make update** to get module requirements
+* run **make deps** to get module requirements
 * run **make** to build the f5er binary
 
-### cross-compile windows
+### cross-compile
 
-Check the Makefile. It now uses the native golang 1.5+ cross-compilation support.
+Windows 64 bit build is defined in the Makefile. It now uses the native golang 1.5+ cross-compilation support.
+Set GOOS and GOARCH to suit your needs if you need other platforms. 
+* run **make win64** to create a windows 64bit binary under Linux.
 
 ## credentials
 

@@ -1,11 +1,12 @@
 package main
 
 import (
+	"fmt"
 	"github.com/jmcvetta/napping"
 	"github.com/pr8kerl/f5er/f5"
 	"github.com/spf13/viper"
-	"log"
 	"net/http"
+	"os"
 )
 
 var (
@@ -71,10 +72,12 @@ func InitialiseConfig() {
 	f5Host = viper.GetString("device")
 
 	if username == "" {
-		log.Fatalf("\nerror: missing username; use config file or F5_USERNAME environment variable\n\n")
+		fmt.Fprint(os.Stderr, "\nerror: missing username; use config file or F5_USERNAME environment variable\n\n")
+		os.Exit(1)
 	}
 	if passwd == "" {
-		log.Fatalf("\nerror: missing password; use config file or F5_PASSWD environment variable\n\n")
+		fmt.Fprint(os.Stderr, "\nerror: missing password; use config file or F5_PASSWD environment variable\n\n")
+		os.Exit(1)
 	}
 	// finally check that f5 is not an empty string (default)
 	//	if f5Host != "" {
@@ -83,15 +86,16 @@ func InitialiseConfig() {
 	//		f5Host = viper.GetString("f5")
 	//	}
 	if f5Host == "" {
-		log.Fatalf("\nerror: missing f5 device hostname; use config file or F5_DEVICE environment variable\n\n")
+		fmt.Fprint(os.Stderr, "\nerror: missing f5 device hostname; use config file or F5_DEVICE environment variable\n\n")
+		os.Exit(1)
 	}
 
 }
 
 func checkRequiredFlag(flg string) {
 	if !viper.IsSet(flg) {
-		log.SetFlags(0)
-		log.Fatalf("\nerror: missing required option --%s\n\n", flg)
+		fmt.Fprintf(os.Stdout, "\nerror: missing required option --%s\n\n", flg)
+		os.Exit(1)
 	}
 }
 
@@ -165,9 +169,6 @@ func init() {
 	// online
 	f5Cmd.AddCommand(onlineCmd)
 	onlineCmd.AddCommand(onlinePoolMemberCmd)
-
-	//	log.SetFlags(log.Ltime | log.Lshortfile)
-	log.SetFlags(0)
 
 	InitialiseConfig()
 	appliance = f5.New(f5Host, username, passwd)

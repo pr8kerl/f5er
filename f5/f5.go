@@ -168,7 +168,7 @@ func (f *Device) PrintObject(input interface{}) {
 	if err != nil {
 		log.Fatal(err)
 	}
-	log.Println(string(jsonresp))
+	fmt.Println(string(jsonresp))
 
 }
 
