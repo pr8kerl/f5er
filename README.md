@@ -77,7 +77,6 @@ Available Commands:
 
 Global Flags:
   -d, --debug=false: debug output
-  -f, --f5="": IP or hostname of F5 to poke
   -h, --help=false: help for show
   -i, --input="": input json f5 configuration
 

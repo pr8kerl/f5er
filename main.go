@@ -39,16 +39,11 @@ func InitialiseConfig() {
 	viper.BindEnv("username")
 	viper.BindEnv("passwd")
 
-	viper.BindPFlag("device", f5Cmd.PersistentFlags().Lookup("f5"))
 	viper.BindPFlag("debug", f5Cmd.PersistentFlags().Lookup("debug"))
 	viper.BindPFlag("pool", onlinePoolMemberCmd.Flags().Lookup("pool"))
 	viper.BindPFlag("pool", offlinePoolMemberCmd.Flags().Lookup("pool"))
 	viper.BindPFlag("input", f5Cmd.PersistentFlags().Lookup("input"))
 
-	if f5Cmd.PersistentFlags().Lookup("f5").Changed {
-		// use cmdline f5 flag if supplied
-		viper.Set("device", f5Host)
-	}
 	if f5Cmd.PersistentFlags().Lookup("debug").Changed {
 		viper.Set("debug", true)
 	}
@@ -101,7 +96,7 @@ func checkRequiredFlag(flg string) {
 
 func init() {
 
-	f5Cmd.PersistentFlags().StringVarP(&f5Host, "f5", "f", "", "IP or hostname of F5 to poke")
+	//	f5Cmd.PersistentFlags().StringVarP(&f5Host, "device", "d", "", "IP or hostname of F5 to poke")
 	f5Cmd.PersistentFlags().BoolVarP(&debug, "debug", "d", false, "debug output")
 	f5Cmd.PersistentFlags().StringVarP(&f5Input, "input", "i", "", "input json f5 configuration")
 	offlinePoolMemberCmd.Flags().StringVarP(&f5Pool, "pool", "p", "", "F5 pool name")
