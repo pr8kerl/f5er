@@ -100,15 +100,15 @@ type LBVirtualStatsInnerEntries struct {
 	Status_enabledState           LBVirtualStatsDescription `json:"status.enabledState"`
 	Status_statusReason           LBVirtualStatsDescription `json:"status.statusReason"`
 	SyncookieStatus               LBVirtualStatsDescription `json:"syncookieStatus"`
-	Syncookie_accepts             LBVirtualStatsValue       `json:"syncookie_accepts"`
-	Syncookie_hwAccepts           LBVirtualStatsValue       `json:"syncookie_hwAccepts"`
-	Syncookie_hwSyncookies        LBVirtualStatsValue       `json:"syncookie_hwSyncookies"`
-	Syncookie_hwsyncookieInstance LBVirtualStatsValue       `json:"syncookie_hwsyncookieInstance"`
-	Syncookie_rejects             LBVirtualStatsValue       `json:"syncookie_rejects"`
-	Syncookie_swsyncookieInstance LBVirtualStatsValue       `json:"syncookie_swsyncookieInstance"`
-	Syncookie_syncacheCurr        LBVirtualStatsValue       `json:"syncookie_syncacheCurr"`
-	Syncookie_syncacheOver        LBVirtualStatsValue       `json:"syncookie_syncacheOver"`
-	Syncookie_syncookies          LBVirtualStatsValue       `json:"syncookie_syncookies"`
+	Syncookie_accepts             LBVirtualStatsValue       `json:"syncookie.accepts"`
+	Syncookie_hwAccepts           LBVirtualStatsValue       `json:"syncookie.hwAccepts"`
+	Syncookie_hwSyncookies        LBVirtualStatsValue       `json:"syncookie.hwSyncookies"`
+	Syncookie_hwsyncookieInstance LBVirtualStatsValue       `json:"syncookie.hwsyncookieInstance"`
+	Syncookie_rejects             LBVirtualStatsValue       `json:"syncookie.rejects"`
+	Syncookie_swsyncookieInstance LBVirtualStatsValue       `json:"syncookie.swsyncookieInstance"`
+	Syncookie_syncacheCurr        LBVirtualStatsValue       `json:"syncookie.syncacheCurr"`
+	Syncookie_syncacheOver        LBVirtualStatsValue       `json:"syncookie.syncacheOver"`
+	Syncookie_syncookies          LBVirtualStatsValue       `json:"syncookie.syncookies"`
 	TotRequests                   LBVirtualStatsValue       `json:"totRequests"`
 }
 
