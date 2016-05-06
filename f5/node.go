@@ -9,7 +9,7 @@ type LBNodeFQDN struct {
 	AddressFamily string `json:"addressFamily"`
 	AutoPopulate  string `json:"autopopulate"`
 	DownInterval  int    `json:"downInterval"`
-	Interval      int    `json:"interval"`
+	Interval      string `json:"interval"`
 }
 
 type LBNode struct {
@@ -53,6 +53,52 @@ type LBNodeUpdate struct {
 	RateLimit       string           `json:"rateLimit"`
 }
 
+type LBNodeStatsDescription struct {
+	Description string `json:"description"`
+}
+
+type LBNodeStatsValue struct {
+	Value int `json:"value"`
+}
+
+type LBNodeStatsInnerEntries struct {
+	Addr                     LBNodeStatsDescription `json:"addr"`
+	CurSessions              LBNodeStatsValue       `json:"curSessions"`
+	MonitorRule              LBNodeStatsDescription `json:"monitorRule"`
+	MonitorStatus            LBNodeStatsDescription `json:"monitorStatus"`
+	TmName                   LBNodeStatsDescription `json:"tmName"`
+	Serverside_bitsIn        LBNodeStatsValue       `json:"serverside.bitsIn"`
+	Serverside_bitsOut       LBNodeStatsValue       `json:"serverside.bitsOut"`
+	Serverside_curConns      LBNodeStatsValue       `json:"serverside.curConns"`
+	Serverside_maxConns      LBNodeStatsValue       `json:"serverside.maxConns"`
+	Serverside_pktsIn        LBNodeStatsValue       `json:"serverside.pktsIn"`
+	Serverside_pktsOut       LBNodeStatsValue       `json:"serverside.pktsOut"`
+	Serverside_totConns      LBNodeStatsValue       `json:"serverside.totConns"`
+	SessionStatus            LBNodeStatsDescription `json:"sessionStatus"`
+	Status_availabilityState LBNodeStatsDescription `json:"status.availabilityState"`
+	Status_enabledState      LBNodeStatsDescription `json:"status.enabledState"`
+	Status_statusReason      LBNodeStatsDescription `json:"status.statusReason"`
+	TotRequests              LBNodeStatsValue       `json:"totRequests"`
+}
+
+type LBNodeStatsNestedStats struct {
+	Kind     string                  `json:"kind"`
+	SelfLink string                  `json:"selfLink"`
+	Entries  LBNodeStatsInnerEntries `json:"entries"`
+}
+
+type LBNodeURLKey struct {
+	NestedStats LBNodeStatsNestedStats `json:"nestedStats"`
+}
+type LBNodeStatsOuterEntries map[string]LBNodeURLKey
+
+type LBNodeStats struct {
+	Kind       string                  `json:"kind"`
+	Generation int                     `json:"generation"`
+	SelfLink   string                  `json:"selfLink"`
+	Entries    LBNodeStatsOuterEntries `json:"entries"`
+}
+
 func (f *Device) ShowNodes() (error, *LBNodes) {
 
 	u := "https://" + f.Hostname + "/mgmt/tm/ltm/node"
@@ -73,6 +119,21 @@ func (f *Device) ShowNode(nname string) (error, *LBNode) {
 	node := strings.Replace(nname, "/", "~", -1)
 	u := "https://" + f.Hostname + "/mgmt/tm/ltm/node/" + node
 	res := LBNode{}
+
+	err, _ := f.sendRequest(u, GET, nil, &res)
+	if err != nil {
+		return err, nil
+	} else {
+		return nil, &res
+	}
+
+}
+
+func (f *Device) ShowNodeStats(nname string) (error, *LBNodeStats) {
+
+	node := strings.Replace(nname, "/", "~", -1)
+	u := "https://" + f.Hostname + "/mgmt/tm/ltm/node/" + node + "/stats"
+	res := LBNodeStats{}
 
 	err, _ := f.sendRequest(u, GET, nil, &res)
 	if err != nil {
