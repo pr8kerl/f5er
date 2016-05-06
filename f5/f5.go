@@ -9,8 +9,8 @@ import (
 	"log"
 	"net/http"
 	"net/url"
-	"time"
 	"sync"
+	"time"
 )
 
 var (
@@ -139,7 +139,7 @@ func (f *Device) CommitTransaction(tid string) error {
 }
 
 func (f *Device) sendRequest(u string, method int, pload interface{}, res interface{}) (error, *Response) {
-  if f.AuthMethod == TOKEN {
+	if f.AuthMethod == TOKEN {
 		f.ensureValidToken()
 	}
 
@@ -252,7 +252,7 @@ var tokenMutex = sync.Mutex{}
 
 func (f *Device) hasValidToken() bool {
 	nowMicros := time.Now().UnixNano() / (int64(time.Microsecond) / int64(time.Nanosecond))
-	if f.AuthToken.Token == "" || f.AuthToken.ExpirationMicros < nowMicros + int64(time.Millisecond) * 100 {
+	if f.AuthToken.Token == "" || f.AuthToken.ExpirationMicros < nowMicros+int64(time.Millisecond)*100 {
 		return false
 	}
 	return true
