@@ -76,7 +76,7 @@ type authToken struct {
 	ExpirationMicros int64
 }
 
-func New(host string, username string, pwd string, provider string, authMethod AuthMethod) *Device {
+func New(host string, username string, pwd string, authMethod AuthMethod) *Device {
 	f := Device{Hostname: host, Username: username, Password: pwd, AuthMethod: authMethod}
 	f.InitSession()
 	return &f
