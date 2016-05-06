@@ -9,6 +9,8 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"sync"
+	"time"
 )
 
 var (
@@ -37,10 +39,12 @@ type httperr struct {
 }
 
 type Device struct {
-	Hostname string
-	Username string
-	Password string
-	Session  napping.Session
+	Hostname   string
+	Username   string
+	Password   string
+	Session    napping.Session
+	AuthToken  authToken
+	AuthMethod AuthMethod
 }
 
 type Response struct {
@@ -60,8 +64,20 @@ type LBTransactionState struct {
 	State string `json:"state"`
 }
 
-func New(host string, username string, pwd string) *Device {
-	f := Device{Hostname: host, Username: username, Password: pwd}
+type AuthMethod int
+
+const (
+	TOKEN AuthMethod = iota
+	BASIC_AUTH
+)
+
+type authToken struct {
+	Token            string
+	ExpirationMicros int64
+}
+
+func New(host string, username string, pwd string, authMethod AuthMethod) *Device {
+	f := Device{Hostname: host, Username: username, Password: pwd, AuthMethod: authMethod}
 	f.InitSession()
 	return &f
 }
@@ -123,6 +139,9 @@ func (f *Device) CommitTransaction(tid string) error {
 }
 
 func (f *Device) sendRequest(u string, method int, pload interface{}, res interface{}) (error, *Response) {
+	if f.AuthMethod == TOKEN {
+		f.ensureValidToken()
+	}
 
 	//
 	// Send request to server
@@ -196,5 +215,54 @@ func (f *Device) ShowModules() (error, *LBModules) {
 		return err, nil
 	} else {
 		return nil, &res
+	}
+}
+
+func (f *Device) GetToken() {
+	type login struct {
+		Token struct {
+			Token            string `json:"token"`
+			ExpirationMicros int64  `json:"expirationMicros"`
+		} `json:"token"`
+	}
+
+	LoginData := map[string]string{"username": f.Username, "password": f.Password, "loginProviderName": "tmos"}
+	byteLogin, err := json.Marshal(LoginData)
+	body := json.RawMessage(byteLogin)
+	u := "https://" + f.Hostname + "/mgmt/shared/authn/login"
+	res := login{}
+	e := httperr{}
+
+	_, err = f.Session.Post(u, &body, &res, &e)
+
+	if err != nil {
+		log.Fatal(err)
+		return
+	}
+
+	f.AuthToken = authToken{
+		Token:            res.Token.Token,
+		ExpirationMicros: res.Token.ExpirationMicros,
+	}
+	log.Println("Setting new token in X-F5-Auth-Token header")
+	f.Session.Header.Set("X-F5-Auth-Token", f.AuthToken.Token)
+}
+
+var tokenMutex = sync.Mutex{}
+
+func (f *Device) hasValidToken() bool {
+	nowMicros := time.Now().UnixNano() / (int64(time.Microsecond) / int64(time.Nanosecond))
+	if f.AuthToken.Token == "" || f.AuthToken.ExpirationMicros < nowMicros+int64(time.Millisecond)*100 {
+		return false
+	}
+	return true
+}
+
+func (f *Device) ensureValidToken() {
+	tokenMutex.Lock()
+	defer tokenMutex.Unlock()
+	if !f.hasValidToken() {
+		log.Println("Getting new token")
+		f.GetToken()
 	}
 }

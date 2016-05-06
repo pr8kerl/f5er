@@ -59,6 +59,77 @@ type LBVirtuals struct {
 	Items []LBVirtual
 }
 
+type LBVirtualStatsDescription struct {
+	Description string `json:"description"`
+}
+
+type LBVirtualStatsValue struct {
+	Value int `json:"value"`
+}
+
+type LBVirtualStatsInnerEntries struct {
+	Clientside_bitsIn             LBVirtualStatsValue       `json:"clientside.bitsIn"`
+	Clientside_bitsOut            LBVirtualStatsValue       `json:"clientside.bitsOut"`
+	Clientside_curConns           LBVirtualStatsValue       `json:"clientside.curConns"`
+	Clientside_evictedConns       LBVirtualStatsValue       `json:"clientside.evictedConns"`
+	Clientside_maxConns           LBVirtualStatsValue       `json:"clientside.maxConns"`
+	Clientside_pktsIn             LBVirtualStatsValue       `json:"clientside.pktsIn"`
+	Clientside_pktsOut            LBVirtualStatsValue       `json:"clientside.pktsOut"`
+	Clientside_slowKilled         LBVirtualStatsValue       `json:"clientside.slowKilled"`
+	Clientside_totConns           LBVirtualStatsValue       `json:"clientside.totConns"`
+	CmpEnableMode                 LBVirtualStatsDescription `json:"cmpEnableMode"`
+	CmpEnabled                    LBVirtualStatsDescription `json:"cmpEnabled"`
+	CsMaxConnDur                  LBVirtualStatsValue       `json:"csMaxConnDur"`
+	CsMeanConnDur                 LBVirtualStatsValue       `json:"csMeanConnDur"`
+	CsMinConnDur                  LBVirtualStatsValue       `json:"csMinConnDur"`
+	Destination                   LBVirtualStatsDescription `json:"destination"`
+	Ephemeral_bitsIn              LBVirtualStatsValue       `json:"ephemeral.bitsIn"`
+	Ephemeral_bitsOut             LBVirtualStatsValue       `json:"ephemeral.bitsOut"`
+	Ephemeral_curConns            LBVirtualStatsValue       `json:"ephemeral.curConns"`
+	Ephemeral_evictedConns        LBVirtualStatsValue       `json:"ephemeral.evictedConns"`
+	Ephemeral_maxConns            LBVirtualStatsValue       `json:"ephemeral.maxConns"`
+	Ephemeral_pktsIn              LBVirtualStatsValue       `json:"ephemeral.pktsIn"`
+	Ephemeral_pktsOut             LBVirtualStatsValue       `json:"ephemeral.pktsOut"`
+	Ephemeral_slowKilled          LBVirtualStatsValue       `json:"ephemeral.slowKilled"`
+	Ephemeral_totConns            LBVirtualStatsValue       `json:"ephemeral.totConns"`
+	FiveMinAvgUsageRatio          LBVirtualStatsValue       `json:"fiveMinAvgUsageRatio"`
+	FiveSecAvgUsageRatio          LBVirtualStatsValue       `json:"fiveSecAvgUsageRatio"`
+	TmName                        LBVirtualStatsDescription `json:"tmName"`
+	OneMinAvgUsageRatio           LBVirtualStatsValue       `json:"oneMinAvgUsageRatio"`
+	Status_availabilityState      LBVirtualStatsDescription `json:"status.availabilityState"`
+	Status_enabledState           LBVirtualStatsDescription `json:"status.enabledState"`
+	Status_statusReason           LBVirtualStatsDescription `json:"status.statusReason"`
+	SyncookieStatus               LBVirtualStatsDescription `json:"syncookieStatus"`
+	Syncookie_accepts             LBVirtualStatsValue       `json:"syncookie_accepts"`
+	Syncookie_hwAccepts           LBVirtualStatsValue       `json:"syncookie_hwAccepts"`
+	Syncookie_hwSyncookies        LBVirtualStatsValue       `json:"syncookie_hwSyncookies"`
+	Syncookie_hwsyncookieInstance LBVirtualStatsValue       `json:"syncookie_hwsyncookieInstance"`
+	Syncookie_rejects             LBVirtualStatsValue       `json:"syncookie_rejects"`
+	Syncookie_swsyncookieInstance LBVirtualStatsValue       `json:"syncookie_swsyncookieInstance"`
+	Syncookie_syncacheCurr        LBVirtualStatsValue       `json:"syncookie_syncacheCurr"`
+	Syncookie_syncacheOver        LBVirtualStatsValue       `json:"syncookie_syncacheOver"`
+	Syncookie_syncookies          LBVirtualStatsValue       `json:"syncookie_syncookies"`
+	TotRequests                   LBVirtualStatsValue       `json:"totRequests"`
+}
+
+type LBVirtualStatsNestedStats struct {
+	Kind     string                     `json:"kind"`
+	SelfLink string                     `json:"selfLink"`
+	Entries  LBVirtualStatsInnerEntries `json:"entries"`
+}
+
+type LBVirtualURLKey struct {
+	NestedStats LBVirtualStatsNestedStats `json:"nestedStats"`
+}
+type LBVirtualStatsOuterEntries map[string]LBVirtualURLKey
+
+type LBVirtualStats struct {
+	Kind       string                     `json:"kind"`
+	Generation int                        `json:"generation"`
+	SelfLink   string                     `json:"selfLink"`
+	Entries    LBVirtualStatsOuterEntries `json:"entries"`
+}
+
 func (f *Device) ShowVirtuals() (error, *LBVirtuals) {
 
 	u := "https://" + f.Hostname + "/mgmt/tm/ltm/virtual"
@@ -86,6 +157,20 @@ func (f *Device) ShowVirtual(vname string) (error, *LBVirtual) {
 		return nil, &res
 	}
 
+}
+
+func (f *Device) ShowVirtualStats(vname string) (error, *LBVirtualStats) {
+
+	vname = strings.Replace(vname, "/", "~", -1)
+	u := "https://" + f.Hostname + "/mgmt/tm/ltm/virtual/" + vname + "/stats"
+	res := LBVirtualStats{}
+
+	err, _ := f.sendRequest(u, GET, nil, &res)
+	if err != nil {
+		return err, nil
+	} else {
+		return nil, &res
+	}
 }
 
 func (f *Device) AddVirtual(virt *json.RawMessage) (error, *LBVirtual) {

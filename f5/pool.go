@@ -43,6 +43,7 @@ type LBPoolMemberState struct {
 
 type LBPool struct {
 	Name                   string          `json:"name"`
+	Partition              string          `json:"partition"`
 	FullPath               string          `json:"fullPath"`
 	Generation             int             `json:"generation"`
 	AllowNat               string          `json:"allowNat"`
@@ -69,6 +70,63 @@ type LBPool struct {
 
 type LBPools struct {
 	Items []LBPool `json:"items"`
+}
+
+type LBPoolStatsDescription struct {
+	Description string `json:"description"`
+}
+
+type LBPoolStatsValue struct {
+	Value int `json:"value"`
+}
+
+type LBPoolStatsInnerEntries struct {
+	ActiveMemberCnt          LBPoolStatsValue       `json:"activeMemberCnt"`
+	ConnqAll_ageEdm          LBPoolStatsValue       `json:"connqAll.ageEdm"`
+	ConnqAll_ageEma          LBPoolStatsValue       `json:"connqAll.ageEma"`
+	ConnqAll_ageHead         LBPoolStatsValue       `json:"connqAll.ageHead"`
+	ConnqAll_ageMax          LBPoolStatsValue       `json:"connqAll.ageMax"`
+	ConnqAll_depth           LBPoolStatsValue       `json:"connqAll.depth"`
+	ConnqAll_serviced        LBPoolStatsValue       `json:"connqAll.serviced"`
+	Connq_ageEdm             LBPoolStatsValue       `json:"connq.ageEdm"`
+	Connq_ageEma             LBPoolStatsValue       `json:"connq.ageEma"`
+	Connq_ageHead            LBPoolStatsValue       `json:"connq.ageHead"`
+	Connq_ageMax             LBPoolStatsValue       `json:"connq.ageMax"`
+	Connq_depth              LBPoolStatsValue       `json:"connq.depth"`
+	Connq_serviced           LBPoolStatsValue       `json:"connq.serviced"`
+	CurSessions              LBPoolStatsValue       `json:"curSessions"`
+	MinActiveMembers         LBPoolStatsValue       `json:"minActiveMembers"`
+	MonitorRule              LBPoolStatsDescription `json:"monitorRule"`
+	TmName                   LBPoolStatsDescription `json:"tmName"`
+	Serverside_bitsIn        LBPoolStatsValue       `json:"serverside.bitsIn"`
+	Serverside_bitsOut       LBPoolStatsValue       `json:"serverside.bitsOut"`
+	Serverside_curConns      LBPoolStatsValue       `json:"serverside.curConns"`
+	Serverside_maxConns      LBPoolStatsValue       `json:"serverside.maxConns"`
+	Serverside_pktsIn        LBPoolStatsValue       `json:"serverside.pktsIn"`
+	Serverside_pktsOut       LBPoolStatsValue       `json:"serverside.pktsOut"`
+	Serverside_totConns      LBPoolStatsValue       `json:"serverside.totConns"`
+	Status_availabilityState LBPoolStatsDescription `json:"status.availabilityState"`
+	Status_enabledState      LBPoolStatsDescription `json:"status.enabledState"`
+	Status_statusReason      LBPoolStatsDescription `json:"status.statusReason"`
+	TotRequests              LBPoolStatsValue       `json:"totRequests"`
+}
+
+type LBPoolStatsNestedStats struct {
+	Kind     string                  `json:"kind"`
+	SelfLink string                  `json:"selfLink"`
+	Entries  LBPoolStatsInnerEntries `json:"entries"`
+}
+
+type LBPoolURLKey struct {
+	NestedStats LBPoolStatsNestedStats `json:"nestedStats"`
+}
+type LBPoolStatsOuterEntries map[string]LBPoolURLKey
+
+type LBPoolStats struct {
+	Kind       string                  `json:"kind"`
+	Generation int                     `json:"generation"`
+	SelfLink   string                  `json:"selfLink"`
+	Entries    LBPoolStatsOuterEntries `json:"entries"`
 }
 
 func (f *Device) ShowPools() (error, *LBPools) {
@@ -98,6 +156,20 @@ func (f *Device) ShowPool(pname string) (error, *LBPool) {
 		return nil, &res
 	}
 
+}
+
+func (f *Device) ShowPoolStats(pname string) (error, *LBPoolStats) {
+
+	pool := strings.Replace(pname, "/", "~", -1)
+	u := "https://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool + "/stats"
+	res := LBPoolStats{}
+
+	err, _ := f.sendRequest(u, GET, nil, &res)
+	if err != nil {
+		return err, nil
+	} else {
+		return nil, &res
+	}
 }
 
 func (f *Device) AddPool(body *json.RawMessage) (error, *LBPool) {
