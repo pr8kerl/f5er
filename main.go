@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"github.com/jmcvetta/napping"
 	"github.com/pr8kerl/f5er/f5"
+	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"net/http"
 	"os"
@@ -32,33 +33,24 @@ func InitialiseConfig() {
 	viper.SetDefault("debug", false)
 	viper.SetDefault("force", false)
 
-	viper.ReadInConfig()
-
 	viper.SetEnvPrefix("f5")
 	viper.BindEnv("device")
 	viper.BindEnv("username")
 	viper.BindEnv("passwd")
+	viper.BindEnv("debug")
 
+	viper.BindPFlag("f5", f5Cmd.PersistentFlags().Lookup("f5"))
 	viper.BindPFlag("debug", f5Cmd.PersistentFlags().Lookup("debug"))
+	viper.BindPFlag("input", f5Cmd.PersistentFlags().Lookup("input"))
 	viper.BindPFlag("pool", onlinePoolMemberCmd.Flags().Lookup("pool"))
 	viper.BindPFlag("pool", offlinePoolMemberCmd.Flags().Lookup("pool"))
-	viper.BindPFlag("input", f5Cmd.PersistentFlags().Lookup("input"))
 
-	if f5Cmd.PersistentFlags().Lookup("debug").Changed {
-		viper.Set("debug", true)
-	}
-	if f5Cmd.PersistentFlags().Lookup("input").Changed {
-		viper.Set("input", f5Input)
-	}
-	if offlinePoolMemberCmd.Flags().Lookup("pool").Changed {
-		viper.Set("pool", f5Pool)
-	}
-	if offlinePoolMemberCmd.Flags().Lookup("now").Changed {
-		viper.Set("now", true)
-	}
-	if onlinePoolMemberCmd.Flags().Lookup("pool").Changed {
-		viper.Set("pool", f5Pool)
-	}
+	// ignore errors - may be using environment vars or cmdline args
+	viper.ReadInConfig()
+
+}
+
+func checkFlags(cmd *cobra.Command) {
 
 	debug = viper.GetBool("debug")
 	now = viper.GetBool("now")
@@ -74,16 +66,15 @@ func InitialiseConfig() {
 		fmt.Fprint(os.Stderr, "\nerror: missing password; use config file or F5_PASSWD environment variable\n\n")
 		os.Exit(1)
 	}
-	// finally check that f5 is not an empty string (default)
-	//	if f5Host != "" {
-	//		viper.Set("f5", f5Host)
-	//	} else {
-	//		f5Host = viper.GetString("f5")
-	//	}
 	if f5Host == "" {
 		fmt.Fprint(os.Stderr, "\nerror: missing f5 device hostname; use config file or F5_DEVICE environment variable\n\n")
 		os.Exit(1)
 	}
+
+	// this has to be done here inside cobraCommand.Execute() inc case cmd line args are passed.
+	// args are only parsed after cobraCommand.Run() - urgh
+	appliance = f5.New(f5Host, username, passwd, f5.TOKEN)
+	appliance.SetDebug(debug)
 
 }
 
@@ -96,7 +87,7 @@ func checkRequiredFlag(flg string) {
 
 func init() {
 
-	//	f5Cmd.PersistentFlags().StringVarP(&f5Host, "device", "d", "", "IP or hostname of F5 to poke")
+	f5Cmd.PersistentFlags().StringVarP(&f5Host, "f5", "f", "", "IP or hostname of F5 to poke")
 	f5Cmd.PersistentFlags().BoolVarP(&debug, "debug", "d", false, "debug output")
 	f5Cmd.PersistentFlags().StringVarP(&f5Input, "input", "i", "", "input json f5 configuration")
 	offlinePoolMemberCmd.Flags().StringVarP(&f5Pool, "pool", "p", "", "F5 pool name")
@@ -107,6 +98,7 @@ func init() {
 	f5Cmd.AddCommand(showCmd)
 	showCmd.AddCommand(showPoolCmd)
 	showCmd.AddCommand(showPoolMemberCmd)
+	showCmd.AddCommand(showPoolStatsCmd)
 	showCmd.AddCommand(showVirtualCmd)
 	showCmd.AddCommand(showNodeCmd)
 	showCmd.AddCommand(showPolicyCmd)
@@ -165,11 +157,12 @@ func init() {
 	f5Cmd.AddCommand(onlineCmd)
 	onlineCmd.AddCommand(onlinePoolMemberCmd)
 
+	// read config
 	InitialiseConfig()
-	appliance = f5.New(f5Host, username, passwd)
+
 }
 
 func main() {
-	//f5Cmd.DebugFlags()
+	//	f5Cmd.DebugFlags()
 	f5Cmd.Execute()
 }

@@ -12,9 +12,13 @@ var f5Cmd = &cobra.Command{
 	Use:   "f5er",
 	Short: "tickle an F5 load balancer using REST",
 	Long:  "A utility to manage F5 configuration objects",
-	//	Run: func(cmd *cobra.Command, args []string) {
-	//		checkRequiredFlag("f5")
-	//	},
+	Run: func(cmd *cobra.Command, args []string) {
+	},
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
+
+		checkFlags(cmd)
+
+	},
 }
 
 var showCmd = &cobra.Command{
@@ -103,6 +107,24 @@ var showPoolCmd = &cobra.Command{
 		} else {
 			name := args[0]
 			err, res := appliance.ShowPool(name)
+			if err != nil {
+				log.Fatal(err)
+			}
+			appliance.PrintObject(res)
+		}
+	},
+}
+
+var showPoolStatsCmd = &cobra.Command{
+	Use:   "poolstats",
+	Short: "show pool statistics",
+	Long:  "show the current statistics of a pool",
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) < 1 {
+			log.Fatal("show poolstats requires a pool name as an argument (ie /partition/poolname )")
+		} else {
+			name := args[0]
+			err, res := appliance.ShowPoolStats(name)
 			if err != nil {
 				log.Fatal(err)
 			}
