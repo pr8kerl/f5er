@@ -15,10 +15,11 @@ import (
 
 var (
 	//sessn   napping.Session
-	tsport  http.Transport
-	clnt    http.Client
-	headers http.Header
-	debug   bool
+	tsport     http.Transport
+	clnt       http.Client
+	headers    http.Header
+	debug      bool
+	tokenMutex = sync.Mutex{}
 )
 
 const (
@@ -96,12 +97,17 @@ func (f *Device) InitSession() {
 	// can also be configured on a per-request basis when using Send().
 	//
 	f.Session = napping.Session{
-		Client:   &clnt,
-		Log:      debug,
+		Client: &clnt,
+		Log:    debug,
+		// if Userinfo is set - napping will set the basic auth header for you
 		Userinfo: url.UserPassword(f.Username, f.Password),
 		Header:   &headers,
 	}
 
+}
+
+func (f *Device) SetDebug(b bool) {
+	debug = b
 }
 
 func (f *Device) StartTransaction() (error, string) {
@@ -139,6 +145,7 @@ func (f *Device) CommitTransaction(tid string) error {
 }
 
 func (f *Device) sendRequest(u string, method int, pload interface{}, res interface{}) (error, *Response) {
+
 	if f.AuthMethod == TOKEN {
 		f.ensureValidToken()
 	}
@@ -171,7 +178,8 @@ func (f *Device) sendRequest(u string, method int, pload interface{}, res interf
 		return err, &resp
 	}
 	if nresp.Status() == 401 {
-		return errors.New("unauthorised - check your username and passwd"), &resp
+		f.PrintObject(resp)
+		return errors.New("error: 401 Unauthorised - check your username and passwd"), &resp
 	}
 	if nresp.Status() >= 300 {
 		return errors.New(e.Message), &resp
@@ -219,11 +227,20 @@ func (f *Device) ShowModules() (error, *LBModules) {
 }
 
 func (f *Device) GetToken() {
+
 	type login struct {
 		Token struct {
 			Token            string `json:"token"`
 			ExpirationMicros int64  `json:"expirationMicros"`
 		} `json:"token"`
+	}
+
+	// Simply posting LoginData to the login endpoint doesn't seem to work.
+	// I seem to need to set basic auth for the token request
+	// after which I can disable basic auth by killing f.Session.Userinfo
+	if f.Session.Userinfo == nil {
+		// turn on basic auth for this token request only
+		f.Session.Userinfo = url.UserPassword(f.Username, f.Password)
 	}
 
 	LoginData := map[string]string{"username": f.Username, "password": f.Password, "loginProviderName": "tmos"}
@@ -233,10 +250,11 @@ func (f *Device) GetToken() {
 	res := login{}
 	e := httperr{}
 
-	_, err = f.Session.Post(u, &body, &res, &e)
+	resp, err := f.Session.Post(u, &body, &res, &e)
+	//f.PrintObject(&resp)
 
 	if err != nil {
-		log.Fatal(err)
+		log.Fatal(fmt.Errorf("error: %s, %v", err, resp))
 		return
 	}
 
@@ -244,11 +262,11 @@ func (f *Device) GetToken() {
 		Token:            res.Token.Token,
 		ExpirationMicros: res.Token.ExpirationMicros,
 	}
-	log.Println("Setting new token in X-F5-Auth-Token header")
 	f.Session.Header.Set("X-F5-Auth-Token", f.AuthToken.Token)
-}
 
-var tokenMutex = sync.Mutex{}
+	// disable basic auth now
+	f.Session.Userinfo = nil
+}
 
 func (f *Device) hasValidToken() bool {
 	nowMicros := time.Now().UnixNano() / (int64(time.Microsecond) / int64(time.Nanosecond))
@@ -262,7 +280,6 @@ func (f *Device) ensureValidToken() {
 	tokenMutex.Lock()
 	defer tokenMutex.Unlock()
 	if !f.hasValidToken() {
-		log.Println("Getting new token")
 		f.GetToken()
 	}
 }
