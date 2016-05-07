@@ -9,7 +9,10 @@ type LBNodeFQDN struct {
 	AddressFamily string `json:"addressFamily"`
 	AutoPopulate  string `json:"autopopulate"`
 	DownInterval  int    `json:"downInterval"`
-	Interval      string `json:"interval"`
+	// hack - ref issue https://github.com/pr8kerl/f5er/issues/9
+	// BIG-IP v12.0 returns a string, whereas v11 returns an int
+	// if you use this field, you'll have to convert it explicitly before use :(
+	Interval interface{} `json:"interval"`
 }
 
 type LBNode struct {
