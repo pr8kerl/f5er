@@ -238,6 +238,9 @@ func (f *Device) GetToken() {
 	// Simply posting LoginData to the login endpoint doesn't seem to work.
 	// I seem to need to set basic auth for the token request
 	// after which I can disable basic auth by killing f.Session.Userinfo
+	// I suspect this is a BIG-IP v11 issue - v12 docs clearly state no basic auth header is required
+	// https://devcentral.f5.com/wiki/iControl.Authentication_with_the_F5_REST_API.ashx?lc=1
+	// can't hurt for now
 	if f.Session.Userinfo == nil {
 		// turn on basic auth for this token request only
 		f.Session.Userinfo = url.UserPassword(f.Username, f.Password)
@@ -255,11 +258,12 @@ func (f *Device) GetToken() {
 	e := httperr{}
 
 	resp, err := f.Session.Post(u, &body, &res, &e)
-	//f.PrintObject(&resp)
-
 	if err != nil {
 		log.Fatal(fmt.Errorf("error: %s, %v", err, resp))
 		return
+	}
+	if debug {
+	  f.PrintObject(&resp)
 	}
 
 	f.AuthToken = authToken{
