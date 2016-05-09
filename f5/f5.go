@@ -243,6 +243,10 @@ func (f *Device) GetToken() {
 		f.Session.Userinfo = url.UserPassword(f.Username, f.Password)
 	}
 
+	// We need to remove X-F5-Auth-Token header when logging in because the BIG-IP
+	// will look att it first and if it has expired it will return Unathorized
+	f.Session.Header.Del("X-F5-Auth-Token")
+
 	LoginData := map[string]string{"username": f.Username, "password": f.Password, "loginProviderName": "tmos"}
 	byteLogin, err := json.Marshal(LoginData)
 	body := json.RawMessage(byteLogin)
