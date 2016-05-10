@@ -46,6 +46,7 @@ type Device struct {
 	Session    napping.Session
 	AuthToken  authToken
 	AuthMethod AuthMethod
+	Proto string
 }
 
 type Response struct {
@@ -78,7 +79,13 @@ type authToken struct {
 }
 
 func New(host string, username string, pwd string, authMethod AuthMethod) *Device {
-	f := Device{Hostname: host, Username: username, Password: pwd, AuthMethod: authMethod}
+	f := Device{Hostname: host, Username: username, Password: pwd, AuthMethod: authMethod, Proto: "https"}
+	f.InitSession()
+	return &f
+}
+
+func NewInsecure(host string, username string, pwd string, authMethod AuthMethod) *Device {
+	f := Device{Hostname: host, Username: username, Password: pwd, AuthMethod: authMethod, Proto: "http"}
 	f.InitSession()
 	return &f
 }
@@ -86,10 +93,14 @@ func New(host string, username string, pwd string, authMethod AuthMethod) *Devic
 func (f *Device) InitSession() {
 
 	// REST connection setup
-	tsport = http.Transport{
-		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	if f.Proto == "https" {
+		tsport = http.Transport{
+			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+		}
+		clnt = http.Client{Transport: &tsport}
+	} else {
+		clnt = http.Client{}
 	}
-	clnt = http.Client{Transport: &tsport}
 	headers = make(http.Header)
 
 	//
@@ -112,7 +123,7 @@ func (f *Device) SetDebug(b bool) {
 
 func (f *Device) StartTransaction() (error, string) {
 
-	u := "https://" + f.Hostname + "/mgmt/tm/transaction"
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/transaction"
 	empty := LBEmptyBody{}
 	tres := LBTransaction{}
 	err, _ := f.sendRequest(u, POST, &empty, &tres)
@@ -132,7 +143,7 @@ func (f *Device) CommitTransaction(tid string) error {
 	// remove the transaction header first
 	f.Session.Header.Del("X-F5-REST-Coordination-Id")
 
-	u := "https://" + f.Hostname + "/mgmt/tm/transaction/" + tid
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/transaction/" + tid
 	body := LBTransaction{State: "VALIDATING"}
 	tres := LBTransaction{}
 	err, _ := f.sendRequest(u, PATCH, &body, &tres)
@@ -215,7 +226,7 @@ type LBModules struct {
 
 func (f *Device) ShowModules() (error, *LBModules) {
 
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm"
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm"
 	res := LBModules{}
 
 	err, _ := f.sendRequest(u, GET, nil, &res)
@@ -253,7 +264,7 @@ func (f *Device) GetToken() {
 	LoginData := map[string]string{"username": f.Username, "password": f.Password, "loginProviderName": "tmos"}
 	byteLogin, err := json.Marshal(LoginData)
 	body := json.RawMessage(byteLogin)
-	u := "https://" + f.Hostname + "/mgmt/shared/authn/login"
+	u := f.Proto + "://" + f.Hostname + "/mgmt/shared/authn/login"
 	res := login{}
 	e := httperr{}
 

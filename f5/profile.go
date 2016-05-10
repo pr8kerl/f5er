@@ -16,7 +16,7 @@ type LBProfiles struct {
 
 func (f *Device) ShowProfiles() (error, *LBProfiles) {
 
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/profile"
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/profile"
 	res := LBProfiles{}
 
 	err, _ := f.sendRequest(u, GET, nil, &res)
@@ -30,7 +30,7 @@ func (f *Device) ShowProfiles() (error, *LBProfiles) {
 
 func (f *Device) ShowProfile(profile string) (error, *json.RawMessage) {
 
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/profile/" + profile
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/profile/" + profile
 	res := json.RawMessage{}
 
 	err, _ := f.sendRequest(u, GET, nil, &res)
@@ -46,7 +46,7 @@ func (f *Device) ShowProfile(profile string) (error, *json.RawMessage) {
 func (f *Device) ShowServerSsl(sname string) (error, *LBServerSsl) {
 
 	server := strings.Replace(sname, "/", "~", -1)
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/profile/server-ssl/" + server
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/profile/server-ssl/" + server
 	res := LBServerSsl{}
 
 	err, _ := f.sendRequest(u, GET, nil, &res)
@@ -60,7 +60,7 @@ func (f *Device) ShowServerSsl(sname string) (error, *LBServerSsl) {
 
 func (f *Device) AddServerSsl(body *json.RawMessage) (error, *LBServerSsl) {
 
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/profile/server-ssl"
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/profile/server-ssl"
 	res := LBServerSsl{}
 
 	// post the request
@@ -76,7 +76,7 @@ func (f *Device) AddServerSsl(body *json.RawMessage) (error, *LBServerSsl) {
 func (f *Device) UpdateServerSsl(sname string, body *json.RawMessage) (error, *LBServerSsl) {
 
 	server := strings.Replace(sname, "/", "~", -1)
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/profile/server-ssl/" + server
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/profile/server-ssl/" + server
 	res := LBServerSsl{}
 
 	// put the request
@@ -92,7 +92,7 @@ func (f *Device) UpdateServerSsl(sname string, body *json.RawMessage) (error, *L
 func (f *Device) DeleteServerSsl(sname string) (error, *Response) {
 
 	server := strings.Replace(sname, "/", "~", -1)
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/profile/server-ssl/" + server
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/profile/server-ssl/" + server
 	res := json.RawMessage{}
 
 	err, resp := f.sendRequest(u, DELETE, nil, &res)

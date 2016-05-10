@@ -132,7 +132,7 @@ type LBVirtualStats struct {
 
 func (f *Device) ShowVirtuals() (error, *LBVirtuals) {
 
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/virtual"
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/virtual"
 	res := LBVirtuals{}
 
 	err, _ := f.sendRequest(u, GET, nil, &res)
@@ -147,7 +147,7 @@ func (f *Device) ShowVirtuals() (error, *LBVirtuals) {
 func (f *Device) ShowVirtual(vname string) (error, *LBVirtual) {
 
 	vname = strings.Replace(vname, "/", "~", -1)
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/virtual/" + vname + "?expandSubcollections=true"
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/virtual/" + vname + "?expandSubcollections=true"
 	res := LBVirtual{}
 
 	err, _ := f.sendRequest(u, GET, nil, &res)
@@ -162,7 +162,7 @@ func (f *Device) ShowVirtual(vname string) (error, *LBVirtual) {
 func (f *Device) ShowVirtualStats(vname string) (error, *LBVirtualStats) {
 
 	vname = strings.Replace(vname, "/", "~", -1)
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/virtual/" + vname + "/stats"
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/virtual/" + vname + "/stats"
 	res := LBVirtualStats{}
 
 	err, _ := f.sendRequest(u, GET, nil, &res)
@@ -175,7 +175,7 @@ func (f *Device) ShowVirtualStats(vname string) (error, *LBVirtualStats) {
 
 func (f *Device) AddVirtual(virt *json.RawMessage) (error, *LBVirtual) {
 
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/virtual"
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/virtual"
 	res := LBVirtual{}
 
 	// post the request
@@ -191,7 +191,7 @@ func (f *Device) AddVirtual(virt *json.RawMessage) (error, *LBVirtual) {
 func (f *Device) UpdateVirtual(vname string, body *json.RawMessage) (error, *LBVirtual) {
 
 	vname = strings.Replace(vname, "/", "~", -1)
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/virtual/" + vname
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/virtual/" + vname
 	res := LBVirtual{}
 
 	// put the request
@@ -207,7 +207,7 @@ func (f *Device) UpdateVirtual(vname string, body *json.RawMessage) (error, *LBV
 func (f *Device) DeleteVirtual(vname string) (error, *Response) {
 
 	vname = strings.Replace(vname, "/", "~", -1)
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/virtual/" + vname
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/virtual/" + vname
 	res := json.RawMessage{}
 
 	err, resp := f.sendRequest(u, DELETE, nil, &res)

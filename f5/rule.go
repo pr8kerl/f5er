@@ -62,7 +62,7 @@ type LBRuleStats struct {
 
 func (f *Device) ShowRules() (error, *LBRules) {
 
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/rule"
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/rule"
 	res := LBRules{}
 
 	err, _ := f.sendRequest(u, GET, nil, &res)
@@ -77,7 +77,7 @@ func (f *Device) ShowRules() (error, *LBRules) {
 func (f *Device) ShowRule(rname string) (error, *LBRule) {
 
 	rule := strings.Replace(rname, "/", "~", -1)
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/rule/" + rule
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/rule/" + rule
 	res := LBRule{}
 
 	err, _ := f.sendRequest(u, GET, nil, &res)
@@ -92,7 +92,7 @@ func (f *Device) ShowRule(rname string) (error, *LBRule) {
 func (f *Device) ShowRuleStats(rname string) (error, *LBRuleStats) {
 
 	rule := strings.Replace(rname, "/", "~", -1)
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/rule/" + rule + "/stats"
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/rule/" + rule + "/stats"
 	res := LBRuleStats{}
 
 	err, _ := f.sendRequest(u, GET, nil, &res)
@@ -106,7 +106,7 @@ func (f *Device) ShowRuleStats(rname string) (error, *LBRuleStats) {
 
 func (f *Device) AddRule(body *json.RawMessage) (error, *LBRule) {
 
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/rule"
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/rule"
 	res := LBRule{}
 
 	// post the request
@@ -122,7 +122,7 @@ func (f *Device) AddRule(body *json.RawMessage) (error, *LBRule) {
 func (f *Device) UpdateRule(rname string, body *json.RawMessage) (error, *LBRule) {
 
 	rule := strings.Replace(rname, "/", "~", -1)
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/rule/" + rule
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/rule/" + rule
 	res := LBRule{}
 
 	// put the request
@@ -138,7 +138,7 @@ func (f *Device) UpdateRule(rname string, body *json.RawMessage) (error, *LBRule
 func (f *Device) DeleteRule(rname string) (error, *Response) {
 
 	rule := strings.Replace(rname, "/", "~", -1)
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/rule/" + rule
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/rule/" + rule
 	res := json.RawMessage{}
 
 	err, resp := f.sendRequest(u, DELETE, nil, &res)

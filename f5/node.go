@@ -104,7 +104,7 @@ type LBNodeStats struct {
 
 func (f *Device) ShowNodes() (error, *LBNodes) {
 
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/node"
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/node"
 	res := LBNodes{}
 
 	err, _ := f.sendRequest(u, GET, nil, &res)
@@ -118,9 +118,9 @@ func (f *Device) ShowNodes() (error, *LBNodes) {
 
 func (f *Device) ShowNode(nname string) (error, *LBNode) {
 
-	//u := "https://" + f.Hostname + "/mgmt/tm/ltm/pool/~" + partition + "~" + pname + "?expandSubcollections=true"
+	//u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/pool/~" + partition + "~" + pname + "?expandSubcollections=true"
 	node := strings.Replace(nname, "/", "~", -1)
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/node/" + node
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/node/" + node
 	res := LBNode{}
 
 	err, _ := f.sendRequest(u, GET, nil, &res)
@@ -135,7 +135,7 @@ func (f *Device) ShowNode(nname string) (error, *LBNode) {
 func (f *Device) ShowNodeStats(nname string) (error, *LBNodeStats) {
 
 	node := strings.Replace(nname, "/", "~", -1)
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/node/" + node + "/stats"
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/node/" + node + "/stats"
 	res := LBNodeStats{}
 
 	err, _ := f.sendRequest(u, GET, nil, &res)
@@ -149,7 +149,7 @@ func (f *Device) ShowNodeStats(nname string) (error, *LBNodeStats) {
 
 func (f *Device) AddNode(body *json.RawMessage) (error, *LBNode) {
 
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/node"
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/node"
 	res := LBNode{}
 
 	// post the request
@@ -165,7 +165,7 @@ func (f *Device) AddNode(body *json.RawMessage) (error, *LBNode) {
 func (f *Device) UpdateNode(nname string, body *json.RawMessage) (error, *LBNode) {
 
 	node := strings.Replace(nname, "/", "~", -1)
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/node/" + node
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/node/" + node
 	res := LBNode{}
 
 	// put the request
@@ -181,7 +181,7 @@ func (f *Device) UpdateNode(nname string, body *json.RawMessage) (error, *LBNode
 func (f *Device) DeleteNode(nname string) (error, *Response) {
 
 	node := strings.Replace(nname, "/", "~", -1)
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/node/" + node
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/node/" + node
 	res := json.RawMessage{}
 
 	err, resp := f.sendRequest(u, DELETE, nil, &res)

@@ -34,7 +34,7 @@ type LBMonitorHttpRef struct {
 
 func (f *Device) ShowMonitorsHttp() (error, *LBMonitorHttpRef) {
 
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/monitor/http"
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/monitor/http"
 	res := LBMonitorHttpRef{}
 
 	err, _ := f.sendRequest(u, GET, nil, &res)
@@ -49,7 +49,7 @@ func (f *Device) ShowMonitorsHttp() (error, *LBMonitorHttpRef) {
 func (f *Device) ShowMonitorHttp(vname string) (error, *LBMonitorHttp) {
 
 	vname = strings.Replace(vname, "/", "~", -1)
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/monitor/http/" + vname + "?expandSubcollections=true"
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/monitor/http/" + vname + "?expandSubcollections=true"
 	res := LBMonitorHttp{}
 
 	err, _ := f.sendRequest(u, GET, nil, &res)
@@ -63,7 +63,7 @@ func (f *Device) ShowMonitorHttp(vname string) (error, *LBMonitorHttp) {
 
 func (f *Device) AddMonitorHttp(body *json.RawMessage) (error, *LBMonitorHttp) {
 
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/monitor/http"
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/monitor/http"
 	res := LBMonitorHttp{}
 
 	// post the request
@@ -78,7 +78,7 @@ func (f *Device) AddMonitorHttp(body *json.RawMessage) (error, *LBMonitorHttp) {
 func (f *Device) UpdateMonitorHttp(vname string, body *json.RawMessage) (error, *LBMonitorHttp) {
 
 	vname = strings.Replace(vname, "/", "~", -1)
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/monitor/http/" + vname
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/monitor/http/" + vname
 	res := LBMonitorHttp{}
 
 	// put the request
@@ -94,7 +94,7 @@ func (f *Device) UpdateMonitorHttp(vname string, body *json.RawMessage) (error, 
 func (f *Device) DeleteMonitorHttp(vname string) (error, *Response) {
 
 	vname = strings.Replace(vname, "/", "~", -1)
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/monitor/http/" + vname
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/monitor/http/" + vname
 	res := json.RawMessage{}
 
 	err, resp := f.sendRequest(u, DELETE, nil, &res)
