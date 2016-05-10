@@ -131,7 +131,7 @@ type LBPoolStats struct {
 
 func (f *Device) ShowPools() (error, *LBPools) {
 
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/pool"
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/pool"
 	res := LBPools{}
 
 	err, _ := f.sendRequest(u, GET, nil, &res)
@@ -146,7 +146,7 @@ func (f *Device) ShowPools() (error, *LBPools) {
 func (f *Device) ShowPool(pname string) (error, *LBPool) {
 
 	pool := strings.Replace(pname, "/", "~", -1)
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool + "?expandSubcollections=true"
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool + "?expandSubcollections=true"
 	res := LBPool{}
 
 	err, _ := f.sendRequest(u, GET, nil, &res)
@@ -161,7 +161,7 @@ func (f *Device) ShowPool(pname string) (error, *LBPool) {
 func (f *Device) ShowPoolStats(pname string) (error, *LBPoolStats) {
 
 	pool := strings.Replace(pname, "/", "~", -1)
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool + "/stats"
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool + "/stats"
 	res := LBPoolStats{}
 
 	err, _ := f.sendRequest(u, GET, nil, &res)
@@ -176,7 +176,7 @@ func (f *Device) AddPool(body *json.RawMessage) (error, *LBPool) {
 	// we use json.RawMessage so we can modify the input file without using a struct
 	// use of a struct will send all available fields, some of which can't be modified
 
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/pool"
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/pool"
 	res := LBPool{}
 
 	// post the request
@@ -192,7 +192,7 @@ func (f *Device) AddPool(body *json.RawMessage) (error, *LBPool) {
 func (f *Device) UpdatePool(pname string, body *json.RawMessage) (error, *LBPool) {
 
 	pool := strings.Replace(pname, "/", "~", -1)
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool
 	res := LBPool{}
 
 	// put the request
@@ -208,7 +208,7 @@ func (f *Device) UpdatePool(pname string, body *json.RawMessage) (error, *LBPool
 func (f *Device) DeletePool(pname string) (error, *Response) {
 
 	pool := strings.Replace(pname, "/", "~", -1)
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool
 	res := json.RawMessage{}
 
 	err, resp := f.sendRequest(u, DELETE, nil, &res)
@@ -223,7 +223,7 @@ func (f *Device) DeletePool(pname string) (error, *Response) {
 func (f *Device) ShowPoolMembers(pname string) (error, *LBPoolMembers) {
 
 	pool := strings.Replace(pname, "/", "~", -1)
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool + "/members"
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool + "/members"
 	res := LBPoolMembers{}
 
 	err, _ := f.sendRequest(u, GET, nil, &res)
@@ -238,7 +238,7 @@ func (f *Device) ShowPoolMembers(pname string) (error, *LBPoolMembers) {
 func (f *Device) AddPoolMembers(pname string, body *json.RawMessage) (error, *LBPoolMembers) {
 
 	pool := strings.Replace(pname, "/", "~", -1)
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool + "/members"
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool + "/members"
 	res := LBPoolMembers{}
 
 	// post the request
@@ -254,7 +254,7 @@ func (f *Device) AddPoolMembers(pname string, body *json.RawMessage) (error, *LB
 func (f *Device) UpdatePoolMembers(pname string, body *json.RawMessage) (error, *LBPoolMembers) {
 
 	pool := strings.Replace(pname, "/", "~", -1)
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool + "/members"
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool + "/members"
 	res := LBPoolMembers{}
 
 	// put the request
@@ -270,7 +270,7 @@ func (f *Device) UpdatePoolMembers(pname string, body *json.RawMessage) (error, 
 func (f *Device) DeletePoolMembers(pname string) (error, *Response) {
 
 	pool := strings.Replace(pname, "/", "~", -1)
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool + "/members"
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool + "/members"
 	res := json.RawMessage{}
 
 	err, resp := f.sendRequest(u, DELETE, nil, &res)
@@ -287,7 +287,7 @@ func (f *Device) OnlinePoolMember(pname string, mname string) (error, *Response)
 	pmember := strings.Replace(mname, "/", "~", -1)
 	pool := strings.Replace(pname, "/", "~", -1)
 
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool + "/members/" + pmember
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool + "/members/" + pmember
 	res := json.RawMessage{}
 
 	/*
@@ -312,7 +312,7 @@ func (f *Device) OfflinePoolMember(pname string, mname string) (error, *Response
 	pmember := strings.Replace(mname, "/", "~", -1)
 	pool := strings.Replace(pname, "/", "~", -1)
 
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool + "/members/" + pmember
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool + "/members/" + pmember
 	res := json.RawMessage{}
 
 	/*
@@ -336,7 +336,7 @@ func (f *Device) OfflinePoolMemberForced(pname string, mname string) (error, *Re
 	pmember := strings.Replace(mname, "/", "~", -1)
 	pool := strings.Replace(pname, "/", "~", -1)
 
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool + "/members/" + pmember
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool + "/members/" + pmember
 	res := json.RawMessage{}
 
 	/*

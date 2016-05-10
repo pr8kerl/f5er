@@ -14,7 +14,7 @@ type LBDeviceState struct {
 
 func (f *Device) ShowDevice() (error, *LBDeviceRef) {
 
-	u := "https://" + f.Hostname + "/mgmt/tm/cm/device"
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/cm/device"
 	res := LBDeviceRef{}
 
 	err, _ := f.sendRequest(u, GET, nil, &res)

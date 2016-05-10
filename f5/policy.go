@@ -73,7 +73,7 @@ type LBPolicies struct {
 
 func (f *Device) ShowPolicies() (error, *LBPolicies) {
 
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/policy"
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/policy"
 	res := LBPolicies{}
 
 	err, _ := f.sendRequest(u, GET, nil, &res)
@@ -88,7 +88,7 @@ func (f *Device) ShowPolicies() (error, *LBPolicies) {
 func (f *Device) ShowPolicy(pname string) (error, *LBPolicy) {
 
 	policy := strings.Replace(pname, "/", "~", -1)
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/policy/" + policy + "?expandSubcollections=true"
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/policy/" + policy + "?expandSubcollections=true"
 	res := LBPolicy{}
 
 	err, _ := f.sendRequest(u, GET, nil, &res)
@@ -102,7 +102,7 @@ func (f *Device) ShowPolicy(pname string) (error, *LBPolicy) {
 
 func (f *Device) AddPolicy(body *json.RawMessage) (error, *LBPolicy) {
 
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/policy"
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/policy"
 	res := LBPolicy{}
 
 	// post the request
@@ -118,7 +118,7 @@ func (f *Device) AddPolicy(body *json.RawMessage) (error, *LBPolicy) {
 func (f *Device) UpdatePolicy(pname string, body *json.RawMessage) (error, *LBPolicy) {
 
 	policy := strings.Replace(pname, "/", "~", -1)
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/policy/" + policy
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/policy/" + policy
 	res := LBPolicy{}
 
 	// put the request
@@ -133,9 +133,9 @@ func (f *Device) UpdatePolicy(pname string, body *json.RawMessage) (error, *LBPo
 
 func (f *Device) DeletePolicy(pname string) (error, *Response) {
 
-	//u := "https://" + f.Hostname + "/mgmt/tm/ltm/policy/~" + partition + "~" + pname + "?expandSubcollections=true"
+	//u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/policy/~" + partition + "~" + pname + "?expandSubcollections=true"
 	policy := strings.Replace(pname, "/", "~", -1)
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/policy/" + policy
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/policy/" + policy
 	res := json.RawMessage{}
 
 	err, resp := f.sendRequest(u, DELETE, nil, &res)

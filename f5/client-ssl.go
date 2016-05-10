@@ -67,7 +67,7 @@ type LBClientSsls struct {
 
 func (f *Device) ShowClientSsls() (error, *LBClientSsls) {
 
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/profile/client-ssl"
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/profile/client-ssl"
 	res := LBClientSsls{}
 
 	err, _ := f.sendRequest(u, GET, nil, &res)
@@ -81,7 +81,7 @@ func (f *Device) ShowClientSsls() (error, *LBClientSsls) {
 func (f *Device) ShowClientSsl(cname string) (error, *LBClientSsl) {
 
 	client := strings.Replace(cname, "/", "~", -1)
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/profile/client-ssl/" + client
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/profile/client-ssl/" + client
 	res := LBClientSsl{}
 
 	err, _ := f.sendRequest(u, GET, nil, &res)
@@ -95,7 +95,7 @@ func (f *Device) ShowClientSsl(cname string) (error, *LBClientSsl) {
 
 func (f *Device) AddClientSsl(body *json.RawMessage) (error, *LBClientSsl) {
 
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/profile/client-ssl"
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/profile/client-ssl"
 	res := LBClientSsl{}
 
 	err, _ := f.sendRequest(u, POST, &body, &res)
@@ -110,7 +110,7 @@ func (f *Device) AddClientSsl(body *json.RawMessage) (error, *LBClientSsl) {
 func (f *Device) UpdateClientSsl(cname string, body *json.RawMessage) (error, *LBClientSsl) {
 
 	client := strings.Replace(cname, "/", "~", -1)
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/profile/client-ssl/" + client
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/profile/client-ssl/" + client
 	res := LBClientSsl{}
 
 	// put the request
@@ -126,7 +126,7 @@ func (f *Device) UpdateClientSsl(cname string, body *json.RawMessage) (error, *L
 func (f *Device) DeleteClientSsl(cname string) (error, *Response) {
 
 	client := strings.Replace(cname, "/", "~", -1)
-	u := "https://" + f.Hostname + "/mgmt/tm/ltm/profile/client-ssl/" + client
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/profile/client-ssl/" + client
 	res := json.RawMessage{}
 
 	err, resp := f.sendRequest(u, DELETE, nil, &res)
