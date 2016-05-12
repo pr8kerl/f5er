@@ -3,6 +3,7 @@ package f5
 import (
 	"encoding/json"
 	"strings"
+	"bytes"
 )
 
 type LBRawValues struct {
@@ -119,6 +120,21 @@ func (f *Device) AddRule(body *json.RawMessage) (error, *LBRule) {
 
 }
 
+func (f *Device) AddRuleRaw(body *bytes.Buffer) (error, *LBRule) {
+
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/rule"
+	res := LBRule{}
+
+	// post the request
+	err, _ := f.sendRequest(u, POSTR, &body, &res)
+	if err != nil {
+		return err, nil
+	} else {
+		return nil, &res
+	}
+
+}
+
 func (f *Device) UpdateRule(rname string, body *json.RawMessage) (error, *LBRule) {
 
 	rule := strings.Replace(rname, "/", "~", -1)
@@ -127,6 +143,22 @@ func (f *Device) UpdateRule(rname string, body *json.RawMessage) (error, *LBRule
 
 	// put the request
 	err, _ := f.sendRequest(u, PUT, &body, &res)
+	if err != nil {
+		return err, nil
+	} else {
+		return nil, &res
+	}
+
+}
+
+func (f *Device) UpdateRuleRaw(rname string, body *bytes.Buffer) (error, *LBRule) {
+
+	rule := strings.Replace(rname, "/", "~", -1)
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/rule/" + rule
+	res := LBRule{}
+
+	// put the request
+	err, _ := f.sendRequest(u, PUTR, body, &res)
 	if err != nil {
 		return err, nil
 	} else {

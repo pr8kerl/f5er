@@ -25,7 +25,9 @@ var (
 const (
 	GET = iota
 	POST
+	POSTR
 	PUT
+	PUTR
 	PATCH
 	DELETE
 )
@@ -182,6 +184,28 @@ func (f *Device) sendRequest(u string, method int, pload interface{}, res interf
 		nresp, err = f.Session.Patch(u, &pload, &res, &e)
 	case DELETE:
 		nresp, err = f.Session.Delete(u, nil, &res, &e)
+	case POSTR:
+		r := napping.Request{
+			Method:  "POST",
+			Url:     u,
+			Params: nil,
+			Payload: pload,
+			RawPayload: true,
+			Result:  res,
+			Error:   e,
+		}
+		nresp, err = f.Session.Send(&r)
+	case PUTR:
+		r := napping.Request{
+			Method:  "PUT",
+			Url:     u,
+			Params: nil,
+			Payload: pload,
+			RawPayload: true,
+			Result:  &res,
+			Error:   &e,
+		}
+		nresp, err = f.Session.Send(&r)
 	}
 
 	var resp = Response{Status: nresp.Status(), Message: e.Message}
