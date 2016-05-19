@@ -48,7 +48,7 @@ type Device struct {
 	Session    napping.Session
 	AuthToken  authToken
 	AuthMethod AuthMethod
-	Proto string
+	Proto      string
 }
 
 type Response struct {
@@ -186,29 +186,33 @@ func (f *Device) sendRequest(u string, method int, pload interface{}, res interf
 		nresp, err = f.Session.Delete(u, nil, &res, &e)
 	case POSTR:
 		r := napping.Request{
-			Method:  "POST",
-			Url:     u,
-			Params: nil,
-			Payload: pload,
+			Method:     "POST",
+			Url:        u,
+			Params:     nil,
+			Payload:    pload,
 			RawPayload: true,
-			Result:  res,
-			Error:   e,
+			Result:     res,
+			Error:      e,
 		}
 		nresp, err = f.Session.Send(&r)
 	case PUTR:
 		r := napping.Request{
-			Method:  "PUT",
-			Url:     u,
-			Params: nil,
-			Payload: pload,
+			Method:     "PUT",
+			Url:        u,
+			Params:     nil,
+			Payload:    pload,
 			RawPayload: true,
-			Result:  &res,
-			Error:   &e,
+			Result:     &res,
+			Error:      &e,
 		}
 		nresp, err = f.Session.Send(&r)
 	}
 
-	var resp = Response{Status: nresp.Status(), Message: e.Message}
+	var resp Response
+	if nresp != nil {
+		resp = Response{Status: nresp.Status(), Message: e.Message}
+	}
+
 	if err != nil {
 		return err, &resp
 	}
@@ -298,7 +302,7 @@ func (f *Device) GetToken() {
 		return
 	}
 	if debug {
-	  f.PrintObject(&resp)
+		f.PrintObject(&resp)
 	}
 
 	f.AuthToken = authToken{

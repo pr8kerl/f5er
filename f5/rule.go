@@ -1,9 +1,9 @@
 package f5
 
 import (
+	"bytes"
 	"encoding/json"
 	"strings"
-	"bytes"
 )
 
 type LBRawValues struct {
