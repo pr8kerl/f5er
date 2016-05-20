@@ -147,6 +147,20 @@ func (f *Device) ShowNodeStats(nname string) (error, *LBNodeStats) {
 
 }
 
+func (f *Device) ShowAllNodeStats() (error, *LBNodeStats) {
+
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/node/stats"
+	res := LBNodeStats{}
+
+	err, _ := f.sendRequest(u, GET, nil, &res)
+	if err != nil {
+		return err, nil
+	} else {
+		return nil, &res
+	}
+
+}
+
 func (f *Device) AddNode(body *json.RawMessage) (error, *LBNode) {
 
 	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/node"
