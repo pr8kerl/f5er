@@ -173,6 +173,19 @@ func (f *Device) ShowVirtualStats(vname string) (error, *LBVirtualStats) {
 	}
 }
 
+func (f *Device) ShowAllVirtualStats() (error, *LBVirtualStats) {
+
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/virtual/stats"
+	res := LBVirtualStats{}
+
+	err, _ := f.sendRequest(u, GET, nil, &res)
+	if err != nil {
+		return err, nil
+	} else {
+		return nil, &res
+	}
+}
+
 func (f *Device) AddVirtual(virt *json.RawMessage) (error, *LBVirtual) {
 
 	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/virtual"

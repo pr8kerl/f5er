@@ -172,6 +172,19 @@ func (f *Device) ShowPoolStats(pname string) (error, *LBPoolStats) {
 	}
 }
 
+func (f *Device) ShowAllPoolStats() (error, *LBPoolStats) {
+
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/pool/stats"
+	res := LBPoolStats{}
+
+	err, _ := f.sendRequest(u, GET, nil, &res)
+	if err != nil {
+		return err, nil
+	} else {
+		return nil, &res
+	}
+}
+
 func (f *Device) AddPool(body *json.RawMessage) (error, *LBPool) {
 	// we use json.RawMessage so we can modify the input file without using a struct
 	// use of a struct will send all available fields, some of which can't be modified

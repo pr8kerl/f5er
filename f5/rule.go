@@ -105,6 +105,20 @@ func (f *Device) ShowRuleStats(rname string) (error, *LBRuleStats) {
 
 }
 
+func (f *Device) ShowAllRuleStats() (error, *LBRuleStats) {
+
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/rule/stats"
+	res := LBRuleStats{}
+
+	err, _ := f.sendRequest(u, GET, nil, &res)
+	if err != nil {
+		return err, nil
+	} else {
+		return nil, &res
+	}
+
+}
+
 func (f *Device) AddRule(body *json.RawMessage) (error, *LBRule) {
 
 	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/rule"
