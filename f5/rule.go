@@ -32,15 +32,15 @@ type LBRuleStatsValue struct {
 }
 
 type LBRuleStatsInnerEntries struct {
-	Aborts          LBRuleStatsValue       `json:"aborts"`
-	AvgCycles       LBRuleStatsValue       `json:"avgCycles"`
+	Aborts          LBStatsValue           `json:"aborts"`
+	AvgCycles       LBStatsValue           `json:"avgCycles"`
 	EventType       LBRuleStatsDescription `json:"eventType"`
-	Failures        LBRuleStatsValue       `json:"failures"`
-	MaxCycles       LBRuleStatsValue       `json:"maxCycles"`
-	MinCycles       LBRuleStatsValue       `json:"minCycles"`
+	Failures        LBStatsValue           `json:"failures"`
+	MaxCycles       LBStatsValue           `json:"maxCycles"`
+	MinCycles       LBStatsValue           `json:"minCycles"`
 	TmName          LBRuleStatsDescription `json:"tmName"`
-	Priority        LBRuleStatsValue       `json:"priority"`
-	TotalExecutions LBRuleStatsValue       `json:"totalExecutions"`
+	Priority        LBStatsValue           `json:"priority"`
+	TotalExecutions LBStatsValue           `json:"totalExecutions"`
 }
 
 type LBRuleStatsNestedStats struct {
@@ -90,11 +90,11 @@ func (f *Device) ShowRule(rname string) (error, *LBRule) {
 
 }
 
-func (f *Device) ShowRuleStats(rname string) (error, *LBRuleStats) {
+func (f *Device) ShowRuleStats(rname string) (error, *LBObjectStats) {
 
 	rule := strings.Replace(rname, "/", "~", -1)
 	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/rule/" + rule + "/stats"
-	res := LBRuleStats{}
+	res := LBObjectStats{}
 
 	err, _ := f.sendRequest(u, GET, nil, &res)
 	if err != nil {

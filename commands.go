@@ -78,6 +78,18 @@ var onlineCmd = &cobra.Command{
 	},
 }
 
+var statsCmd = &cobra.Command{
+	Use:   "stats",
+	Short: "get F5 statistics",
+	Long:  "get statistics for F5 objects.",
+	Run: func(cmd *cobra.Command, args []string) {
+		appliance.SetStatsPathPrefix(stats_path_prefix)
+		if len(args) < 1 {
+			stats()
+		}
+	},
+}
+
 var showDeviceCmd = &cobra.Command{
 	Use:   "device",
 	Short: "show an f5 device",
@@ -107,24 +119,6 @@ var showPoolCmd = &cobra.Command{
 		} else {
 			name := args[0]
 			err, res := appliance.ShowPool(name)
-			if err != nil {
-				log.Fatal(err)
-			}
-			appliance.PrintObject(res)
-		}
-	},
-}
-
-var showPoolStatsCmd = &cobra.Command{
-	Use:   "poolstats",
-	Short: "show pool statistics",
-	Long:  "show the current statistics of a pool",
-	Run: func(cmd *cobra.Command, args []string) {
-		if len(args) < 1 {
-			log.Fatal("show poolstats requires a pool name as an argument (ie /partition/poolname )")
-		} else {
-			name := args[0]
-			err, res := appliance.ShowPoolStats(name)
 			if err != nil {
 				log.Fatal(err)
 			}
@@ -204,6 +198,33 @@ var deletePoolCmd = &cobra.Command{
 				log.Fatal(err)
 			}
 			appliance.PrintObject(res)
+		}
+	},
+}
+
+var statsPoolCmd = &cobra.Command{
+	Use:   "pool",
+	Short: "show pool statistics",
+	Long:  "show the current statistics of a pool",
+	Run: func(cmd *cobra.Command, args []string) {
+
+		if len(args) < 1 {
+			err, res := appliance.StatsPools()
+			if err != nil {
+				log.Fatal(err)
+			}
+			for _, datapoint := range res {
+				fmt.Printf("%s\n", datapoint.String())
+			}
+		} else {
+			name := args[0]
+			err, res := appliance.StatsPool(name)
+			if err != nil {
+				log.Fatal(err)
+			}
+			for _, datapoint := range res {
+				fmt.Printf("%s\n", datapoint.String())
+			}
 		}
 	},
 }
@@ -443,6 +464,33 @@ var deleteVirtualCmd = &cobra.Command{
 	},
 }
 
+var statsVirtualCmd = &cobra.Command{
+	Use:   "virtual",
+	Short: "show virtual server statistics",
+	Long:  "show the current statistics of a virtual server",
+	Run: func(cmd *cobra.Command, args []string) {
+
+		if len(args) < 1 {
+			err, res := appliance.StatsVirtuals()
+			if err != nil {
+				log.Fatal(err)
+			}
+			for _, datapoint := range res {
+				fmt.Printf("%s\n", datapoint.String())
+			}
+		} else {
+			name := args[0]
+			err, res := appliance.StatsVirtual(name)
+			if err != nil {
+				log.Fatal(err)
+			}
+			for _, datapoint := range res {
+				fmt.Printf("%s\n", datapoint.String())
+			}
+		}
+	},
+}
+
 var showPolicyCmd = &cobra.Command{
 	Use:   "policy",
 	Short: "show a policy",
@@ -637,6 +685,33 @@ var deleteNodeCmd = &cobra.Command{
 	},
 }
 
+var statsNodeCmd = &cobra.Command{
+	Use:   "node",
+	Short: "show node statistics",
+	Long:  "show the current statistics of a node",
+	Run: func(cmd *cobra.Command, args []string) {
+
+		if len(args) < 1 {
+			err, res := appliance.StatsNodes()
+			if err != nil {
+				log.Fatal(err)
+			}
+			for _, datapoint := range res {
+				fmt.Printf("%s\n", datapoint.String())
+			}
+		} else {
+			name := args[0]
+			err, res := appliance.StatsNode(name)
+			if err != nil {
+				log.Fatal(err)
+			}
+			for _, datapoint := range res {
+				fmt.Printf("%s\n", datapoint.String())
+			}
+		}
+	},
+}
+
 var showRuleCmd = &cobra.Command{
 	Use:   "rule",
 	Short: "show a rule",
@@ -730,6 +805,33 @@ var deleteRuleCmd = &cobra.Command{
 				log.Fatal(err)
 			}
 			appliance.PrintObject(res)
+		}
+	},
+}
+
+var statsRuleCmd = &cobra.Command{
+	Use:   "rule",
+	Short: "show rule statistics",
+	Long:  "show the current statistics of a rule",
+	Run: func(cmd *cobra.Command, args []string) {
+
+		if len(args) < 1 {
+			err, res := appliance.StatsRules()
+			if err != nil {
+				log.Fatal(err)
+			}
+			for _, datapoint := range res {
+				fmt.Printf("%s\n", datapoint.String())
+			}
+		} else {
+			name := args[0]
+			err, res := appliance.StatsRule(name)
+			if err != nil {
+				log.Fatal(err)
+			}
+			for _, datapoint := range res {
+				fmt.Printf("%s\n", datapoint.String())
+			}
 		}
 	},
 }
@@ -1119,4 +1221,23 @@ func offline() {
 
 func online() {
 	fmt.Println("which pool member would you like to online?")
+}
+
+func stats() {
+
+	fmt.Println("what sort of F5 object would you like stats for? (virtual, pool, node or rule)")
+
+	/*
+		err, res := appliance.Stats()
+		if err != nil {
+			log.Fatal(err)
+		}
+		for _, datapoint := range res {
+			fmt.Printf("%s\n", datapoint.String())
+		}
+		if err != nil {
+			log.Fatalf("cannot get statistics: %s\n", err)
+		}
+	*/
+
 }

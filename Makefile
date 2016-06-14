@@ -2,7 +2,7 @@ GOROOT := /usr/local/go
 GOPATH := $(shell pwd)
 GOBIN  := $(GOPATH)/bin
 PATH   := $(GOROOT)/bin:$(PATH)
-DEPS   := github.com/jmcvetta/napping github.com/spf13/cobra github.com/spf13/viper github.com/pr8kerl/f5er/f5 github.com/inconshreveable/mousetrap
+DEPS   := github.com/jmcvetta/napping github.com/spf13/cobra github.com/spf13/viper github.com/pr8kerl/f5er/f5 github.com/inconshreveable/mousetrap github.com/fatih/structs
 
 all: f5er
 

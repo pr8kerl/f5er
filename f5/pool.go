@@ -81,34 +81,34 @@ type LBPoolStatsValue struct {
 }
 
 type LBPoolStatsInnerEntries struct {
-	ActiveMemberCnt          LBPoolStatsValue       `json:"activeMemberCnt"`
-	ConnqAll_ageEdm          LBPoolStatsValue       `json:"connqAll.ageEdm"`
-	ConnqAll_ageEma          LBPoolStatsValue       `json:"connqAll.ageEma"`
-	ConnqAll_ageHead         LBPoolStatsValue       `json:"connqAll.ageHead"`
-	ConnqAll_ageMax          LBPoolStatsValue       `json:"connqAll.ageMax"`
-	ConnqAll_depth           LBPoolStatsValue       `json:"connqAll.depth"`
-	ConnqAll_serviced        LBPoolStatsValue       `json:"connqAll.serviced"`
-	Connq_ageEdm             LBPoolStatsValue       `json:"connq.ageEdm"`
-	Connq_ageEma             LBPoolStatsValue       `json:"connq.ageEma"`
-	Connq_ageHead            LBPoolStatsValue       `json:"connq.ageHead"`
-	Connq_ageMax             LBPoolStatsValue       `json:"connq.ageMax"`
-	Connq_depth              LBPoolStatsValue       `json:"connq.depth"`
-	Connq_serviced           LBPoolStatsValue       `json:"connq.serviced"`
-	CurSessions              LBPoolStatsValue       `json:"curSessions"`
-	MinActiveMembers         LBPoolStatsValue       `json:"minActiveMembers"`
+	ActiveMemberCnt          LBStatsValue           `json:"activeMemberCnt"`
+	ConnqAll_ageEdm          LBStatsValue           `json:"connqAll.ageEdm"`
+	ConnqAll_ageEma          LBStatsValue           `json:"connqAll.ageEma"`
+	ConnqAll_ageHead         LBStatsValue           `json:"connqAll.ageHead"`
+	ConnqAll_ageMax          LBStatsValue           `json:"connqAll.ageMax"`
+	ConnqAll_depth           LBStatsValue           `json:"connqAll.depth"`
+	ConnqAll_serviced        LBStatsValue           `json:"connqAll.serviced"`
+	Connq_ageEdm             LBStatsValue           `json:"connq.ageEdm"`
+	Connq_ageEma             LBStatsValue           `json:"connq.ageEma"`
+	Connq_ageHead            LBStatsValue           `json:"connq.ageHead"`
+	Connq_ageMax             LBStatsValue           `json:"connq.ageMax"`
+	Connq_depth              LBStatsValue           `json:"connq.depth"`
+	Connq_serviced           LBStatsValue           `json:"connq.serviced"`
+	CurSessions              LBStatsValue           `json:"curSessions"`
+	MinActiveMembers         LBStatsValue           `json:"minActiveMembers"`
 	MonitorRule              LBPoolStatsDescription `json:"monitorRule"`
 	TmName                   LBPoolStatsDescription `json:"tmName"`
-	Serverside_bitsIn        LBPoolStatsValue       `json:"serverside.bitsIn"`
-	Serverside_bitsOut       LBPoolStatsValue       `json:"serverside.bitsOut"`
-	Serverside_curConns      LBPoolStatsValue       `json:"serverside.curConns"`
-	Serverside_maxConns      LBPoolStatsValue       `json:"serverside.maxConns"`
-	Serverside_pktsIn        LBPoolStatsValue       `json:"serverside.pktsIn"`
-	Serverside_pktsOut       LBPoolStatsValue       `json:"serverside.pktsOut"`
-	Serverside_totConns      LBPoolStatsValue       `json:"serverside.totConns"`
+	Serverside_bitsIn        LBStatsValue           `json:"serverside.bitsIn"`
+	Serverside_bitsOut       LBStatsValue           `json:"serverside.bitsOut"`
+	Serverside_curConns      LBStatsValue           `json:"serverside.curConns"`
+	Serverside_maxConns      LBStatsValue           `json:"serverside.maxConns"`
+	Serverside_pktsIn        LBStatsValue           `json:"serverside.pktsIn"`
+	Serverside_pktsOut       LBStatsValue           `json:"serverside.pktsOut"`
+	Serverside_totConns      LBStatsValue           `json:"serverside.totConns"`
 	Status_availabilityState LBPoolStatsDescription `json:"status.availabilityState"`
 	Status_enabledState      LBPoolStatsDescription `json:"status.enabledState"`
 	Status_statusReason      LBPoolStatsDescription `json:"status.statusReason"`
-	TotRequests              LBPoolStatsValue       `json:"totRequests"`
+	TotRequests              LBStatsValue           `json:"totRequests"`
 }
 
 type LBPoolStatsNestedStats struct {
@@ -158,11 +158,11 @@ func (f *Device) ShowPool(pname string) (error, *LBPool) {
 
 }
 
-func (f *Device) ShowPoolStats(pname string) (error, *LBPoolStats) {
+func (f *Device) ShowPoolStats(pname string) (error, *LBObjectStats) {
 
 	pool := strings.Replace(pname, "/", "~", -1)
 	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool + "/stats"
-	res := LBPoolStats{}
+	res := LBObjectStats{}
 
 	err, _ := f.sendRequest(u, GET, nil, &res)
 	if err != nil {

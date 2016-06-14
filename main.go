@@ -11,27 +11,32 @@ import (
 )
 
 var (
-	appliance *f5.Device
-	f5Host    string
-	username  string
-	passwd    string
-	cfgFile   string = "f5.json"
-	f5Input   string
-	f5Pool    string
-	session   napping.Session
-	transport *http.Transport
-	client    *http.Client
-	debug     bool
-	now       bool
+	appliance              *f5.Device
+	f5Host                 string
+	username               string
+	passwd                 string
+	cfgName                string = "f5"
+	f5Input                string
+	f5Pool                 string
+	session                napping.Session
+	transport              *http.Transport
+	client                 *http.Client
+	debug                  bool
+	now                    bool
+	stats_path_prefix      string
+	stats_show_zero_values bool
 )
 
-func InitialiseConfig() {
+func initialiseConfig() {
 
-	viper.SetConfigFile(cfgFile)
+	viper.SetConfigName(cfgName)
+	viper.AddConfigPath("$HOME/.f5")
 	viper.AddConfigPath(".")
 	viper.SetDefault("username", "admin")
 	viper.SetDefault("debug", false)
 	viper.SetDefault("force", false)
+	viper.SetDefault("stats_path_prefix", "f5")
+	viper.SetDefault("stats_show_zero_values", false)
 
 	viper.SetEnvPrefix("f5")
 	viper.BindEnv("device")
@@ -47,6 +52,11 @@ func InitialiseConfig() {
 
 	// ignore errors - may be using environment vars or cmdline args
 	viper.ReadInConfig()
+	err := viper.ReadInConfig() // Find and read the config file
+	if err != nil {
+		fmt.Fprintf(os.Stderr, "\nerror: no config file found: %s\n", err)
+		os.Exit(1)
+	}
 
 }
 
@@ -57,6 +67,8 @@ func checkFlags(cmd *cobra.Command) {
 	username = viper.GetString("username")
 	passwd = viper.GetString("passwd")
 	f5Host = viper.GetString("device")
+	stats_path_prefix = viper.GetString("stats_path_prefix")
+	stats_show_zero_values = viper.GetBool("stats_show_zero_values")
 
 	if username == "" {
 		fmt.Fprint(os.Stderr, "\nerror: missing username; use config file or F5_USERNAME environment variable\n\n")
@@ -75,6 +87,8 @@ func checkFlags(cmd *cobra.Command) {
 	// args are only parsed after cobraCommand.Run() - urgh
 	appliance = f5.New(f5Host, username, passwd, f5.TOKEN)
 	appliance.SetDebug(debug)
+	appliance.SetStatsPathPrefix(stats_path_prefix)
+	appliance.SetStatsShowZeroes(stats_show_zero_values)
 
 }
 
@@ -98,7 +112,6 @@ func init() {
 	f5Cmd.AddCommand(showCmd)
 	showCmd.AddCommand(showPoolCmd)
 	showCmd.AddCommand(showPoolMemberCmd)
-	showCmd.AddCommand(showPoolStatsCmd)
 	showCmd.AddCommand(showVirtualCmd)
 	showCmd.AddCommand(showNodeCmd)
 	showCmd.AddCommand(showPolicyCmd)
@@ -157,8 +170,14 @@ func init() {
 	f5Cmd.AddCommand(onlineCmd)
 	onlineCmd.AddCommand(onlinePoolMemberCmd)
 
+	f5Cmd.AddCommand(statsCmd)
+	statsCmd.AddCommand(statsPoolCmd)
+	statsCmd.AddCommand(statsVirtualCmd)
+	statsCmd.AddCommand(statsNodeCmd)
+	statsCmd.AddCommand(statsRuleCmd)
+
 	// read config
-	InitialiseConfig()
+	initialiseConfig()
 
 }
 

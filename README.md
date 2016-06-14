@@ -2,7 +2,7 @@
 
 A golang F5 rest client plaything
 
-Supports nodes, pools, poolmembers, virtuals, nodes, policies, irules, client-ssl profiles and http monitors in full - so far.
+Supports nodes, pools, poolmembers, virtuals, nodes, policies, irules, client-ssl profiles and http monitors in full - so far. Some statistics retrieval.
 
 Create, modify and delete F5 objects easily, using json input files.
 
@@ -11,6 +11,8 @@ A convenience entity called a **stack** can be used to act upon nodes, their poo
 Supports the REST methods GET (show), POST (create), PUT (update) and DELETE (delete).
 
 Most commands will display the response in json as provided by the F5 device. Please note that although the response json may look similar to input json, some json object fields differ. For example, pool members within a pool are displayed within a membersReference object in a response, however members must be defined as an array within the **members** array in a pool object. Also some json object response fields are read-only and cannot be used with an input object (the object supplied in the body of a POST or PUT operation.
+
+It can now display statistics in graphite format for virtuals, pools, nodes and rules. Thanks to [cgunning](https://github.com/cgunning) for the core of the statistics code. If you are a prometheus user, then check out [bigip_exporter](https://github.com/ExpressenAB/bigip_exporter).
 
 ## Build
 
@@ -29,6 +31,7 @@ Set GOOS and GOARCH to suit your needs if you need other platforms.
 ## credentials
 
 ### Environment variables
+
 You can use the following environment variables to specify the F5 device and credentials.
 ```
 F5_DEVICE="192.168.0.100"
@@ -40,21 +43,51 @@ export F5_DEVICE F5_USERNAME F5_PASSWD
 
 ### Config file
 
-F5 ip address and login credentials can also be stored in a json input file in the current directory.
-The expected file is **f5.json**.
+F5 ip address/hostname and login credentials can also be stored in a json input file in the current directory.
+The expected file is called **f5.json** and it can be in the current working directory or in $HOME/.f5/.
+Below is a full example of all current configurables. The **stats_** ones (used for displaying statistics) are only available in a config file.
 
 ```
 {
   "device": "192.168.0.100",
   "username": "admin",
-  "passwd": "superSecretSquirrel"
+  "passwd": "superSecretSquirrel",
+	"stats_path_prefix": "prd.f5.bigip01",
+	"stats_show_zero_values": false
 }
 ```
+
 
 ## help
 
 Use the help command to display hints and available subcommands
 
+```
+./f5er help
+A utility to manage F5 configuration objects
+
+Usage:
+  f5er [flags]
+  f5er [command]
+
+Available Commands:
+  show        show F5 objects
+  add         add F5 objects
+  update      update F5 objects
+  delete      delete F5 objects
+  offline     offline a pool member
+  online      online a pool member
+  stats       get F5 statistics
+
+Flags:
+  -d, --debug          debug output
+  -f, --f5 string      IP or hostname of F5 to poke
+  -i, --input string   input json f5 configuration
+
+Use "f5er [command] --help" for more information about a command.
+```
+
+And show help for a subcommand such as **show**...
 ```
 ./f5er help show
 show current state of F5 objects. Show requires an object, eg. f5er show pool
@@ -197,6 +230,34 @@ f5er offline poolmember --now --pool=/partition/poolname /partition/poolmember:p
 The opposite to the poolmember offline command
 
 
+## Statistics
+
+Query F5 statistics for LTM virtuals, pools, nodes and rules.
+Output is returned in graphite format.
+To set a custom graphite path prefix, use a config file and set the configurable **stats_path_prefix**. See the conf file example above.
+Only statistics that are non-zero will be returned by default. Override this by setting the configurable **stats_show_zero_values** to true.
+
+To retrieve all stats for a single virtual server...
+```
+./f5er stats virtual /DMZ/virtual-prd
+f5.DMZ.virtual.virtual-prd.fiveMinAvgUsageRatio 0 1465879005
+f5.DMZ.virtual.virtual-prd.oneMinAvgUsageRatio 0 1465879005
+f5.DMZ.virtual.virtual-prd.clientside.curConns 28 1465879005
+...
+```
+
+To retrieve stats for all virtual servers in one hit, don't pass a virtual as an argument...
+```
+./f5er stats virtual
+f5.DMZ.virtual.virtualserver.Clientside_bitsIn 160632 1465880938
+f5.DMZ.virtual.virtualserver.Clientside_bitsOut 67000 1465880938
+f5.DMZ.virtual.virtualserver.Clientside_maxConns 2 1465880938
+f5.DMZ.virtual.virtualserver.Clientside_pktsIn 228 1465880938
+f5.DMZ.virtual.virtualserver.Clientside_pktsOut 105 1465880938
+...
+
+```
+
 
 # Saved F5 snippets
 
@@ -315,4 +376,11 @@ The response indicates that iControl® REST added the operation to the transacti
 "kind":"tm:transactionstate",
 "selfLink":"https://localhost/mgmt/tm/transaction/1389813931?ver=11.5.0"
 }
+```
+#### interface stats
+
+Get global interface statistics
+
+```
+/mgmt/tm/net/interface/stats
 ```

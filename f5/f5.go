@@ -9,17 +9,19 @@ import (
 	"log"
 	"net/http"
 	"net/url"
+	"strings"
 	"sync"
 	"time"
 )
 
 var (
 	//sessn   napping.Session
-	tsport     http.Transport
-	clnt       http.Client
-	headers    http.Header
-	debug      bool
-	tokenMutex = sync.Mutex{}
+	tsport            http.Transport
+	clnt              http.Client
+	headers           http.Header
+	debug             bool
+	tokenMutex        = sync.Mutex{}
+	stats_path_prefix string
 )
 
 const (
@@ -42,13 +44,15 @@ type httperr struct {
 }
 
 type Device struct {
-	Hostname   string
-	Username   string
-	Password   string
-	Session    napping.Session
-	AuthToken  authToken
-	AuthMethod AuthMethod
-	Proto      string
+	Hostname        string
+	Username        string
+	Password        string
+	Session         napping.Session
+	AuthToken       authToken
+	AuthMethod      AuthMethod
+	Proto           string
+	StatsPathPrefix string
+	StatsShowZeroes bool
 }
 
 type Response struct {
@@ -81,13 +85,13 @@ type authToken struct {
 }
 
 func New(host string, username string, pwd string, authMethod AuthMethod) *Device {
-	f := Device{Hostname: host, Username: username, Password: pwd, AuthMethod: authMethod, Proto: "https"}
+	f := Device{Hostname: host, Username: username, Password: pwd, AuthMethod: authMethod, Proto: "https", StatsPathPrefix: "f5.", StatsShowZeroes: false}
 	f.InitSession()
 	return &f
 }
 
 func NewInsecure(host string, username string, pwd string, authMethod AuthMethod) *Device {
-	f := Device{Hostname: host, Username: username, Password: pwd, AuthMethod: authMethod, Proto: "http"}
+	f := Device{Hostname: host, Username: username, Password: pwd, AuthMethod: authMethod, Proto: "http", StatsPathPrefix: "f5.", StatsShowZeroes: false}
 	f.InitSession()
 	return &f
 }
@@ -121,6 +125,18 @@ func (f *Device) InitSession() {
 
 func (f *Device) SetDebug(b bool) {
 	debug = b
+}
+
+func (f *Device) SetStatsPathPrefix(p string) {
+	if strings.HasSuffix(p, ".") {
+		f.StatsPathPrefix = p
+	} else {
+		f.StatsPathPrefix = p + "."
+	}
+
+}
+func (f *Device) SetStatsShowZeroes(b bool) {
+	f.StatsShowZeroes = b
 }
 
 func (f *Device) StartTransaction() (error, string) {

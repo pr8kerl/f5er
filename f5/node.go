@@ -66,22 +66,22 @@ type LBNodeStatsValue struct {
 
 type LBNodeStatsInnerEntries struct {
 	Addr                     LBNodeStatsDescription `json:"addr"`
-	CurSessions              LBNodeStatsValue       `json:"curSessions"`
+	CurSessions              LBStatsValue           `json:"curSessions"`
 	MonitorRule              LBNodeStatsDescription `json:"monitorRule"`
 	MonitorStatus            LBNodeStatsDescription `json:"monitorStatus"`
 	TmName                   LBNodeStatsDescription `json:"tmName"`
-	Serverside_bitsIn        LBNodeStatsValue       `json:"serverside.bitsIn"`
-	Serverside_bitsOut       LBNodeStatsValue       `json:"serverside.bitsOut"`
-	Serverside_curConns      LBNodeStatsValue       `json:"serverside.curConns"`
-	Serverside_maxConns      LBNodeStatsValue       `json:"serverside.maxConns"`
-	Serverside_pktsIn        LBNodeStatsValue       `json:"serverside.pktsIn"`
-	Serverside_pktsOut       LBNodeStatsValue       `json:"serverside.pktsOut"`
-	Serverside_totConns      LBNodeStatsValue       `json:"serverside.totConns"`
+	Serverside_bitsIn        LBStatsValue           `json:"serverside.bitsIn"`
+	Serverside_bitsOut       LBStatsValue           `json:"serverside.bitsOut"`
+	Serverside_curConns      LBStatsValue           `json:"serverside.curConns"`
+	Serverside_maxConns      LBStatsValue           `json:"serverside.maxConns"`
+	Serverside_pktsIn        LBStatsValue           `json:"serverside.pktsIn"`
+	Serverside_pktsOut       LBStatsValue           `json:"serverside.pktsOut"`
+	Serverside_totConns      LBStatsValue           `json:"serverside.totConns"`
 	SessionStatus            LBNodeStatsDescription `json:"sessionStatus"`
 	Status_availabilityState LBNodeStatsDescription `json:"status.availabilityState"`
 	Status_enabledState      LBNodeStatsDescription `json:"status.enabledState"`
 	Status_statusReason      LBNodeStatsDescription `json:"status.statusReason"`
-	TotRequests              LBNodeStatsValue       `json:"totRequests"`
+	TotRequests              LBStatsValue           `json:"totRequests"`
 }
 
 type LBNodeStatsNestedStats struct {
@@ -132,11 +132,11 @@ func (f *Device) ShowNode(nname string) (error, *LBNode) {
 
 }
 
-func (f *Device) ShowNodeStats(nname string) (error, *LBNodeStats) {
+func (f *Device) ShowNodeStats(nname string) (error, *LBObjectStats) {
 
 	node := strings.Replace(nname, "/", "~", -1)
 	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/node/" + node + "/stats"
-	res := LBNodeStats{}
+	res := LBObjectStats{}
 
 	err, _ := f.sendRequest(u, GET, nil, &res)
 	if err != nil {
