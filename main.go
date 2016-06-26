@@ -25,6 +25,8 @@ var (
 	now                    bool
 	stats_path_prefix      string
 	stats_show_zero_values bool
+	version                string = "0.1."
+	commit                 string = "unset"
 )
 
 func initialiseConfig() {
@@ -107,6 +109,10 @@ func init() {
 	offlinePoolMemberCmd.Flags().StringVarP(&f5Pool, "pool", "p", "", "F5 pool name")
 	offlinePoolMemberCmd.Flags().BoolVarP(&now, "now", "n", false, "force member offline immediately")
 	onlinePoolMemberCmd.Flags().StringVarP(&f5Pool, "pool", "p", "", "F5 pool name")
+
+	// version
+	version = version + commit
+	f5Cmd.AddCommand(versionCmd)
 
 	// show
 	f5Cmd.AddCommand(showCmd)

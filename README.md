@@ -377,10 +377,29 @@ The response indicates that iControl® REST added the operation to the transacti
 "selfLink":"https://localhost/mgmt/tm/transaction/1389813931?ver=11.5.0"
 }
 ```
-#### interface stats
+
+#### system stats
 
 Get global interface statistics
 
 ```
 /mgmt/tm/net/interface/stats
+```
+
+#### Memory stats
+
+```
+/mgmt/tm/sys/memory
+```
+#### CPU  stats
+
+```
+/mgmt/tm/sys/cpu
+```
+
+#### Disk stats
+
+```
+/mgmt/tm/sys/disk/logical-disk
+/mgmt/tm/sys/disk/application-volume
 ```

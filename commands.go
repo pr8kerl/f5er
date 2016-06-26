@@ -21,6 +21,14 @@ var f5Cmd = &cobra.Command{
 	},
 }
 
+var versionCmd = &cobra.Command{
+	Use:   "version",
+	Short: "show current version",
+	Long:  "show compiled version of f5er binary",
+	Run: func(cmd *cobra.Command, args []string) {
+		fmt.Printf("f5er version %s\n", version)
+	},
+}
 var showCmd = &cobra.Command{
 	Use:   "show",
 	Short: "show F5 objects",
