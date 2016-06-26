@@ -14,6 +14,10 @@ Most commands will display the response in json as provided by the F5 device. Pl
 
 It can now display statistics in graphite format for virtuals, pools, nodes and rules. Thanks to [cgunning](https://github.com/cgunning) for the core of the statistics code. If you are a prometheus user, then check out [bigip_exporter](https://github.com/ExpressenAB/bigip_exporter).
 
+## Download
+
+Pre-compiled binaries for linux and windows can be found under [releases](https://github.com/pr8kerl/f5er/releases).
+
 ## Build
 
 For Linux
