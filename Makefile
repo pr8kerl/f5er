@@ -24,8 +24,8 @@ linux64: main.go commands.go stack.go
 		# vet it
 		GOPATH=$(GOPATH) go tool vet $^
     # binary
-		GOOS=linux GOARCH=amd64 GOPATH=$(GOPATH) go build $(LDFLAGS) -o f5er-linux-amd64.bin -v $^
-		touch f5er-linux-amd64.bin
+		GOOS=linux GOARCH=amd64 GOPATH=$(GOPATH) go build $(LDFLAGS) -o f5er -v $^
+		touch f5er
 
 win64: main.go commands.go stack.go
     # always format code
@@ -33,10 +33,10 @@ win64: main.go commands.go stack.go
 		# vet it
 		GOPATH=$(GOPATH) go tool vet $^
     # binary
-		GOOS=windows GOARCH=amd64 GOPATH=$(GOPATH) go build $(LDFLAGS) -o f5er-win-amd64.exe -v $^
-		touch f5er-win-amd64.exe
+		GOOS=windows GOARCH=amd64 GOPATH=$(GOPATH) go build $(LDFLAGS) -o f5er.exe -v $^
+		touch f5er.exe
 
 .PHONY: $(DEPS) clean
 
 clean:
-	rm -f f5er f5er-win-amd64.exe f5er-linux-amd64.bin
+	GOPATH=$(GOPATH) go clean -x

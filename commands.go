@@ -375,6 +375,33 @@ var onlinePoolMemberCmd = &cobra.Command{
 	},
 }
 
+var statsPoolMembersCmd = &cobra.Command{
+	Use:   "poolmember",
+	Short: "show poolmember statistics",
+	Long:  "show the current statistics of all members in a pool",
+	Run: func(cmd *cobra.Command, args []string) {
+
+		if len(args) < 1 {
+			err, res := appliance.StatsCommonPoolMembers()
+			if err != nil {
+				log.Fatal(err)
+			}
+			for _, datapoint := range res {
+				fmt.Printf("%s\n", datapoint.String())
+			}
+		} else {
+			name := args[0]
+			err, res := appliance.StatsPoolMembers(name)
+			if err != nil {
+				log.Fatal(err)
+			}
+			for _, datapoint := range res {
+				fmt.Printf("%s\n", datapoint.String())
+			}
+		}
+	},
+}
+
 var showVirtualCmd = &cobra.Command{
 	Use:   "virtual",
 	Short: "show a virtual server",

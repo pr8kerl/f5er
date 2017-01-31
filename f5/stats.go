@@ -187,6 +187,140 @@ func (f *Device) StatsPools() (error, []GraphiteDataPoint) {
 
 }
 
+func (f *Device) StatsPoolMembers(pname string) (error, []GraphiteDataPoint) {
+
+	data := make([]GraphiteDataPoint, 0, 4096)
+	start := time.Now()
+	timestamp := start.Unix()
+
+	pool := strings.Replace(pname, "/", "~", -1)
+	splitter := func(c rune) bool {
+		// split if "/" or "~"
+		return c == '\u002f' || c == '\u007e'
+
+	}
+	fields := strings.FieldsFunc(pool, splitter)
+	partition := fields[0]
+	poolname := fields[1]
+	if len(partition) < 1 || len(poolname) < 1 {
+		return fmt.Errorf("error: cannot parse partition and poolname for given pool: %s", pname), nil
+	}
+
+	prefix := f.StatsPathPrefix + partition + ".pool."
+	err, res := f.ShowPoolMembersStats(pool)
+	if err != nil {
+		return err, nil
+	} else {
+
+		splitter := func(c rune) bool {
+			// split if "/" or "~"
+			return c == '\u002f' || c == '\u007e'
+
+		}
+
+		for surl, stats := range res.Entries {
+
+			fields := strings.FieldsFunc(surl, splitter)
+			poolname := fields[7]
+			pmember := fields[10]
+			if len(partition) < 1 || len(poolname) < 1 {
+				fmt.Fprintf(os.Stderr, "warn: cannot parse poolname and poolmember for pool given url: %s", surl)
+				continue
+			}
+
+			poolmember := strings.Replace(pmember, ":", "-", -1)
+			entries := structs.New(stats.NestedStats.Entries)
+			fnames := entries.Names()
+
+			for key := range fnames {
+
+				skey := prefix + poolname + ".poolmember." + poolmember + "." + fnames[key]
+				v := entries.Field(fnames[key])
+
+				if value, ok := v.Value().(LBStatsValue); ok {
+					if value.Value > 0 {
+						// only print value if it is greater than zero
+						dp := NewGraphiteDataPoint(skey, value.Value, timestamp)
+						data = append(data, dp)
+					} else if f.StatsShowZeroes {
+						// except if I really want it
+						dp := NewGraphiteDataPoint(skey, value.Value, timestamp)
+						data = append(data, dp)
+					}
+				}
+
+			}
+
+		}
+		//		elapsed := time.Since(start)
+		//		fmt.Printf("elapsed: %v\n", elapsed.Seconds())
+		return nil, data
+
+	}
+
+}
+
+func (f *Device) StatsCommonPoolMembers() (error, []GraphiteDataPoint) {
+
+	data := make([]GraphiteDataPoint, 0, 4096)
+	start := time.Now()
+	timestamp := start.Unix()
+
+	err, res := f.ShowAllPoolMembersStats()
+	if err != nil {
+		return err, nil
+	} else {
+
+		splitter := func(c rune) bool {
+			// split if "/" or "~"
+			return c == '\u002f' || c == '\u007e'
+
+		}
+
+		for surl, stats := range res.Entries {
+
+			fields := strings.FieldsFunc(surl, splitter)
+			partition := fields[6]
+			poolname := fields[7]
+			pmember := fields[10]
+			if len(partition) < 1 || len(poolname) < 1 {
+				fmt.Fprintf(os.Stderr, "warn: cannot parse poolname and poolmember for pool given url: %s", surl)
+				continue
+			}
+
+			poolmember := strings.Replace(pmember, ":", "-", -1)
+			entries := structs.New(stats.NestedStats.Entries)
+			fnames := entries.Names()
+			prefix := f.StatsPathPrefix + partition + ".pool."
+
+			for key := range fnames {
+
+				skey := prefix + poolname + ".poolmember." + poolmember + "." + fnames[key]
+				v := entries.Field(fnames[key])
+
+				if value, ok := v.Value().(LBStatsValue); ok {
+					if value.Value > 0 {
+						// only print value if it is greater than zero
+						dp := NewGraphiteDataPoint(skey, value.Value, timestamp)
+						data = append(data, dp)
+					} else if f.StatsShowZeroes {
+						// except if I really want it
+						dp := NewGraphiteDataPoint(skey, value.Value, timestamp)
+						data = append(data, dp)
+					}
+				}
+
+			}
+
+		}
+		//		elapsed := time.Since(start)
+		//		fmt.Printf("elapsed: %v\n", elapsed.Seconds())
+		return nil, data
+
+	}
+
+}
+
 func (f *Device) StatsNode(nname string) (error, []GraphiteDataPoint) {
 
 	node := strings.Replace(nname, "/", "~", -1)

@@ -248,6 +248,33 @@ func (f *Device) ShowPoolMembers(pname string) (error, *LBPoolMembers) {
 
 }
 
+func (f *Device) ShowPoolMembersStats(pname string) (error, *LBPoolStats) {
+
+	pool := strings.Replace(pname, "/", "~", -1)
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/pool/" + pool + "/members/stats"
+	res := LBPoolStats{}
+
+	err, _ := f.sendRequest(u, GET, nil, &res)
+	if err != nil {
+		return err, nil
+	} else {
+		return nil, &res
+	}
+}
+
+func (f *Device) ShowAllPoolMembersStats() (error, *LBPoolStats) {
+
+	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/ltm/pool/members/stats"
+	res := LBPoolStats{}
+
+	err, _ := f.sendRequest(u, GET, nil, &res)
+	if err != nil {
+		return err, nil
+	} else {
+		return nil, &res
+	}
+}
+
 func (f *Device) AddPoolMembers(pname string, body *json.RawMessage) (error, *LBPoolMembers) {
 
 	pool := strings.Replace(pname, "/", "~", -1)

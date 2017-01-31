@@ -178,6 +178,7 @@ func init() {
 
 	f5Cmd.AddCommand(statsCmd)
 	statsCmd.AddCommand(statsPoolCmd)
+	statsCmd.AddCommand(statsPoolMembersCmd)
 	statsCmd.AddCommand(statsVirtualCmd)
 	statsCmd.AddCommand(statsNodeCmd)
 	statsCmd.AddCommand(statsRuleCmd)
