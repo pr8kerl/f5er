@@ -54,11 +54,6 @@ func initialiseConfig() {
 
 	// ignore errors - may be using environment vars or cmdline args
 	viper.ReadInConfig()
-	err := viper.ReadInConfig() // Find and read the config file
-	if err != nil {
-		fmt.Fprintf(os.Stderr, "\nerror: no config file found: %s\n", err)
-		os.Exit(1)
-	}
 
 }
 
@@ -69,6 +64,10 @@ func checkFlags(cmd *cobra.Command) {
 	username = viper.GetString("username")
 	passwd = viper.GetString("passwd")
 	f5Host = viper.GetString("device")
+	if f5Host == "" {
+		// look for the f5 cmdline option
+		f5Host = viper.GetString("f5")
+	}
 	stats_path_prefix = viper.GetString("stats_path_prefix")
 	stats_show_zero_values = viper.GetBool("stats_show_zero_values")
 

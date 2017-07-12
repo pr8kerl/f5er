@@ -15,9 +15,7 @@ var f5Cmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 	},
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
-
 		checkFlags(cmd)
-
 	},
 }
 

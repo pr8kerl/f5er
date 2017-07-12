@@ -56,8 +56,8 @@ Below is a full example of all current configurables. The **stats_** ones (used 
   "device": "192.168.0.100",
   "username": "admin",
   "passwd": "superSecretSquirrel",
-	"stats_path_prefix": "prd.f5.bigip01",
-	"stats_show_zero_values": false
+  "stats_path_prefix": "prd.f5.bigip01",
+  "stats_show_zero_values": false
 }
 ```
 
