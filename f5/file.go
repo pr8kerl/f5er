@@ -9,10 +9,6 @@ import (
 	"strconv"
 )
 
-type StatusError struct {
-
-}
-
 func (f *Device) UploadFile(filename string, data []byte) (error) {
 	if(len(data) > 512 * 1024) {
 		return errors.New("File size is too large, and we dont support chunked file sizes yet.")
