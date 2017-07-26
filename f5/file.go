@@ -14,7 +14,6 @@ type StatusError struct {
 }
 
 func (f *Device) UploadFile(filename string, data []byte) (error) {
-	//	err, res := f.sendRequest("/mgmt/shared/file-transfer/uploads/" + filename, POSTR, bytes.NewBuffer(data), resp)
 	if(len(data) > 512 * 1024) {
 		return errors.New("File size is too large, and we dont support chunked file sizes yet.")
 	}
