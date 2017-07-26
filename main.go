@@ -182,6 +182,8 @@ func init() {
 	statsCmd.AddCommand(statsNodeCmd)
 	statsCmd.AddCommand(statsRuleCmd)
 
+	f5Cmd.AddCommand(uploadFileCmd)
+
 	// read config
 	initialiseConfig()
 

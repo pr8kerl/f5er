@@ -6,6 +6,7 @@ import (
 	"github.com/spf13/cobra"
 	"io/ioutil"
 	"log"
+	"path/filepath"
 )
 
 var f5Cmd = &cobra.Command{
@@ -1221,6 +1222,25 @@ var deleteStackCmd = &cobra.Command{
 	Run: func(cmd *cobra.Command, args []string) {
 		checkRequiredFlag("input")
 		deleteStack()
+	},
+}
+
+var uploadFileCmd = &cobra.Command{
+	Use:   "upload",
+	Short: "upload a file",
+	Long:  "upload a file to the f5 server",
+	Run: func(cmd *cobra.Command, args []string) {
+		filename := args[0]
+		dat, err := ioutil.ReadFile(filename)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println("Uploading file", filepath.Base(filename))
+		err = appliance.UploadFile(filepath.Base(filename), dat)
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println("Done")
 	},
 }
 
