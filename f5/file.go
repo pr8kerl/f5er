@@ -3,7 +3,6 @@ package f5
 import (
 	"net/http"
 	"crypto/tls"
-	"fmt"
 	"errors"
 	"bytes"
 	"strconv"
