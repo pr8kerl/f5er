@@ -13,7 +13,6 @@ type BashCommandResult struct {
 }
 
 func (f *Device) Run(command string) (error, *BashCommandResult) {
-	// Change permissions to allow the REST interfaces to see files. 
 	u := f.Proto + "://" + f.Hostname + "/mgmt/tm/util/bash"
 	b := BashCommand { Command:"run", UtilCommandArgs:"-c \"" + command + "\"" }
 	r := BashCommandResult{}
