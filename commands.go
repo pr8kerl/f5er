@@ -7,8 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"path/filepath"
-	"./f5"
-	//"github.com/pr8kerl/f5er/f5"
+	"github.com/pr8kerl/f5er/f5"
 )
 
 var f5Cmd = &cobra.Command{
