@@ -33,7 +33,7 @@ type SSLCertificate struct {
 	SerialNum	string 		`json:"serialNumber"`
 	Size 		int			`json:"size"`
 	Subject		string 		`json:"subject"`
-	UpdatedBy	string 		`json:"updatedBy"`
+	UpdatedBy	string		`json:"updatedBy"`
 	Version		int			`json:"version"`
 }
 
