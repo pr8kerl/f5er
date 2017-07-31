@@ -127,6 +127,8 @@ func init() {
 	showCmd.AddCommand(showServerSslCmd)
 	showCmd.AddCommand(showMonitorHttpCmd)
 	showCmd.AddCommand(showStackCmd)
+	showCmd.AddCommand(showCertCmd)
+	showCmd.AddCommand(showCertsCmd)
 
 	// add
 	f5Cmd.AddCommand(addCmd)
@@ -140,6 +142,8 @@ func init() {
 	addCmd.AddCommand(addServerSslCmd)
 	addCmd.AddCommand(addMonitorHttpCmd)
 	addCmd.AddCommand(addStackCmd)
+	addCmd.AddCommand(addCertCmd)
+	addCmd.AddCommand(addKeyCmd)
 
 	// update
 	f5Cmd.AddCommand(updateCmd)
@@ -183,6 +187,7 @@ func init() {
 	statsCmd.AddCommand(statsRuleCmd)
 
 	f5Cmd.AddCommand(uploadFileCmd)
+	f5Cmd.AddCommand(runCmd)
 
 	// read config
 	initialiseConfig()

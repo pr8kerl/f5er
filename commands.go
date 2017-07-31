@@ -7,6 +7,7 @@ import (
 	"io/ioutil"
 	"log"
 	"path/filepath"
+	"github.com/pr8kerl/f5er/f5"
 )
 
 var f5Cmd = &cobra.Command{
@@ -1241,6 +1242,98 @@ var uploadFileCmd = &cobra.Command{
 			log.Fatal(err)
 		}
 		fmt.Println("Done")
+	},
+}
+
+func PrintCerts(cert *f5.SSLCertificate) {
+	fmt.Printf("Name: %v Partition: %s\n", cert.Name, cert.Partition)
+	fmt.Printf("Issuer: %s\n", cert.Issuer)
+	fmt.Printf("Subject: %s\n", cert.Subject)
+	fmt.Printf("Strength: %d Curve: %s Type: %s\n", cert.KeySize, cert.CurveName, cert.KeyType)
+	fmt.Printf("Checksum: %s\n", cert.Checksum)
+	fmt.Printf("Uploaded: %s Expires %s\n", cert.CreateTime, cert.ExpireTime)
+}
+
+var showCertCmd = &cobra.Command{
+	Use:   "cert",
+	Short: "show a certificate",
+	Long:  "show a certificate",
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) != 2 {
+			log.Fatal("partition then cert are required.")
+		}
+		partition := args[0]
+		cert_name := args[1]
+		err, cert := appliance.GetCertificate(partition, cert_name)
+		if err != nil {
+			log.Fatal(err)
+		}
+		PrintCerts(cert)
+	},
+}
+
+var showCertsCmd = &cobra.Command{
+	Use:   "certs",
+	Short: "show all certificates",
+	Long:  "show all certificates",
+	Run: func(cmd *cobra.Command, args []string) {
+		err, certs := appliance.GetCertificates()
+		if err != nil {
+			log.Fatal(err)
+		}
+		for _, cert := range certs.Items {
+			fmt.Println("")
+			PrintCerts(&cert)
+		}
+	},
+}
+
+var addCertCmd = &cobra.Command{
+	Use:   "cert",
+	Short: "add a certificate [name, partition, uploaded_file_name]. Note the name should be the same for the key/cert and should not have a suffix (.crt/.key)",
+	Long:  "add certificate to f5. note this does not create ssl profiles. uploaded_file_name should be a filename uploaded via f5 upload\nExample: f5 add cert mysite.com Common mysite.com.crt",
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) != 3 {
+			log.Fatal("[cert_name, partition, local_file]")
+		}
+		err, cert := appliance.CreateCertificateFromLocalFile(args[0], args[1], args[2])
+		if err != nil {
+			log.Fatal(err)
+		}
+		PrintCerts(cert)
+	},
+}
+
+var addKeyCmd = &cobra.Command{
+	Use:   "key",
+	Short: "add a certificate key [name, partition, uploaded_file_name]. Note the name should be the same for the key/cert and should not have a suffix (.crt/.key)",
+	Long:  "add certificate key to f5. note this does not create ssl profiles. uploaded_file_name should be a filename uploaded via f5 upload\nExample: f5 add key mysite.com Common mysite.com.key",
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) != 3 {
+			log.Fatal("[key_name, partition, local_file]")
+		}
+		err, cert := appliance.CreateKeyFromLocalFile(args[0], args[1], args[2])
+		if err != nil {
+			log.Fatal(err)
+		}
+		PrintCerts(cert)
+	},
+}
+
+
+var runCmd = &cobra.Command{
+	Use:   "run",
+	Short: "runs a bash command on the f5",
+	Long:  "Runs a bash command on the f5\nExample: f5 run \"ls -al\"",
+	Run: func(cmd *cobra.Command, args []string) {
+		if len(args) != 1 {
+			log.Fatal("Too little or too many arguements, Example: f5 run \"ls -al\"")
+		}
+		err, res := appliance.Run(args[0])
+		if err != nil {
+			log.Fatal(err)
+		}
+		fmt.Println(res.CommandResult)
 	},
 }
 

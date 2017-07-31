@@ -42,6 +42,7 @@ type LBClientSsl struct {
 	Renegotiation                   string           `json:"renegotiation"`
 	RetainCertificate               string           `json:"retainCertificate"`
 	SecureRenegotiation             string           `json:"secureRenegotiation"`
+	ServerName			            string           `json:"serverName"`
 	SessionMirroring                string           `json:"sessionMirroring"`
 	SessionTicket                   string           `json:"sessionTicket"`
 	SniDefault                      string           `json:"sniDefault"`
