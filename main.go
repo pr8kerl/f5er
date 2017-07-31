@@ -3,8 +3,7 @@ package main
 import (
 	"fmt"
 	"github.com/jmcvetta/napping"
-	"./f5"
-	//"github.com/pr8kerl/f5er/f5"
+	"github.com/pr8kerl/f5er/f5"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
 	"net/http"
