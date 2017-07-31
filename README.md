@@ -75,13 +75,17 @@ Usage:
   f5er [command]
 
 Available Commands:
-  show        show F5 objects
   add         add F5 objects
-  update      update F5 objects
   delete      delete F5 objects
+  help        Help about any command
   offline     offline a pool member
   online      online a pool member
+  run         runs a bash command on the f5
+  show        show F5 objects
   stats       get F5 statistics
+  update      update F5 objects
+  upload      upload a file
+  version     show current version
 
 Flags:
   -d, --debug          debug output
@@ -262,6 +266,46 @@ f5.DMZ.virtual.virtualserver.Clientside_pktsOut 105 1465880938
 
 ```
 
+## Adding TLS/SSL Certificate and Keys
+
+```
+$ ./f5er upload mysite.com.crt
+Uploading file mysite.com.crt
+Done
+
+$ ./f5er upload mysite.com.key
+Uploading file mysite.com.key
+Done
+
+$ ./f5er add cert mysite_com PARTITION mysite.com.crt
+Name: mysite_com.crt Partition: PARTITION
+Issuer: CN=DigiCert SHA2 High Assurance Server CA,OU=www.digicert.com,O=DigiCert Inc,C=US
+Subject: CN=www.mysite.com,OU=IS,O=Foobar,L=Salt Lake City,ST=Utah,C=US
+Strength: 2048 Curve: none Type: rsa-public
+Checksum: SHA1:2148:999980b62a14054893804473bda0376f44fa51c1
+Uploaded: 2017-07-31T16:30:01Z Expires May 28 12:00:00 2020 GMT
+
+$ ./f5er add key mysite_com PARTITION mysite.com.key
+Name: mysite_com.key Partition: DEV
+Issuer: 
+Subject: 
+Strength: 0 Curve:  Type: rsa-private
+Checksum: SHA1:1679:1111f23b7c0a3f53a6809c4608e6c8319a46a3a9
+Uploaded: 2017-07-31T16:30:18Z Expires
+```
+
+## Running Bash Commands
+
+```
+$ ./f5er run "ls -al"
+total 44
+drwxr-xr-x.  5 root root 4096 Jun 30  2016 .
+drwxr-xr-x. 95 root root 4096 Jun 30  2016 ..
+drwxr-xr-x.  2 root root 4096 Jun 30  2016 deps
+drwxr-xr-x.  2 root root 4096 Jun 30  2016 requires
+lrwxrwxrwx.  1 root root   31 Jun 30  2016 run -> /etc/bigstart/scripts/restjavad
+drwx------.  2 root root 4096 Jun  3 23:44 supervise
+```
 
 # Saved F5 snippets
 

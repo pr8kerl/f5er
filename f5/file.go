@@ -36,5 +36,10 @@ func (f *Device) UploadFile(filename string, data []byte) (error) {
 		s := buf.String()
 		return errors.New("Unable to process request, returned status: " + response.Status + " " + s)
 	}
+
+	err, _ = f.Run("chmod 644 /var/config/rest/downloads/" + filename)
+	if err != nil {
+		return err
+	}
 	return nil
 }
