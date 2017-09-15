@@ -12,7 +12,7 @@ type LBVirtualPolicy struct {
 }
 
 type LBVirtualPoliciesRef struct {
-	Items []LBVirtualPolicy `json":items"`
+	Items []LBVirtualPolicy `json:"items"`
 }
 
 type LBVirtualProfile struct {
@@ -29,7 +29,7 @@ type LBVirtualPersistProfile struct {
 }
 
 type LBVirtualProfileRef struct {
-	Items []LBVirtualProfile `json":items"`
+	Items []LBVirtualProfile `json:"items"`
 }
 
 type LBVirtual struct {

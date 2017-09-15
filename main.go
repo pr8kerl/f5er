@@ -25,8 +25,8 @@ var (
 	now                    bool
 	stats_path_prefix      string
 	stats_show_zero_values bool
-	version                string = "0.1."
-	commit                 string = "unset"
+	version                string = "0.2."
+	commit                 string = "unstable"
 )
 
 func initialiseConfig() {

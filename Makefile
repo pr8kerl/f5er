@@ -1,42 +1,40 @@
-GOROOT := /usr/local/go
-GOPATH := $(shell pwd)
+GOPATH := /go
 GOBIN  := $(GOPATH)/bin
-PATH   := $(GOROOT)/bin:$(PATH)
-DEPS   := github.com/jmcvetta/napping github.com/spf13/cobra github.com/spf13/viper github.com/pr8kerl/f5er/f5 github.com/inconshreveable/mousetrap github.com/fatih/structs
+PATH   := $(GOPATH)/bin:$(PATH)
+PROJ   := f5er
 
 LDFLAGS := -ldflags "-X main.commit=`git rev-parse HEAD`"
 
-all: f5er
+all: deps fmt test $(PROJ)
 
 deps: $(DEPS)
-	GOPATH=$(GOPATH) go get -u $^
+	GOPATH=$(GOPATH) glide install
 
-f5er: main.go commands.go stack.go
-    # always format code
-		GOPATH=$(GOPATH) go fmt $^
-    # binary
-		GOPATH=$(GOPATH) go build $(LDFLAGS) -o $@ -v $^
-		touch $@
+test: deps
+		GOPATH=$(GOPATH) go test -cover -v $(shell glide novendor)
 
-linux64: main.go commands.go stack.go
-    # always format code
-		GOPATH=$(GOPATH) go fmt $^
-		# vet it
-		GOPATH=$(GOPATH) go tool vet $^
-    # binary
-		GOOS=linux GOARCH=amd64 GOPATH=$(GOPATH) go build $(LDFLAGS) -o f5er -v $^
-		touch f5er
+fmt:
+		GOPATH=$(GOPATH) go fmt $(glide novendor)
+		GOPATH=$(GOPATH) go tool vet *.go f5/*.go
 
-win64: main.go commands.go stack.go
-    # always format code
-		GOPATH=$(GOPATH) go fmt $^
-		# vet it
-		GOPATH=$(GOPATH) go tool vet $^
-    # binary
-		GOOS=windows GOARCH=amd64 GOPATH=$(GOPATH) go build $(LDFLAGS) -o f5er.exe -v $^
-		touch f5er.exe
+$(PROJ): deps 
+		GOPATH=$(GOPATH) go build $(LDFLAGS) -o $@ -v $(glide novendor)
+		touch $@ && chmod 755 $@
+
+linux: deps
+		GOOS=linux GOARCH=amd64 GOPATH=$(GOPATH) go build $(LDFLAGS) -o $(PROJ)-linux-amd64 -v $(glide novendor)
+		touch $(PROJ)-linux-amd64 && chmod 755 $(PROJ)-linux-amd64
+
+windows: deps
+		GOOS=windows GOARCH=amd64 GOPATH=$(GOPATH) go build $(LDFLAGS) -o $(PROJ)-windows-amd64.exe -v $(glide novendor)
+		touch $(PROJ)-windows-amd64.exe
+
+darwin: deps
+		GOOS=darwin GOARCH=amd64 GOPATH=$(GOPATH) go build -o $(PROJ)-darwin-amd64 -v $(glide novendor)
+		touch $(PROJ)-darwin-amd64 && chmod 755 $(PROJ)-darwin-amd64
 
 .PHONY: $(DEPS) clean
 
 clean:
-	GOPATH=$(GOPATH) go clean -x
+		rm -rf $(PROJ) $(PROJ)-win-amd64.exe $(PROJ)-linux-amd64 $(PROJ)-darwin-amd64 .glide vendor
+

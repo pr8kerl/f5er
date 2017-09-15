@@ -2,7 +2,7 @@ package f5
 
 type LBDeviceRef struct {
 	Link  string          `json:"selfLink"`
-	Items []LBDeviceState `json":items"`
+	Items []LBDeviceState `json:"items"`
 }
 
 type LBDeviceState struct {

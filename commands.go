@@ -3,11 +3,11 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"github.com/pr8kerl/f5er/f5"
 	"github.com/spf13/cobra"
 	"io/ioutil"
 	"log"
 	"path/filepath"
-	"github.com/pr8kerl/f5er/f5"
 )
 
 var f5Cmd = &cobra.Command{
@@ -1319,7 +1319,6 @@ var addKeyCmd = &cobra.Command{
 		PrintCerts(cert)
 	},
 }
-
 
 var runCmd = &cobra.Command{
 	Use:   "run",

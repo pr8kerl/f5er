@@ -1,0 +1,9 @@
+package: .
+import:
+- package: github.com/fatih/structs
+  version: ^1.0.0
+- package: github.com/jmcvetta/napping
+  version: ^3.2.0
+- package: github.com/spf13/cobra
+- package: github.com/spf13/viper
+  version: ^1.0.0
