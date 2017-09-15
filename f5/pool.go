@@ -27,12 +27,12 @@ type LBPoolMember struct {
 // a pool member reference - just a link and an array of pool members
 type LBPoolMemberRef struct {
 	Link  string         `json:"link"`
-	Items []LBPoolMember `json":items"`
+	Items []LBPoolMember `json:"items"`
 }
 
 type LBPoolMembers struct {
 	Link  string         `json:"selfLink"`
-	Items []LBPoolMember `json":items"`
+	Items []LBPoolMember `json:"items"`
 }
 
 // used by online/offline

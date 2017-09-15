@@ -29,7 +29,7 @@ type LBMonitorHttp struct {
 }
 
 type LBMonitorHttpRef struct {
-	Items []LBMonitorHttp `json":items"`
+	Items []LBMonitorHttp `json:"items"`
 }
 
 func (f *Device) ShowMonitorsHttp() (error, *LBMonitorHttpRef) {

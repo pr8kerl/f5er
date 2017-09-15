@@ -32,7 +32,7 @@ type LBNode struct {
 
 type LBNodeRef struct {
 	Link  string   `json:"selfLink"`
-	Items []LBNode `json":items"`
+	Items []LBNode `json:"items"`
 }
 
 type LBNodes struct {

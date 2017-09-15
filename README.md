@@ -1,6 +1,6 @@
 # f5er
 
-A golang F5 rest client plaything
+An F5 rest client.
 
 Supports nodes, pools, poolmembers, virtuals, nodes, policies, irules, client-ssl profiles and http monitors in full - so far. Some statistics retrieval.
 
@@ -12,27 +12,20 @@ Supports the REST methods GET (show), POST (create), PUT (update) and DELETE (de
 
 Most commands will display the response in json as provided by the F5 device. Please note that although the response json may look similar to input json, some json object fields differ. For example, pool members within a pool are displayed within a membersReference object in a response, however members must be defined as an array within the **members** array in a pool object. Also some json object response fields are read-only and cannot be used with an input object (the object supplied in the body of a POST or PUT operation.
 
-It can now display statistics in graphite format for virtuals, pools, nodes and rules. Thanks to [cgunning](https://github.com/cgunning) for the core of the statistics code. If you are a prometheus user, then check out [bigip_exporter](https://github.com/ExpressenAB/bigip_exporter).
-
-## Download
-
-Pre-compiled binaries for linux and windows can be found under [releases](https://github.com/pr8kerl/f5er/releases).
+It can now display statistics in graphite format for virtuals, pools, nodes and rules. 
+If you are a prometheus user, then also check out [bigip_exporter](https://github.com/ExpressenAB/bigip_exporter).
 
 ## Build
 
-For Linux
-* update go.env to match your GOROOT.
-* source go.env
-* run **make deps** to get module requirements
-* run **make** to build the f5er binary
+Use docker and docker-compose to build.
 
-### cross-compile
-
-Windows 64 bit build is defined in the Makefile. It now uses the native golang 1.5+ cross-compilation support.
-Set GOOS and GOARCH to suit your needs if you need other platforms. 
-* run **make win64** to create a windows 64bit binary under Linux.
+```
+docker-compose run make [linux|windows|darwin]
+```
 
 ## credentials
+
+**f5er** looks for device credentials in the current environment, or if not found in a config file.
 
 ### Environment variables
 
@@ -439,6 +432,7 @@ Get global interface statistics
 ```
 /mgmt/tm/sys/memory
 ```
+
 #### CPU  stats
 
 ```
