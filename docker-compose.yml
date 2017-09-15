@@ -1,0 +1,21 @@
+base:
+  build: .
+  volumes:
+    - .:/go/src/github.com/pr8kerl/f5er
+  working_dir: /go/src/github.com/pr8kerl/f5er
+
+console:
+  extends:
+    service: base
+  entrypoint: bash
+
+glide:
+  extends:
+    service: base
+  entrypoint: glide
+
+make:
+  extends:
+    service: base
+  entrypoint: make 
+

@@ -1,5 +1,7 @@
 # f5er
 
+[![Build Status](https://travis-ci.org/pr8kerl/f5er.svg?branch=master)](https://travis-ci.org/pr8kerl/f5er)
+
 An F5 rest client.
 
 Supports nodes, pools, poolmembers, virtuals, nodes, policies, irules, client-ssl profiles and http monitors in full - so far. Some statistics retrieval.
