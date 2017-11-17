@@ -1,4 +1,4 @@
-GOPATH := /go
+GOPATH ?= /go
 GOBIN  := $(GOPATH)/bin
 PATH   := $(GOPATH)/bin:$(PATH)
 PROJ   := f5er
@@ -11,7 +11,7 @@ deps: $(DEPS)
 	GOPATH=$(GOPATH) glide install
 
 test: deps
-		GOPATH=$(GOPATH) go test -cover -v $(shell glide novendor)
+		GOPATH=$(GOPATH) go test -cover -v $(glide novendor)
 
 fmt:
 		GOPATH=$(GOPATH) go fmt $(glide novendor)
@@ -20,6 +20,10 @@ fmt:
 $(PROJ): deps 
 		GOPATH=$(GOPATH) go build $(LDFLAGS) -o $@ -v $(glide novendor)
 		touch $@ && chmod 755 $@
+
+build:
+		GOOS=linux GOARCH=amd64 GOPATH=$(GOPATH) go build $(LDFLAGS) -o $(PROJ) -v $(glide novendor)
+		touch $(PROJ) && chmod 755 $(PROJ)
 
 linux: deps
 		GOOS=linux GOARCH=amd64 GOPATH=$(GOPATH) go build $(LDFLAGS) -o $(PROJ)-linux-amd64 -v $(glide novendor)
