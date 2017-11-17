@@ -21,6 +21,10 @@ $(PROJ): deps
 		GOPATH=$(GOPATH) go build $(LDFLAGS) -o $@ -v $(glide novendor)
 		touch $@ && chmod 755 $@
 
+build:
+		GOOS=linux GOARCH=amd64 GOPATH=$(GOPATH) go build $(LDFLAGS) -o $(PROJ) -v $(glide novendor)
+		touch $(PROJ) && chmod 755 $(PROJ)
+
 linux: deps
 		GOOS=linux GOARCH=amd64 GOPATH=$(GOPATH) go build $(LDFLAGS) -o $(PROJ)-linux-amd64 -v $(glide novendor)
 		touch $(PROJ)-linux-amd64 && chmod 755 $(PROJ)-linux-amd64

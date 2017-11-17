@@ -2,12 +2,13 @@ package main
 
 import (
 	"fmt"
+	"net/http"
+	"os"
+
 	"github.com/jmcvetta/napping"
 	"github.com/pr8kerl/f5er/f5"
 	"github.com/spf13/cobra"
 	"github.com/spf13/viper"
-	"net/http"
-	"os"
 )
 
 var (
@@ -25,7 +26,6 @@ var (
 	now                    bool
 	stats_path_prefix      string
 	stats_show_zero_values bool
-	version                string = "0.2."
 	commit                 string = "unstable"
 )
 
@@ -110,7 +110,6 @@ func init() {
 	onlinePoolMemberCmd.Flags().StringVarP(&f5Pool, "pool", "p", "", "F5 pool name")
 
 	// version
-	version = version + commit
 	f5Cmd.AddCommand(versionCmd)
 
 	// show

@@ -5,13 +5,14 @@ import (
 	"encoding/json"
 	"errors"
 	"fmt"
-	"github.com/jmcvetta/napping"
 	"log"
 	"net/http"
 	"net/url"
 	"strings"
 	"sync"
 	"time"
+
+	"github.com/jmcvetta/napping"
 )
 
 var (
@@ -25,7 +26,8 @@ var (
 )
 
 const (
-	GET = iota
+	version = "v0.3.0"
+	GET     = iota
 	POST
 	POSTR
 	PUT
@@ -84,6 +86,10 @@ type authToken struct {
 	ExpirationMicros int64
 }
 
+func GetVersion() string {
+	return version
+}
+
 func New(host string, username string, pwd string, authMethod AuthMethod) *Device {
 	f := Device{Hostname: host, Username: username, Password: pwd, AuthMethod: authMethod, Proto: "https", StatsPathPrefix: "f5.", StatsShowZeroes: false}
 	f.InitSession()
@@ -102,6 +108,7 @@ func (f *Device) InitSession() {
 	if f.Proto == "https" {
 		tsport = http.Transport{
 			TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+			Proxy:           http.ProxyFromEnvironment,
 		}
 		clnt = http.Client{Transport: &tsport}
 	} else {

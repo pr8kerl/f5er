@@ -3,11 +3,12 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"github.com/pr8kerl/f5er/f5"
-	"github.com/spf13/cobra"
 	"io/ioutil"
 	"log"
 	"path/filepath"
+
+	"github.com/pr8kerl/f5er/f5"
+	"github.com/spf13/cobra"
 )
 
 var f5Cmd = &cobra.Command{
@@ -26,7 +27,7 @@ var versionCmd = &cobra.Command{
 	Short: "show current version",
 	Long:  "show compiled version of f5er binary",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("f5er version %s\n", version)
+		fmt.Printf("f5er %s commit %s\n", f5.GetVersion(), commit)
 	},
 }
 var showCmd = &cobra.Command{
