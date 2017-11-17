@@ -17,7 +17,7 @@ Most commands will display the response in json as provided by the F5 device. Pl
 It can now display statistics in graphite format for virtuals, pools, nodes and rules. 
 If you are a prometheus user, then also check out [bigip_exporter](https://github.com/ExpressenAB/bigip_exporter).
 
-## Build
+## Installation
 
 Use docker and docker-compose to build.
 
@@ -25,9 +25,14 @@ Use docker and docker-compose to build.
 docker-compose run make [linux|windows|darwin]
 ```
 
-## credentials
+Or build manually from repo installed in your GOPATH. Requires [glide](https://glide.sh/).
+```
+make
+```
 
-**f5er** looks for device credentials in the current environment, or if not found in a config file.
+## Configuration
+
+**f5er** looks for configuration in the current environment, or if not found in a config file.
 
 ### Environment variables
 
@@ -44,7 +49,7 @@ export F5_DEVICE F5_USERNAME F5_PASSWD
 
 F5 ip address/hostname and login credentials can also be stored in a json input file in the current directory.
 The expected file is called **f5.json** and it can be in the current working directory or in $HOME/.f5/.
-Below is a full example of all current configurables. The **stats_** ones (used for displaying statistics) are only available in a config file.
+Below is a full example of all current configurables. 
 
 ```
 {
@@ -56,10 +61,15 @@ Below is a full example of all current configurables. The **stats_** ones (used 
 }
 ```
 
+The **stats_** configuration options (used for displaying statistics) are only available in a config file.
 
-## help
+### Proxy support
 
-Use the help command to display hints and available subcommands
+**f5er** will use a proxy if the conventional proxy environment variables HTTP_PROXY or HTTPS_PROXY are set.
+
+## Usage
+
+Use the help command to display available commands.
 
 ```
 ./f5er help
@@ -90,42 +100,63 @@ Flags:
 Use "f5er [command] --help" for more information about a command.
 ```
 
-And show help for a subcommand such as **show**...
+For any command or subcommand, you can get additional information by using the help flags **-h|--help**.
+
 ```
-./f5er help show
+./f5er show --help
 show current state of F5 objects. Show requires an object, eg. f5er show pool
 
-Usage: 
+Usage:
   f5er show [flags]
   f5er show [command]
-Available Commands: 
-  pool         show a pool
-  poolmember   show pool members
-  virtual      show a virtual server
+
+Available Commands:
+  cert         show a certificate
+  certs        show all certificates
+  client-ssl   show a client-ssl profile
+  device       show an f5 device
+  monitor-http show a monitor-http profile
   node         show a node
   policy       show a policy
-  device       show an f5 device
+  pool         show a pool
+  poolmember   show pool members
+  profile      show profiles
   rule         show a rule
-  client-ssl   show a client-ssl profile
-  monitor-http show a monitor-http profile
+  server-ssl   show a server-ssl profile
   stack        show a stack transaction
+  virtual      show a virtual server
 
+Flags:
+  -h, --help   help for show
 
 Global Flags:
+  -d, --debug          debug output
+  -f, --f5 string      IP or hostname of F5 to poke
+  -i, --input string   input json f5 configuration
+
+Use "f5er show [command] --help" for more information about a command.
+```
+
+## Stacks
+
+This is a convenience construct and does not exist within F5 terminology. 
+It effectively allows commands to work on multiple nodes, pools, virtual servers, rules and policies in one operation. It uses a REST transaction to do so.
+Look at the file stack.json to see how to structure the input file.
+Show, add, update and delete operations are supported.
+
+```
+./f5er add stack -h
+add a new stack
+
+Usage: 
+  f5er add stack [flags]
+
+ Available Flags:
   -d, --debug=false: debug output
-  -h, --help=false: help for show
+  -f, --f5="": IP or hostname of F5 to poke
+  -h, --help=false: help for stack
   -i, --input="": input json f5 configuration
 
-Additional help topics: 
-  f5er show    show F5 objects
-  f5er add     add F5 objects
-  f5er update  update F5 objects
-  f5er delete  delete F5 objects
-  f5er offline offline a pool member
-  f5er online  online a pool member
-  f5er help    Help about any command
-
-Use "f5er help [command]" for more information about a command.
 
 ```
 
@@ -150,29 +181,6 @@ Only show is supported for device.
 		"managementIP": "192.168.0.101"
 	}
 ]
-```
-
-## Stacks
-
-This is a convenience construct and does not exist within F5 terminology. 
-It effectively allows commands to work on multiple nodes, pools, virtual servers, rules and policies in one operation. It uses a REST transaction to do so.
-Look at the file stack.json to see how to structure the input file.
-Show, add, update and delete operations are supported.
-
-```
-./f5er help add stack
-add a new stack
-
-Usage: 
-  f5er add stack [flags]
-
- Available Flags:
-  -d, --debug=false: debug output
-  -f, --f5="": IP or hostname of F5 to poke
-  -h, --help=false: help for stack
-  -i, --input="": input json f5 configuration
-
-
 ```
 
 ## Pools
@@ -302,148 +310,3 @@ lrwxrwxrwx.  1 root root   31 Jun 30  2016 run -> /etc/bigstart/scripts/restjava
 drwx------.  2 root root 4096 Jun  3 23:44 supervise
 ```
 
-# Saved F5 snippets
-
-These bits are saved here to serve as reminders to commands that could be supported in the future.
-
-#### cluster member status
-```
-curl -sk -u admin:admin -H "Content-Type: application/json" -X GET https://x.x.x.x/mgmt/tm/cm/failover-status 
-{
-  "kind":"tm:cm:failover-status:failover-statusstats",
-  "selfLink":"https://localhost/mgmt/tm/cm/failover-status?ver=11.6.0",
-  "entries":{
-    "https://localhost/mgmt/tm/cm/failover-status/0":{
-      "nestedStats":{
-        "entries":{
-          "color":{"description":"green"},
-          "https://localhost/mgmt/tm/cm/failoverStatus/0/details":{
-          "nestedStats":{
-            "entries":{
-              "https://localhost/mgmt/tm/cm/failoverStatus/0/details/0":{
-                "nestedStats":{
-                  "entries":{
-                    "details":{"description":"active for /Common/traffic-group-1"}
-                  }
-                }
-              }
-            }
-          }
-        },
-        "status":{"description":"ACTIVE"},
-        "summary":{"description":"1/1 active"}
-      }
-    }
-  }
-  }
-}
-
-```
-
-#### config sync
-
-```
-curl -sk -u admin:admin -H "Content-Type: application/json" -X POST -d '{"command":"run","utilCmdArgs":"config-sync to-group pair-group-name"}' https://x.x.x.x/mgmt/tm/cm
-```
-
-### show pool member stats
-
-```
-curl -sk -u admin:admin -H "Content-Type: application/json" https://x.x.x.x/mgmt/tm/ltm/pool/~DMZ~audmzbilltweb-sit_443_pool/members/stats
-```
-
-### show partitions
-
-```
-curl -sk -u admin:admin -H "Content-Type: application/json" https://x.x.x.x/mgmt/tm/sys/folder
-```
-
-### certificates/keys etc
-
-```
-curl -sk -u admin:admin -H "Content-Type: application/json" https://x.x.x.x/mgmt/tm/sys/crypto/
-curl -sk -u admin:admin -H "Content-Type: application/json" https://x.x.x.x/mgmt/tm/sys/crypto/cert
-curl -sk -u admin:admin -H "Content-Type: application/json" https://x.x.x.x/mgmt/tm/sys/crypto/key
-```
-
-### pool member status
-
-Take pool member offline. Active sessions are no longer allowed to continue
-{"state": "user-down", "session": "user-disabled"} (Member Forced Offline in GUI)
-
-Take pool member offline, active sessions continue (drain)
-{"state": "user-up", "session": "user-disabled"} (Member Disabled in GUI)
-
-Enable a pool member
-{"state": "user-up", "session": "user-enabled"}  (Member Enabled in GUI)
-
-
-#### transaction info
-
-
-```
-POST https://192.168.25.42/mgmt/tm/transaction
-
-{
-"transId":1389812351,
-"state":"STARTED",
-"timeoutSeconds":30,
-"kind":"tm:transactionstate",
-"selfLink":"https://localhost/mgmt/tm/transaction/1389812351?ver=11.5.0"
-}
-
-
-GET https://192.168.25.42/mgmt/tm/transaction
-GET https://192.168.25.42/mgmt/tm/transaction/<transId>
-
-
-Modifying a transaction
-After you create a transaction, you can populate the transaction by adding commands. Individual commands
-comprise the operations that a transaction performs. Commands are added in the order they are received
-but you can delete commands or change the order of the commands in the transaction.
-1. To add a command to a transaction, use the POST method and specify the
-X-F5-REST-Coordination-Id HTTP header with the transaction ID value from the example
-(1389812351). In the example, the request creates a new pool and adds a single member to the pool.
-POST https://192.168.25.42/mgmt/tm/ltm/pool
-X-F5-REST-Coordination-Id:1389812351
-{
-"name":"tcb-xact-pool",
-"members": [ {"name":"192.168.25.32:80","description":"First pool for transactions"} ]
-}
-
-The response indicates that iControl® REST added the operation to the transaction.
-{
-"transId":1389812351,
-"state":"STARTED",
-"timeoutSeconds":30,
-"kind":"tm:transactionstate",
-"selfLink":"https://localhost/mgmt/tm/transaction/1389813931?ver=11.5.0"
-}
-```
-
-#### system stats
-
-Get global interface statistics
-
-```
-/mgmt/tm/net/interface/stats
-```
-
-#### Memory stats
-
-```
-/mgmt/tm/sys/memory
-```
-
-#### CPU  stats
-
-```
-/mgmt/tm/sys/cpu
-```
-
-#### Disk stats
-
-```
-/mgmt/tm/sys/disk/logical-disk
-/mgmt/tm/sys/disk/application-volume
-```

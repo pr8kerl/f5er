@@ -1,4 +1,4 @@
-GOPATH := /go
+GOPATH ?= /go
 GOBIN  := $(GOPATH)/bin
 PATH   := $(GOPATH)/bin:$(PATH)
 PROJ   := f5er
@@ -11,7 +11,7 @@ deps: $(DEPS)
 	GOPATH=$(GOPATH) glide install
 
 test: deps
-		GOPATH=$(GOPATH) go test -cover -v $(shell glide novendor)
+		GOPATH=$(GOPATH) go test -cover -v $(glide novendor)
 
 fmt:
 		GOPATH=$(GOPATH) go fmt $(glide novendor)
