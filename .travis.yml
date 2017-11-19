@@ -1,8 +1,12 @@
-sudo: required
+language: go
+
+addons:
+  apt:
+    packages:
+      - docker-ce
 
 services:
   - docker
 
 script:
-  - docker-compose --version
-  - docker-compose run make
+- make test publish

@@ -27,6 +27,7 @@ var (
 	now                 bool
 	statsPathPrefix     string
 	statsShowZeroValues bool
+	version             = "master"
 	commit              = "unstable"
 )
 

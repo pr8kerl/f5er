@@ -1,3 +1,4 @@
+---
 base:
   build: .
   volumes:
@@ -19,3 +20,9 @@ make:
     service: base
   entrypoint: make 
 
+releaser:
+  extends:
+    service: base
+  image: pr8kerl/goreleaser:v0.35.7
+  environment:
+    - GITHUB_TOKEN
