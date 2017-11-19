@@ -12,21 +12,22 @@ import (
 )
 
 var (
-	appliance              *f5.Device
-	f5Host                 string
-	username               string
-	passwd                 string
-	cfgName                string = "f5"
-	f5Input                string
-	f5Pool                 string
-	session                napping.Session
-	transport              *http.Transport
-	client                 *http.Client
-	debug                  bool
-	now                    bool
-	stats_path_prefix      string
-	stats_show_zero_values bool
-	commit                 string = "unstable"
+	appliance           *f5.Device
+	f5Host              string
+	username            string
+	passwd              string
+	cfgName             = "f5"
+	f5Input             string
+	f5Pool              string
+	session             napping.Session
+	transport           *http.Transport
+	client              *http.Client
+	debug               bool
+	token               bool
+	now                 bool
+	statsPathPrefix     string
+	statsShowZeroValues bool
+	commit              = "unstable"
 )
 
 func initialiseConfig() {
@@ -36,15 +37,17 @@ func initialiseConfig() {
 	viper.AddConfigPath(".")
 	viper.SetDefault("username", "admin")
 	viper.SetDefault("debug", false)
+	viper.SetDefault("token", true)
 	viper.SetDefault("force", false)
-	viper.SetDefault("stats_path_prefix", "f5")
-	viper.SetDefault("stats_show_zero_values", false)
+	viper.SetDefault("statsPathPrefix", "f5")
+	viper.SetDefault("statsShowZeroValues", false)
 
 	viper.SetEnvPrefix("f5")
 	viper.BindEnv("device")
 	viper.BindEnv("username")
 	viper.BindEnv("passwd")
 	viper.BindEnv("debug")
+	viper.BindEnv("token")
 
 	viper.BindPFlag("f5", f5Cmd.PersistentFlags().Lookup("f5"))
 	viper.BindPFlag("debug", f5Cmd.PersistentFlags().Lookup("debug"))
@@ -60,6 +63,7 @@ func initialiseConfig() {
 func checkFlags(cmd *cobra.Command) {
 
 	debug = viper.GetBool("debug")
+	token = viper.GetBool("token")
 	now = viper.GetBool("now")
 	username = viper.GetString("username")
 	passwd = viper.GetString("passwd")
@@ -68,8 +72,8 @@ func checkFlags(cmd *cobra.Command) {
 		// look for the f5 cmdline option
 		f5Host = viper.GetString("f5")
 	}
-	stats_path_prefix = viper.GetString("stats_path_prefix")
-	stats_show_zero_values = viper.GetBool("stats_show_zero_values")
+	statsPathPrefix = viper.GetString("stats_path_prefix")
+	statsShowZeroValues = viper.GetBool("stats_show_zero_values")
 
 	if username == "" {
 		fmt.Fprint(os.Stderr, "\nerror: missing username; use config file or F5_USERNAME environment variable\n\n")
@@ -88,8 +92,9 @@ func checkFlags(cmd *cobra.Command) {
 	// args are only parsed after cobraCommand.Run() - urgh
 	appliance = f5.New(f5Host, username, passwd, f5.TOKEN)
 	appliance.SetDebug(debug)
-	appliance.SetStatsPathPrefix(stats_path_prefix)
-	appliance.SetStatsShowZeroes(stats_show_zero_values)
+	appliance.SetTokenAuth(token)
+	appliance.SetStatsPathPrefix(statsPathPrefix)
+	appliance.SetStatsShowZeroes(statsShowZeroValues)
 
 }
 
@@ -104,6 +109,7 @@ func init() {
 
 	f5Cmd.PersistentFlags().StringVarP(&f5Host, "f5", "f", "", "IP or hostname of F5 to poke")
 	f5Cmd.PersistentFlags().BoolVarP(&debug, "debug", "d", false, "debug output")
+	f5Cmd.PersistentFlags().BoolVarP(&token, "token", "t", true, "use token auth")
 	f5Cmd.PersistentFlags().StringVarP(&f5Input, "input", "i", "", "input json f5 configuration")
 	offlinePoolMemberCmd.Flags().StringVarP(&f5Pool, "pool", "p", "", "F5 pool name")
 	offlinePoolMemberCmd.Flags().BoolVarP(&now, "now", "n", false, "force member offline immediately")

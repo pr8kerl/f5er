@@ -92,7 +92,7 @@ var statsCmd = &cobra.Command{
 	Short: "get F5 statistics",
 	Long:  "get statistics for F5 objects.",
 	Run: func(cmd *cobra.Command, args []string) {
-		appliance.SetStatsPathPrefix(stats_path_prefix)
+		appliance.SetStatsPathPrefix(statsPathPrefix)
 		if len(args) < 1 {
 			stats()
 		}

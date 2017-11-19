@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/pr8kerl/f5er.svg?branch=master)](https://travis-ci.org/pr8kerl/f5er)
 
-An F5 rest client.
+An F5 rest client and package.
 
 Supports nodes, pools, poolmembers, virtuals, nodes, policies, irules, client-ssl profiles and http monitors in full - so far. Some statistics retrieval.
 
@@ -15,7 +15,7 @@ Supports the REST methods GET (show), POST (create), PUT (update) and DELETE (de
 Most commands will display the response in json as provided by the F5 device. Please note that although the response json may look similar to input json, some json object fields differ. For example, pool members within a pool are displayed within a membersReference object in a response, however members must be defined as an array within the **members** array in a pool object. Also some json object response fields are read-only and cannot be used with an input object (the object supplied in the body of a POST or PUT operation.
 
 It can now display statistics in graphite format for virtuals, pools, nodes and rules. 
-If you are a prometheus user, then also check out [bigip_exporter](https://github.com/ExpressenAB/bigip_exporter).
+If you are a prometheus user, then also check out [bigip_exporter](https://github.com/ExpressenAB/bigip_exporter) which uses the f5 package.
 
 ## Installation
 
@@ -36,13 +36,14 @@ make
 
 ### Environment variables
 
-You can use the following environment variables to specify the F5 device and credentials.
+You can use the following environment variables to specify the F5 device, credentials and token authentication mode.
 ```
 F5_DEVICE="192.168.0.100"
 F5_USERNAME="admin"
 F5_PASSWD="superSecretSquirrel"
+F5_TOKEN="true"
 
-export F5_DEVICE F5_USERNAME F5_PASSWD
+export F5_DEVICE F5_USERNAME F5_PASSWD F5_TOKEN
 ```
 
 ### Config file
@@ -56,6 +57,7 @@ Below is a full example of all current configurables.
   "device": "192.168.0.100",
   "username": "admin",
   "passwd": "superSecretSquirrel",
+  "token": true,
   "stats_path_prefix": "prd.f5.bigip01",
   "stats_show_zero_values": false
 }
@@ -66,6 +68,16 @@ The **stats_** configuration options (used for displaying statistics) are only a
 ### Proxy support
 
 **f5er** will use a proxy if the conventional proxy environment variables HTTP_PROXY or HTTPS_PROXY are set.
+
+### Authentication
+
+Big-IP devices allow authentication to the REST API using basic http authentication or using a proprietary token authentication. The default is to use 
+the token auth method. To use only basic auth, you can set the token flag to false on the command line, in the config file, or using the F5_TOKEN environment variable.
+
+```
+f5er --token=false show pool
+F5_TOKEN=fale f5er show pool
+```
 
 ## Usage
 
