@@ -40,8 +40,8 @@ darwin: deps
 ifdef TRAVIS_TAG
 publish: deps
 	@echo "+++ release :octocat:"
-	docker-compose run releaser --skip-validate --rm-dist
+	goreleaser --skip-validate --rm-dist
 endif
 
 clean:
-		rm -rf $(PROJ) $(PROJ)-win-amd64.exe $(PROJ)-linux-amd64 $(PROJ)-darwin-amd64 .glide vendor dist
+	rm -rf $(PROJ) $(PROJ)-win-amd64.exe $(PROJ)-linux-amd64 $(PROJ)-darwin-amd64 .glide vendor dist
