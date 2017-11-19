@@ -27,7 +27,7 @@ var versionCmd = &cobra.Command{
 	Short: "show current version",
 	Long:  "show compiled version of f5er binary",
 	Run: func(cmd *cobra.Command, args []string) {
-		fmt.Printf("f5er %s commit %s\n", f5.GetVersion(), commit)
+		fmt.Printf("f5er version %s commit %s\n", version, commit)
 	},
 }
 var showCmd = &cobra.Command{
