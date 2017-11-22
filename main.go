@@ -38,7 +38,7 @@ func initialiseConfig() {
 	viper.AddConfigPath(".")
 	viper.SetDefault("username", "admin")
 	viper.SetDefault("debug", false)
-	viper.SetDefault("token", true)
+	viper.SetDefault("token", false)
 	viper.SetDefault("force", false)
 	viper.SetDefault("statsPathPrefix", "f5")
 	viper.SetDefault("statsShowZeroValues", false)
@@ -91,7 +91,7 @@ func checkFlags(cmd *cobra.Command) {
 
 	// this has to be done here inside cobraCommand.Execute() inc case cmd line args are passed.
 	// args are only parsed after cobraCommand.Run() - urgh
-	appliance = f5.New(f5Host, username, passwd, f5.TOKEN)
+	appliance = f5.New(f5Host, username, passwd, f5.BASIC_AUTH)
 	appliance.SetDebug(debug)
 	appliance.SetTokenAuth(token)
 	appliance.SetStatsPathPrefix(statsPathPrefix)
@@ -110,7 +110,7 @@ func init() {
 
 	f5Cmd.PersistentFlags().StringVarP(&f5Host, "f5", "f", "", "IP or hostname of F5 to poke")
 	f5Cmd.PersistentFlags().BoolVarP(&debug, "debug", "d", false, "debug output")
-	f5Cmd.PersistentFlags().BoolVarP(&token, "token", "t", true, "use token auth")
+	f5Cmd.PersistentFlags().BoolVarP(&token, "token", "t", false, "use token auth")
 	f5Cmd.PersistentFlags().StringVarP(&f5Input, "input", "i", "", "input json f5 configuration")
 	offlinePoolMemberCmd.Flags().StringVarP(&f5Pool, "pool", "p", "", "F5 pool name")
 	offlinePoolMemberCmd.Flags().BoolVarP(&now, "now", "n", false, "force member offline immediately")

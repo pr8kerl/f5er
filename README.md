@@ -19,7 +19,11 @@ If you are a prometheus user, then also check out [bigip_exporter](https://githu
 
 ## Installation
 
-Use docker and docker-compose to build.
+You can download the latest build for Mac, Linux or Windows from the [releases](https://github.com/pr8kerl/f5er/releases) page.
+
+### Build
+
+Use docker and docker-compose to build it yourself.
 
 ```
 docker-compose run make [linux|windows|darwin]
@@ -33,6 +37,7 @@ make
 ## Configuration
 
 **f5er** looks for configuration in the current environment, or if not found in a config file.
+You must provide config for the device (ip address or hostname), as well as username and password.
 
 ### Environment variables
 
@@ -57,7 +62,7 @@ Below is a full example of all current configurables.
   "device": "192.168.0.100",
   "username": "admin",
   "passwd": "superSecretSquirrel",
-  "token": true,
+  "token": false,
   "stats_path_prefix": "prd.f5.bigip01",
   "stats_show_zero_values": false
 }
@@ -72,11 +77,11 @@ The **stats_** configuration options (used for displaying statistics) are only a
 ### Authentication
 
 Big-IP devices allow authentication to the REST API using basic http authentication or using a proprietary token authentication. The default is to use 
-the token auth method. To use only basic auth, you can set the token flag to false on the command line, in the config file, or using the F5_TOKEN environment variable.
+basic auth method. To use token auth, you can set the token flag to true on the command line, in the config file, or using the F5_TOKEN environment variable.
 
 ```
-f5er --token=false show pool
-F5_TOKEN=fale f5er show pool
+f5er --token=true show pool
+F5_TOKEN=true f5er show pool
 ```
 
 ## Usage

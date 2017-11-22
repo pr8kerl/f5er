@@ -139,7 +139,6 @@ func (f *Device) SetTokenAuth(t bool) {
 	}
 	if debug {
 		fmt.Printf("authentication mode: %s\n", debugout)
-
 	}
 }
 
