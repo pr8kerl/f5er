@@ -17,12 +17,12 @@ var f5Cmd = &cobra.Command{
 	Short: "tickle an F5 load balancer using REST",
 	Long:  "A utility to manage F5 configuration objects",
 	Run: func(cmd *cobra.Command, args []string) {
-	},
-	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		if len(args) < 1 {
 			cmd.Help()
 			os.Exit(1)
 		}
+	},
+	PersistentPreRun: func(cmd *cobra.Command, args []string) {
 		checkFlags(cmd)
 	},
 }
