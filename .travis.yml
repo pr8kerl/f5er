@@ -9,4 +9,4 @@ services:
   - docker
 
 script:
-- docker-compose run make test publish
+- docker-compose run make all
