@@ -1,24 +1,24 @@
 ---
-base:
-  build: .
-  volumes:
-    - .:/go/src/github.com/pr8kerl/f5er
-  working_dir: /go/src/github.com/pr8kerl/f5er
+version: '3'
 
-console:
-  extends:
-    service: base
-  entrypoint: bash
+services:
+  base: &base
+    build:
+      context: .
+      dockerfile: Dockerfile.build
+    volumes:
+      - .:/go/src/github.com/pr8kerl/f5er
+    working_dir: /go/src/github.com/pr8kerl/f5er
+    entrypoint: make 
 
-glide:
-  extends:
-    service: base
-  entrypoint: glide
+  f5er:
+    build: .
+    volumes:
+      - .:/go/src/github.com/pr8kerl/f5er
+      - $HOME/.f5:/root/.f5
 
-make:
-  extends:
-    service: base
-  entrypoint: make 
-  environment:
-    - GITHUB_TOKEN
-    - TRAVIS_TAG
+  make:
+    <<: *base
+    environment:
+      - GITHUB_TOKEN
+      - TRAVIS_TAG

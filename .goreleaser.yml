@@ -5,7 +5,22 @@ builds:
       - windows
     goarch:
       - amd64
+    env:
+      - CGO_ENABLED=0
 
 archive:
   name_template: "f5er-{{ .Os }}-{{ .Arch }}"
   format: binary
+
+dockers:
+  -
+    goos: linux
+    goarch: amd64
+    binary: f5er
+    image: pr8kerl/f5er
+    dockerfile: Dockerfile
+    tag_templates:
+    - "{{ .Tag }}"
+    - "v{{ .Major }}"
+    - "v{{ .Major }}.{{ .Minor }}"
+    - latest
