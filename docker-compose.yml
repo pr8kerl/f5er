@@ -3,9 +3,7 @@ version: '3'
 
 services:
   base: &base
-    build:
-      context: .
-      dockerfile: Dockerfile.build
+    image: pr8kerl/gobuilder:1.10
     volumes:
       - .:/go/src/github.com/pr8kerl/f5er
     working_dir: /go/src/github.com/pr8kerl/f5er
