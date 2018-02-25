@@ -1,15 +1,15 @@
 package f5
 
 import (
-	"net/http"
+	"bytes"
 	"crypto/tls"
 	"errors"
-	"bytes"
+	"net/http"
 	"strconv"
 )
 
-func (f *Device) UploadFile(filename string, data []byte) (error) {
-	if(len(data) > 512 * 1024) {
+func (f *Device) UploadFile(filename string, data []byte) error {
+	if len(data) > 512*1024 {
 		return errors.New("File size is too large, and we dont support chunked file sizes yet.")
 	}
 
@@ -20,10 +20,10 @@ func (f *Device) UploadFile(filename string, data []byte) (error) {
 	}
 	request.SetBasicAuth(f.Username, f.Password)
 	request.Header.Set("Content-Type", "application/octet-stream")
-	request.Header.Set("Content-Range", "0-" + strconv.Itoa(len(data) - 1) + "/" + strconv.Itoa(len(data)))
+	request.Header.Set("Content-Range", "0-"+strconv.Itoa(len(data)-1)+"/"+strconv.Itoa(len(data)))
 	tr := &http.Transport{
-        TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
-    }
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
 	client := &http.Client{Transport: tr}
 	response, err := client.Do(request)
 	if err != nil {
