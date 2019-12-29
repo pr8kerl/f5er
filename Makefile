@@ -1,4 +1,4 @@
-.PHONY: deps test publish clean
+.PHONY: deps test clean
 
 GOPATH ?= /go
 GOBIN  := $(GOPATH)/bin
@@ -9,43 +9,34 @@ DOCKER_PASSWORD ?= Magic
 
 LDFLAGS := -ldflags "-X main.commit=`git rev-parse HEAD`"
 
-all: deps fmt test $(PROJ) publish
-
-deps:
-	@echo "--- collecting ingredients :bento:"
-	GOPATH=$(GOPATH) dep ensure
+all: fmt test $(PROJ)
 
 fmt:
 	GOPATH=$(GOPATH) go fmt *.go
 	GOPATH=$(GOPATH) go fmt f5/*.go
-	GOPATH=$(GOPATH) go tool vet *.go f5/*.go
+	GOPATH=$(GOPATH) go vet 
+	GOPATH=$(GOPATH) go vet ./f5
 
-test: fmt deps 
+test: fmt
 	@echo "+++ Is this thing working? :hammer_and_wrench:"
 	GOPATH=$(GOPATH) go test -cover -v 
 
-$(PROJ): deps 
+$(PROJ):
 	CGO_ENABLED=0 GOPATH=$(GOPATH) go build $(LDFLAGS) -o $@ -v
 	touch $@ && chmod 755 $@
 
-linux: deps
+linux:
 	CGO_ENABLED=0 GOOS=linux GOARCH=amd64 GOPATH=$(GOPATH) go build $(LDFLAGS) -o $(PROJ)-linux-amd64 -v
 	touch $(PROJ)-linux-amd64 && chmod 755 $(PROJ)-linux-amd64
 
-windows: deps
+windows:
 	CGO_ENABLED=0 GOOS=windows GOARCH=amd64 GOPATH=$(GOPATH) go build $(LDFLAGS) -o $(PROJ)-windows-amd64.exe -v
 	touch $(PROJ)-windows-amd64.exe
 
-darwin: deps
+darwin:
 	CGO_ENABLED=0 GOOS=darwin GOARCH=amd64 GOPATH=$(GOPATH) go build -o $(PROJ)-darwin-amd64 -v
 	touch $(PROJ)-darwin-amd64 && chmod 755 $(PROJ)-darwin-amd64
 
-ifdef TRAVIS_TAG
-publish: deps
-	@echo "+++ release :octocat:"
-	docker login -u "$(DOCKER_USERNAME)" -p "$(DOCKER_PASSWORD)"
-	goreleaser --skip-validate --rm-dist
-endif
-
 clean:
 	rm -rf $(PROJ) $(PROJ)-windows-amd64.exe $(PROJ)-linux-amd64 $(PROJ)-darwin-amd64 dist
+

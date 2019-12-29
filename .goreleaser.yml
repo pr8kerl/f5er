@@ -13,14 +13,12 @@ archive:
   format: binary
 
 dockers:
-  -
+  - 
+    image_templates:
+    - 'pr8kerl/f5er:{{ .Tag }}'
+    - 'pr8kerl/f5er:latest'
+    binaries:
+    - f5er
     goos: linux
     goarch: amd64
-    binary: f5er
-    image: pr8kerl/f5er
     dockerfile: Dockerfile
-    tag_templates:
-    - "{{ .Tag }}"
-    - "v{{ .Major }}"
-    - "v{{ .Major }}.{{ .Minor }}"
-    - latest
