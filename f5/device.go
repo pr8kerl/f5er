@@ -10,6 +10,7 @@ type LBDeviceState struct {
 	Path          string `json:"fullPath"`
 	FailoverState string `json:"failoverState"`
 	ManagementIP  string `json:"managementIP"`
+	Self          bool   `json:"selfDevice,string"`
 }
 
 func (f *Device) ShowDevice() (error, *LBDeviceRef) {
