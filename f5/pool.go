@@ -95,6 +95,7 @@ type LBPoolStatsInnerEntries struct {
 	Connq_depth              LBStatsValue           `json:"connq.depth"`
 	Connq_serviced           LBStatsValue           `json:"connq.serviced"`
 	CurSessions              LBStatsValue           `json:"curSessions"`
+	MemberCnt                LBStatsValue           `json:"memberCnt"`
 	MinActiveMembers         LBStatsValue           `json:"minActiveMembers"`
 	MonitorRule              LBPoolStatsDescription `json:"monitorRule"`
 	TmName                   LBPoolStatsDescription `json:"tmName"`
